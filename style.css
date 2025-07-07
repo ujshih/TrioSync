@@ -1,0 +1,135 @@
+/* 基本重置與背景 */
+body {
+    margin: 0;
+    padding: 0;
+    background: #181828;
+    color: #fff;
+    font-family: 'Orbitron', 'Audiowide', '微軟正黑體', Arial, sans-serif;
+    min-height: 100vh;
+    letter-spacing: 1.5px;
+}
+
+header {
+    text-align: center;
+    margin-top: 24px;
+    margin-bottom: 8px;
+}
+
+header h1 {
+    font-size: 2.8rem;
+    color: #0ff;
+    text-shadow: 0 0 16px #0ff, 0 0 32px #39f;
+    font-family: 'Orbitron', 'Audiowide', '微軟正黑體', Arial, sans-serif;
+    letter-spacing: 4px;
+}
+
+/* 開始畫面與選單 */
+#start-screen, #result-screen {
+    background: rgba(24,24,40,0.92);
+    border-radius: 18px;
+    box-shadow: 0 0 32px #39f, 0 0 8px #0ff;
+    padding: 32px 24px;
+    margin-top: 32px;
+}
+.song-select, .difficulty-select, .bgm-toggle {
+    margin: 8px 0;
+}
+.difficulty-btn, #start-btn, #restart-btn, #back-btn, #bgm-toggle-btn {
+    background: linear-gradient(90deg, #0ff 0%, #39f 100%);
+    color: #181828;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 32px;
+    font-size: 1.2rem;
+    font-family: 'Orbitron', 'Audiowide', '微軟正黑體', Arial, sans-serif;
+    font-weight: bold;
+    margin: 8px 6px;
+    cursor: pointer;
+    box-shadow: 0 0 16px #0ff, 0 0 8px #39f;
+    transition: background 0.2s, box-shadow 0.2s, color 0.2s;
+    text-shadow: 0 0 8px #fff8;
+}
+.difficulty-btn.active, .difficulty-btn:hover, #start-btn:hover, #restart-btn:hover, #back-btn:hover, #bgm-toggle-btn.on {
+    background: linear-gradient(90deg, #f0f 0%, #0ff 100%);
+    color: #fff;
+    box-shadow: 0 0 32px #f0f, 0 0 16px #0ff;
+}
+
+/* Canvas 遊戲區 */
+#game-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 16px;
+}
+#game-canvas {
+    background: #222244;
+    border-radius: 18px;
+    box-shadow: 0 0 32px #0ff, 0 0 8px #39f;
+    display: block;
+    margin-bottom: 16px;
+}
+#key-hints {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+    gap: 18px;
+}
+.key {
+    background: #222244;
+    color: #0ff;
+    border-radius: 10px;
+    padding: 12px 28px;
+    font-size: 1.3rem;
+    margin: 0 4px;
+    box-shadow: 0 0 12px #0ff, 0 0 4px #39f;
+    font-family: 'Orbitron', 'Audiowide', '微軟正黑體', Arial, sans-serif;
+    transition: background 0.1s, color 0.1s, box-shadow 0.1s;
+    user-select: none;
+}
+.key.active, .key:active {
+    background: #f0f;
+    color: #fff;
+    box-shadow: 0 0 24px #f0f, 0 0 12px #0ff;
+}
+
+/* 分數與 Combo 效果 */
+#score-display, #combo-display {
+    font-size: 1.5rem;
+    color: #0ff;
+    text-shadow: 0 0 12px #0ff, 0 0 8px #39f;
+    font-family: 'Orbitron', 'Audiowide', '微軟正黑體', Arial, sans-serif;
+    font-weight: bold;
+}
+#combo-display {
+    color: #f0f;
+    text-shadow: 0 0 16px #f0f, 0 0 8px #0ff;
+}
+
+/* 結算畫面 */
+#final-score, #final-grade {
+    font-size: 2.2rem;
+    color: #0ff;
+    text-shadow: 0 0 16px #0ff, 0 0 8px #39f;
+    font-family: 'Orbitron', 'Audiowide', '微軟正黑體', Arial, sans-serif;
+    font-weight: bold;
+}
+
+/* 音符動畫（由 JS 動態繪製，這裡僅供參考） */
+.note {
+    /* 由 JS 動態產生樣式 */
+}
+
+/* 響應式設計 */
+@media (max-width: 600px) {
+    #game-canvas {
+        width: 98vw;
+        height: 60vw;
+        max-width: 480px;
+        max-height: 640px;
+    }
+    .key {
+        padding: 8px 10px;
+        font-size: 1rem;
+    }
+} 
