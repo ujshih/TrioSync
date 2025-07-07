@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fate Keys 命運節奏</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Audiowide&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+    <!-- 遊戲標題 -->
+    <header>
+        <h1>Fate Keys 命運節奏</h1>
+        <p style="color:#0ff;text-shadow:0 0 8px #0ff;font-family:'Orbitron',sans-serif;">基於經典音樂的電競節奏遊戲</p>
+    </header>
+    <!-- 音樂與難度選擇區 -->
+    <section id="select-area">
+        <div class="song-select">
+            <label for="song">歌曲：</label>
+            <select id="song">
+                <option value="Champion.mp3">You're The Champion</option>
+                <option value="Bliss.mp3">Bliss</option>
+                <option value="Canon.mp3">Canon in D Major</option>
+                <option value="HappyBirthday.mp3">Happy Birthday</option>
+                <option value="MainTheme.mp3">Main Theme</option>
+                <option value="MagicalMoments.mp3">Magical Moments</option>
+                <option value="Noise.mp3">Noise</option>
+                <option value="HammerMASTER.mp3">HammerMASTER</option>
+                <option value="InspiringDreams.mp3">Inspiring Dreams</option>
+                <option value="inspiringguitar.mp3">Guitar Rhythm</option>
+            </select>
+        </div>
+        <div class="difficulty-select">
+            <label>難度：</label>
+            <button class="difficulty-btn" data-difficulty="easy">簡單</button>
+            <button class="difficulty-btn" data-difficulty="normal">中等</button>
+            <button class="difficulty-btn" data-difficulty="hard">困難</button>
+            <button class="difficulty-btn" data-difficulty="master">魔王</button>
+        </div>
+        <button id="start-btn">開始遊戲</button>
+    </section>
+    <!-- Canvas 遊戲區 -->
+    <section id="game-area" style="display:none;">
+        <canvas id="game-canvas" width="480" height="640"></canvas>
+        <div id="key-hints">
+            <span class="key" data-key="A">A</span>
+            <span class="key" data-key="S">S</span>
+            <span class="key" data-key="D">D</span>
+            <span class="key" data-key="F">F</span>
+            <span class="key" data-key="G">G</span>
+        </div>
+        <div id="combo-display"></div>
+        <div id="score-display">分數：0</div>
+        <div id="timer-display">剩餘：30.0 秒</div>
+    </section>
+    <!-- 結算畫面 -->
+    <section id="result-screen" style="display:none;">
+        <h2>遊戲結束</h2>
+        <div id="final-score"></div>
+        <div id="final-grade"></div>
+        <button id="restart-btn">再玩一次</button>
+        <button id="back-btn">返回主選單</button>
+    </section>
+    <script src="game.js"></script>
+</body>
+</html> 
