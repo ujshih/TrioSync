@@ -9,59 +9,188 @@
     <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
-    <!-- 遊戲標題 -->
-    <header>
-        <h1>Fate Keys 命運節奏</h1>
-        <p style="color:#0ff;text-shadow:0 0 8px #0ff;font-family:'Orbitron',sans-serif;">基於經典音樂的電競節奏遊戲</p>
-    </header>
-    <!-- 音樂與難度選擇區 -->
-    <section id="select-area">
-        <div class="song-select">
-            <label for="song">歌曲：</label>
-            <select id="song">
-                <option value="Champion.mp3">You're The Champion</option>
-                <option value="Bliss.mp3">Bliss</option>
-                <option value="Canon.mp3">Canon in D Major</option>
-                <option value="HappyBirthday.mp3">Happy Birthday</option>
-                <option value="MainTheme.mp3">Main Theme</option>
-                <option value="MagicalMoments.mp3">Magical Moments</option>
-                <option value="Noise.mp3">Noise</option>
-                <option value="HammerMASTER.mp3">HammerMASTER</option>
-                <option value="InspiringDreams.mp3">Inspiring Dreams</option>
-                <option value="inspiringguitar.mp3">Guitar Rhythm</option>
-            </select>
+    <!-- 粒子背景 Canvas -->
+    <canvas id="particles-bg" aria-hidden="true"></canvas>
+    
+    <!-- 音訊解鎖遮罩 -->
+    <div id="unlock-audio-mask">
+        <div class="unlock-content">
+            <div class="unlock-icon">🎵</div>
+            <div class="unlock-text">點擊畫面以啟用音樂</div>
+            <div class="unlock-hint">準備好體驗命運節奏了嗎？</div>
         </div>
-        <div class="difficulty-select">
-            <label>難度：</label>
-            <button class="difficulty-btn" data-difficulty="easy">簡單</button>
-            <button class="difficulty-btn" data-difficulty="normal">中等</button>
-            <button class="difficulty-btn" data-difficulty="hard">困難</button>
-            <button class="difficulty-btn" data-difficulty="master">魔王</button>
+    </div>
+    
+    <div id="main-wrapper">
+        <!-- 倒數動畫遮罩 -->
+        <div id="countdown-overlay">
+            <div id="countdown-text">3</div>
         </div>
-        <button id="start-btn">開始遊戲</button>
-    </section>
-    <!-- Canvas 遊戲區 -->
-    <section id="game-area" style="display:none;">
-        <canvas id="game-canvas" width="480" height="640"></canvas>
-        <div id="key-hints">
-            <span class="key" data-key="A">A</span>
-            <span class="key" data-key="S">S</span>
-            <span class="key" data-key="D">D</span>
-            <span class="key" data-key="F">F</span>
-            <span class="key" data-key="G">G</span>
-        </div>
-        <div id="combo-display"></div>
-        <div id="score-display">分數：0</div>
-        <div id="timer-display">剩餘：30.0 秒</div>
-    </section>
-    <!-- 結算畫面 -->
-    <section id="result-screen" style="display:none;">
-        <h2>遊戲結束</h2>
-        <div id="final-score"></div>
-        <div id="final-grade"></div>
-        <button id="restart-btn">再玩一次</button>
-        <button id="back-btn">返回主選單</button>
-    </section>
+        
+        <!-- 遊戲標題 -->
+        <header>
+            <h1 class="neon-logo">Fate Keys 命運節奏</h1>
+            <p class="subtitle">基於經典音樂的電競節奏遊戲</p>
+            <div id="audio-error-msg" role="alert"></div>
+        </header>
+        
+        <!-- 音樂與難度選擇區 -->
+        <section id="select-area">
+            <div class="song-select">
+                <h2 class="section-title">選擇歌曲</h2>
+                <div class="song-card-list">
+                    <div class="song-card" data-song="Champion.mp3" tabindex="0" aria-label="選擇歌曲 You're The Champion">
+                        <div class="song-card-icon">🎵</div>
+                        <div class="song-card-title">You're The Champion</div>
+                        <div class="song-card-bpm">BPM: 128</div>
+                    </div>
+                    <div class="song-card" data-song="Bliss.mp3">
+                        <div class="song-card-icon">🎶</div>
+                        <div class="song-card-title">Bliss</div>
+                        <div class="song-card-bpm">BPM: 140</div>
+                    </div>
+                    <div class="song-card" data-song="Canon.mp3">
+                        <div class="song-card-icon">🎻</div>
+                        <div class="song-card-title">Canon in D Major</div>
+                        <div class="song-card-bpm">BPM: 120</div>
+                    </div>
+                    <div class="song-card" data-song="HappyBirthday.mp3">
+                        <div class="song-card-icon">🎂</div>
+                        <div class="song-card-title">Happy Birthday</div>
+                        <div class="song-card-bpm">BPM: 100</div>
+                    </div>
+                    <div class="song-card" data-song="MainTheme.mp3">
+                        <div class="song-card-icon">🌟</div>
+                        <div class="song-card-title">Main Theme</div>
+                        <div class="song-card-bpm">BPM: 135</div>
+                    </div>
+                    <div class="song-card" data-song="MagicalMoments.mp3">
+                        <div class="song-card-icon">✨</div>
+                        <div class="song-card-title">Magical Moments</div>
+                        <div class="song-card-bpm">BPM: 145</div>
+                    </div>
+                    <div class="song-card" data-song="Noise.mp3">
+                        <div class="song-card-icon">🔊</div>
+                        <div class="song-card-title">Noise</div>
+                        <div class="song-card-bpm">BPM: 150</div>
+                    </div>
+                    <div class="song-card" data-song="HammerMASTER.mp3">
+                        <div class="song-card-icon">🥁</div>
+                        <div class="song-card-title">HammerMASTER</div>
+                        <div class="song-card-bpm">BPM: 160</div>
+                    </div>
+                    <div class="song-card" data-song="InspiringDreams.mp3">
+                        <div class="song-card-icon">🎷</div>
+                        <div class="song-card-title">Inspiring Dreams</div>
+                        <div class="song-card-bpm">BPM: 130</div>
+                    </div>
+                    <div class="song-card" data-song="inspiringguitar.mp3">
+                        <div class="song-card-icon">🎸</div>
+                        <div class="song-card-title">Guitar Rhythm</div>
+                        <div class="song-card-bpm">BPM: 125</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="difficulty-select">
+                <h2 class="section-title">選擇難度</h2>
+                <div class="difficulty-btn-row">
+                    <button class="difficulty-btn easy" data-difficulty="beginner" tabindex="0" aria-label="選擇難度 初學者">
+                        <div class="difficulty-icon">📝</div>
+                        <div class="difficulty-name">初學者</div>
+                        <div class="difficulty-stars"></div>
+                        <div class="difficulty-desc">超簡單引導關，單鍵、慢速，適合新手</div>
+                    </button>
+                    <button class="difficulty-btn normal" data-difficulty="casual" tabindex="0" aria-label="選擇難度 休閒玩家">
+                        <div class="difficulty-icon">🎵</div>
+                        <div class="difficulty-name">休閒玩家</div>
+                        <div class="difficulty-stars"></div>
+                        <div class="difficulty-desc">慢速，簡單長音與雙鍵，適合放鬆體驗</div>
+                    </button>
+                    <button class="difficulty-btn hard" data-difficulty="hard" tabindex="0" aria-label="選擇難度 困難模式">
+                        <div class="difficulty-icon">🎶</div>
+                        <div class="difficulty-name">困難模式</div>
+                        <div class="difficulty-stars"></div>
+                        <div class="difficulty-desc">中速、密度提升，偶爾出現連打與疊音</div>
+                    </button>
+                    <button class="difficulty-btn master" data-difficulty="extreme" tabindex="0" aria-label="選擇難度 極限挑戰">
+                        <div class="difficulty-icon">🎼</div>
+                        <div class="difficulty-name">極限挑戰</div>
+                        <div class="difficulty-stars"></div>
+                        <div class="difficulty-desc">偏快，有長音、雙鍵組合與簡單干擾特效</div>
+                    </button>
+                    <button class="difficulty-btn ultimate" data-difficulty="master" tabindex="0" aria-label="選擇難度 大師級">
+                        <div class="difficulty-icon">🎹</div>
+                        <div class="difficulty-name">大師級</div>
+                        <div class="difficulty-stars"></div>
+                        <div class="difficulty-desc">高速混合，反應與記憶挑戰</div>
+                    </button>
+                    <button class="difficulty-btn hidden-difficulty" data-difficulty="fate" tabindex="0" aria-label="選擇難度 命運之路" disabled>
+                        <div class="difficulty-icon">🌟</div>
+                        <div class="difficulty-name">命運之路</div>
+                        <div class="difficulty-stars"></div>
+                        <div class="difficulty-desc">隱藏關卡，需解鎖，特製譜設計，閃爍星星</div>
+                    </button>
+                </div>
+                <div id="miss-buffer-ui" class="miss-buffer-ui" style="display:none;"></div>
+            </div>
+            
+            <div class="start-btn-container">
+                <button id="start-btn" class="pulse-btn" tabindex="0" aria-label="開始遊戲">
+                    <div class="start-btn-icon">🚀</div>
+                    <div class="start-btn-text">開始遊戲</div>
+                </button>
+            </div>
+        </section>
+        
+        <!-- 遊戲區域 -->
+        <section id="game-area">
+            <div class="game-header">
+                <div id="timer-display">60</div>
+                <div id="score-display">分數: 0</div>
+                <div id="combo-display">0</div>
+            </div>
+            
+            <canvas id="game-canvas"></canvas>
+            
+            <!-- 音頻可視化 -->
+            <canvas id="audio-visualizer"></canvas>
+            
+            <div id="key-hints">
+                <div class="key" data-key="D">D</div>
+                <div class="key" data-key="F">F</div>
+                <div class="key" data-key=" ">SPACE</div>
+                <div class="key" data-key="J">J</div>
+                <div class="key" data-key="K">K</div>
+            </div>
+            
+            <!-- Combo 容器 -->
+            <div id="combo-container"></div>
+        </section>
+        
+        <!-- 結算畫面 -->
+        <section id="result-screen">
+            <h2 class="result-title">遊戲結束</h2>
+            <div class="result-content">
+                <div id="final-score" class="final-score"></div>
+                <div id="final-grade" class="final-grade"></div>
+            </div>
+            <div class="result-buttons">
+                <button id="restart-btn" class="action-btn" tabindex="0" aria-label="再玩一次">
+                    <span class="btn-icon">🔄</span>
+                    再玩一次
+                </button>
+                <button id="back-btn" class="action-btn" tabindex="0" aria-label="返回主選單">
+                    <span class="btn-icon">🏠</span>
+                    返回主選單
+                </button>
+            </div>
+        </section>
+    </div>
+    
+    <!-- 遊戲說明按鈕 -->
+    <button id="help-btn" class="action-btn" tabindex="0" aria-label="遊戲說明" style="position: absolute; top: 1rem; right: 1rem; z-index: 10;">❓</button>
+    
     <script src="game.js"></script>
 </body>
 </html> 

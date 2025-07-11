@@ -1,0 +1,12 @@
+{
+  "name": "fatekeys",
+  "version": "1.0.0",
+  "description": "Fate Keys 命運節奏 - 桌面音樂節奏遊戲 Electron 版",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^29.3.0"
+  }
+} 
