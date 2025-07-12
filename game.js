@@ -2293,15 +2293,12 @@ function renderDifficultyStars() {
         const config = LEVEL_CONFIGS[diff];
         if (!config) return;
         let stars = '';
-        for (let i = 0; i < 6; i++) {
-            if (i < config.stars) {
-                if (config.locked) {
-                    stars += '<span class="star star-locked">' + (i === 5 ? '✨' : '⭐') + '</span>';
-                } else {
-                    stars += '<span class="star">' + (i === 5 && config.stars === 6 ? '✨' : '⭐') + '</span>';
-                }
+        // 根據難度等級顯示對應數量的星星
+        for (let i = 0; i < config.stars; i++) {
+            if (config.locked) {
+                stars += '<span class="star star-locked">⭐</span>';
             } else {
-                stars += '<span class="star">☆</span>';
+                stars += '<span class="star">⭐</span>';
             }
         }
         const starDiv = btn.querySelector('.difficulty-stars');
