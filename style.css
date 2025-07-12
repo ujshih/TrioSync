@@ -1270,3 +1270,17 @@ header {
 .slide-in-right {
     animation: slideInRight 0.5s ease-out;
 } 
+
+#game-area,
+#select-area,
+#result-screen {
+  transform: scale(0.7);
+  transform-origin: top center;
+  margin: 0 auto;
+}
+
+/* 移除 #game-canvas 的 scale */
+#game-canvas {
+  display: block;
+  margin: 0 auto;
+} 
