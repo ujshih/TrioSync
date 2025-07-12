@@ -2781,78 +2781,158 @@ window.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // 鍵盤事件
+    // 鍵盤事件 - 支援 Mac 鍵盤
     document.addEventListener('keydown', function(e) {
-        if (!gameStarted || gamePaused || gameEnded) return;
+        console.log('[keydown] 按鍵:', e.key, '代碼:', e.code, '鍵碼:', e.keyCode);
         
-        const key = e.key.toUpperCase();
-        
-        // 根據當前難度獲取按鍵配置
-        let currentKeys = ['D', 'F', 'J', 'K']; // 預設4鍵
-        if (selectedDifficulty && LEVEL_CONFIGS[selectedDifficulty]) {
-            currentKeys = LEVEL_CONFIGS[selectedDifficulty].keys;
+        // 遊戲暫停功能（Esc）
+        if (e.key === 'Escape' || e.code === 'Escape') {
+            if (gameStarted && !gameEnded) {
+                gamePaused = !gamePaused;
+                if (gamePaused) {
+                    audioManager.audio && audioManager.audio.pause();
+                } else {
+                    audioManager.audio && audioManager.audio.play();
+                }
+                showToast(gamePaused ? '遊戲已暫停（再按 Esc 恢復）' : '遊戲繼續');
+            }
+            return;
         }
         
-        const keyIndex = currentKeys.indexOf(key);
+        // 處理遊戲按鍵 - 支援多種按鍵格式
+        let key = e.key;
+        let keyCode = e.code;
         
-        if (keyIndex !== -1) {
-            e.preventDefault();
-            
-            // 更新按鍵提示
-            const keyElement = document.querySelector(`[data-key="${key}"]`);
+        // Mac 鍵盤特殊處理 - 加強空白鍵支援
+        if (key === ' ' || key === 'Spacebar' || key === 'Space' || keyCode === 'Space' || e.keyCode === 32) {
+            // 強制 SPACE UI 高亮
+            let found = false;
+            // 1. 先用 data-key=" " 查找
+            let keyElement = document.querySelector('.key[data-key=" "]');
             if (keyElement) {
                 keyElement.classList.add('active');
-                setTimeout(() => keyElement.classList.remove('active'), 100);
+                setTimeout(() => keyElement.classList.remove('active'), 150);
+                found = true;
+            }
+            // 2. 若找不到，再用 textContent 為 "SPACE" 查找
+            if (!found) {
+                document.querySelectorAll('.key').forEach(el => {
+                    if (el.textContent.trim() === 'SPACE') {
+                        el.classList.add('active');
+                        setTimeout(() => el.classList.remove('active'), 150);
+                        found = true;
+                    }
+                });
+            }
+            // 3. 若還是找不到，全部 .key 逐一加亮
+            if (!found) {
+                document.querySelectorAll('.key').forEach(el => {
+                    el.classList.add('active');
+                    setTimeout(() => el.classList.remove('active'), 150);
+                });
+            }
+            // 仍然要執行遊戲判定
+            key = ' ';
+        } else {
+            key = key.toUpperCase();
+        }
+        
+        console.log('[keydown] 處理後按鍵:', key, '代碼:', keyCode);
+        
+        // 檢查是否為遊戲按鍵（支援多種格式）
+        const validKeys = ['D', 'F', 'J', 'K', ' '];
+        const validCodes = ['KeyD', 'KeyF', 'KeyJ', 'KeyK', 'Space'];
+        
+        const isValidKey = validKeys.includes(key);
+        const isValidCode = validCodes.includes(keyCode);
+        
+        console.log('[keydown] 有效按鍵檢查:', { isValidKey, isValidCode, key, keyCode });
+        
+        if (isValidKey || isValidCode) {
+            e.preventDefault();
+            console.log('[keydown] 有效按鍵:', key);
+            
+            // 更新 UI 高亮 - 特別處理空白鍵
+            let targetKey = key;
+            if (key === ' ') {
+                targetKey = ' ';
+                console.log('[keydown] 空白鍵 UI 查找目標:', targetKey);
             }
             
-            // 長音符頭部判定
-            if (!holdKeyLane) {
-                const judgeLineY = canvas.height - 100;
-                const config = LEVEL_CONFIGS[selectedDifficulty];
-                const noteSpeed = config.speed;
-                let best = null, bestIdx = -1, minDist = 9999;
-                for (let i = 0; i < notes.length; i++) {
-                    const note = notes[i];
-                    if (note.lane === keyIndex && !note.hit && !note.missed && note.duration > 0) {
-                        const noteY = (currentTime - note.time) * noteSpeed;
-                        const dist = Math.abs(noteY - judgeLineY);
-                        if (dist < 40 && dist < minDist) {
-                            best = note;
-                            bestIdx = i;
-                            minDist = dist;
-                        }
+            // 多種查找方法
+            let keyElement = null;
+            
+            // 方法1: 用 data-key 查找
+            keyElement = document.querySelector(`[data-key="${targetKey}"]`);
+            console.log('[keydown] 方法1 - 查找 UI 元素:', `[data-key="${targetKey}"]`, '結果:', keyElement);
+            
+            // 方法2: 如果找不到，嘗試查找包含 SPACE 文字的元素
+            if (!keyElement && key === ' ') {
+                const allKeys = document.querySelectorAll('.key');
+                for (let el of allKeys) {
+                    if (el.textContent === 'SPACE') {
+                        keyElement = el;
+                        console.log('[keydown] 方法2 - 找到 SPACE 文字元素:', el);
+                        break;
                     }
                 }
-                if (best) {
-                    best.holdActive = true;
-                    holdKeyLane = keyIndex;
-                    holdKeyNote = best;
-                    holdKeyStartTime = currentTime;
-                    // 動畫效果
-                    best.animating = 'hit';
-                    return;
+            }
+            
+            // 方法3: 如果還是找不到，嘗試用代碼查找
+            if (!keyElement) {
+                const codeKey = keyCode === 'Space' ? ' ' : keyCode.replace('Key', '');
+                keyElement = document.querySelector(`[data-key="${codeKey}"]`);
+                console.log('[keydown] 方法3 - 用代碼查找:', `[data-key="${codeKey}"]`, '結果:', keyElement);
+            }
+            
+            if (keyElement) {
+                keyElement.classList.add('active');
+                console.log('[keydown] 成功添加 active 類別到:', keyElement);
+                setTimeout(() => {
+                    keyElement.classList.remove('active');
+                    console.log('[keydown] 移除 active 類別');
+                }, 150);
+            } else {
+                console.warn('[keydown] 所有方法都找不到 UI 元素:', targetKey);
+                // 最後嘗試：直接查找所有 .key 元素並顯示
+                const allKeys = document.querySelectorAll('.key');
+                console.log('[keydown] 所有 .key 元素:', allKeys);
+                allKeys.forEach((el, i) => {
+                    console.log(`[keydown] 元素 ${i}:`, el.textContent, el.dataset.key);
+                });
+            }
+            
+            // 遊戲進行中的判定
+            if (gameStarted && !gamePaused && !gameEnded) {
+                let currentKeys = ['D', 'F', 'J', 'K'];
+                if (selectedDifficulty && LEVEL_CONFIGS[selectedDifficulty]) {
+                    currentKeys = LEVEL_CONFIGS[selectedDifficulty].keys;
+                }
+                const keyIndex = currentKeys.findIndex(k => (k === ' ' ? key === ' ' : k.toUpperCase() === key));
+                if (keyIndex !== -1) {
+                    judgeNote(keyIndex);
                 }
             }
-            // 短音符判定
-            judgeNote(keyIndex);
         }
     });
+    
     document.addEventListener('keyup', function(e) {
         if (!gameStarted || gamePaused || gameEnded) return;
-        const key = e.key.toUpperCase();
         
-        // 根據當前難度獲取按鍵配置
-        let currentKeys = ['D', 'F', 'J', 'K']; // 預設4鍵
+        let key = e.key;
+        if (key === ' ' || key === 'Spacebar' || key === 'Space') key = ' ';
+        key = key.toUpperCase();
+        
+        let currentKeys = ['D', 'F', 'J', 'K'];
         if (selectedDifficulty && LEVEL_CONFIGS[selectedDifficulty]) {
             currentKeys = LEVEL_CONFIGS[selectedDifficulty].keys;
         }
         
-        const keyIndex = currentKeys.indexOf(key);
+        const keyIndex = currentKeys.findIndex(k => (k === ' ' ? key === ' ' : k.toUpperCase() === key));
         if (keyIndex !== -1 && holdKeyLane === keyIndex && holdKeyNote) {
             const judgeLineY = canvas.height - 100;
             const noteSpeed = LEVEL_CONFIGS[selectedDifficulty].speed;
             const tailY = (currentTime - (holdKeyNote.time + holdKeyNote.duration)) * noteSpeed;
-            // 尾部過線判定
             if (Math.abs(tailY - judgeLineY) < 40) {
                 holdKeyNote.holdHit = true;
                 holdKeyNote.hit = true;
@@ -2863,13 +2943,10 @@ window.addEventListener('DOMContentLoaded', function() {
                 updateScoreDisplay();
                 updateComboDisplay();
             } else {
-                // Miss
                 holdKeyNote.missed = true;
                 holdKeyNote.animating = 'miss';
                 resetCombo();
                 showMissEffect();
-                
-                // 觸發長按斷開特效
                 dynamicInteractionManager.triggerHoldBreakEffect();
             }
             holdKeyNote.holdActive = false;
@@ -2886,7 +2963,7 @@ window.addEventListener('DOMContentLoaded', function() {
                 gamePaused = !gamePaused;
                 if (gamePaused) {
                     audioManager.audio && audioManager.audio.pause();
-    } else {
+                } else {
                     audioManager.audio && audioManager.audio.play();
                 }
                 showToast(gamePaused ? '遊戲已暫停（再按 Esc 恢復）' : '遊戲繼續');

@@ -950,11 +950,35 @@ header {
 }
 
 .key.active, .key:active {
-    background: linear-gradient(135deg, #f0f, #ff6f91);
+    background: linear-gradient(135deg, #ff00ff, #ff6f91);
     border-color: #fff;
     color: #fff;
-    box-shadow: 0 0 25px rgba(240,0,255,0.6);
-    transform: scale(0.95);
+    box-shadow: 
+        0 0 30px rgba(255,0,255,0.8),
+        0 0 60px rgba(255,111,145,0.6),
+        inset 0 0 20px rgba(255,255,255,0.3);
+    transform: scale(0.9);
+    animation: key-press 0.1s ease-out;
+    text-shadow: 0 0 10px #fff;
+}
+
+@keyframes key-press {
+    0% { 
+        transform: scale(1);
+        box-shadow: 0 0 8px #0ff;
+    }
+    50% { 
+        transform: scale(0.85);
+        box-shadow: 
+            0 0 40px rgba(255,0,255,0.9),
+            0 0 80px rgba(255,111,145,0.7);
+    }
+    100% { 
+        transform: scale(0.9);
+        box-shadow: 
+            0 0 30px rgba(255,0,255,0.8),
+            0 0 60px rgba(255,111,145,0.6);
+    }
 }
 
 /* Combo 容器 */
@@ -1457,4 +1481,188 @@ button:hover, .action-btn:hover {
     background: linear-gradient(90deg, #fff700 0%, #0ff 100%);
     color: #000;
     box-shadow: 0 4px 24px 0 rgba(0,255,255,0.18);
+} 
+
+/* 按鍵高亮效果 - 每個按鍵不同顏色 */
+.key.active[data-key="D"], .key:active[data-key="D"] {
+    background: linear-gradient(135deg, #00CFFF, #0088FF);
+    border-color: #00CFFF;
+    color: #fff;
+    box-shadow: 
+        0 0 30px rgba(0,207,255,0.8),
+        0 0 60px rgba(0,136,255,0.6),
+        inset 0 0 20px rgba(0,207,255,0.3);
+    transform: scale(0.9);
+    animation: key-press-blue 0.15s ease-out;
+    text-shadow: 0 0 10px #00CFFF;
+}
+
+.key.active[data-key="F"], .key:active[data-key="F"] {
+    background: linear-gradient(135deg, #A16EFF, #8A2BE2);
+    border-color: #A16EFF;
+    color: #fff;
+    box-shadow: 
+        0 0 30px rgba(161,110,255,0.8),
+        0 0 60px rgba(138,43,226,0.6),
+        inset 0 0 20px rgba(161,110,255,0.3);
+    transform: scale(0.9);
+    animation: key-press-purple 0.15s ease-out;
+    text-shadow: 0 0 10px #A16EFF;
+}
+
+.key.active[data-key=" "], .key:active[data-key=" "] {
+    background: linear-gradient(135deg, #0ff 60%, #1C1C80 100%);
+    border: 3px solid #0ff;
+    color: #0ff;
+    box-shadow: 0 0 32px 8px #0ff, 0 0 64px 16px #39f, 0 0 0px 0px #fff;
+    text-shadow: 0 0 12px #0ff, 0 0 24px #39f;
+    font-weight: bold;
+    letter-spacing: 6px;
+    font-size: 2.1rem;
+    filter: brightness(1.3);
+    animation: space-neon-glow 0.18s cubic-bezier(.4,2,.6,1) 1;
+    transform: scale(1.05);
+}
+
+@keyframes space-neon-glow {
+    0% {
+        box-shadow: 0 0 0px 0px #0ff, 0 0 0px 0px #39f;
+        border-color: #fff;
+        filter: brightness(1.0);
+        transform: scale(1.0);
+    }
+    60% {
+        box-shadow: 0 0 48px 16px #0ff, 0 0 96px 32px #39f;
+        border-color: #0ff;
+        filter: brightness(1.5);
+        transform: scale(1.08);
+    }
+    100% {
+        box-shadow: 0 0 32px 8px #0ff, 0 0 64px 16px #39f;
+        border-color: #0ff;
+        filter: brightness(1.3);
+        transform: scale(1.05);
+    }
+}
+
+.key.active[data-key="J"], .key:active[data-key="J"] {
+    background: linear-gradient(135deg, #FF8888, #FF6B6B);
+    border-color: #FF8888;
+    color: #fff;
+    box-shadow: 
+        0 0 30px rgba(255,136,136,0.8),
+        0 0 60px rgba(255,107,107,0.6),
+        inset 0 0 20px rgba(255,136,136,0.3);
+    transform: scale(0.9);
+    animation: key-press-pink 0.15s ease-out;
+    text-shadow: 0 0 10px #FF8888;
+}
+
+.key.active[data-key="K"], .key:active[data-key="K"] {
+    background: linear-gradient(135deg, #66FFFF, #00FFFF);
+    border-color: #66FFFF;
+    color: #000;
+    box-shadow: 
+        0 0 30px rgba(102,255,255,0.8),
+        0 0 60px rgba(0,255,255,0.6),
+        inset 0 0 20px rgba(102,255,255,0.3);
+    transform: scale(0.9);
+    animation: key-press-cyan 0.15s ease-out;
+    text-shadow: 0 0 10px #66FFFF;
+}
+
+/* 各按鍵的動畫效果 */
+@keyframes key-press-blue {
+    0% { 
+        transform: scale(1);
+        box-shadow: 0 0 8px #00CFFF;
+    }
+    50% { 
+        transform: scale(0.85);
+        box-shadow: 
+            0 0 40px rgba(0,207,255,0.9),
+            0 0 80px rgba(0,136,255,0.7);
+    }
+    100% { 
+        transform: scale(0.9);
+        box-shadow: 
+            0 0 30px rgba(0,207,255,0.8),
+            0 0 60px rgba(0,136,255,0.6);
+    }
+}
+
+@keyframes key-press-purple {
+    0% { 
+        transform: scale(1);
+        box-shadow: 0 0 8px #A16EFF;
+    }
+    50% { 
+        transform: scale(0.85);
+        box-shadow: 
+            0 0 40px rgba(161,110,255,0.9),
+            0 0 80px rgba(138,43,226,0.7);
+    }
+    100% { 
+        transform: scale(0.9);
+        box-shadow: 
+            0 0 30px rgba(161,110,255,0.8),
+            0 0 60px rgba(138,43,226,0.6);
+    }
+}
+
+@keyframes key-press-gold {
+    0% { 
+        transform: scale(1);
+        box-shadow: 0 0 8px #FFD700;
+    }
+    50% { 
+        transform: scale(0.85);
+        box-shadow: 
+            0 0 40px rgba(255,215,0,0.9),
+            0 0 80px rgba(255,165,0,0.7);
+    }
+    100% { 
+        transform: scale(0.9);
+        box-shadow: 
+            0 0 30px rgba(255,215,0,0.8),
+            0 0 60px rgba(255,165,0,0.6);
+    }
+}
+
+@keyframes key-press-pink {
+    0% { 
+        transform: scale(1);
+        box-shadow: 0 0 8px #FF8888;
+    }
+    50% { 
+        transform: scale(0.85);
+        box-shadow: 
+            0 0 40px rgba(255,136,136,0.9),
+            0 0 80px rgba(255,107,107,0.7);
+    }
+    100% { 
+        transform: scale(0.9);
+        box-shadow: 
+            0 0 30px rgba(255,136,136,0.8),
+            0 0 60px rgba(255,107,107,0.6);
+    }
+}
+
+@keyframes key-press-cyan {
+    0% { 
+        transform: scale(1);
+        box-shadow: 0 0 8px #66FFFF;
+    }
+    50% { 
+        transform: scale(0.85);
+        box-shadow: 
+            0 0 40px rgba(102,255,255,0.9),
+            0 0 80px rgba(0,255,255,0.7);
+    }
+    100% { 
+        transform: scale(0.9);
+        box-shadow: 
+            0 0 30px rgba(102,255,255,0.8),
+            0 0 60px rgba(0,255,255,0.6);
+    }
 } 
