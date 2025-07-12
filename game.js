@@ -376,10 +376,10 @@ let gameArea = null;
 
 // 遊戲配置
 const KEY_COLORS = ['#ff6f91', '#4ecdc4', '#ffe066', '#5f6fff', '#ffb347'];
-let KEY_LIST = ['D', 'F', ' ', 'J', 'K'];
+let KEY_LIST = ['D', 'F', 'J', 'K'];
 const KEY_LISTS = {
     four: ['D', 'F', 'J', 'K'],
-    five: ['D', 'F', ' ', 'J', 'K']
+    five: ['D', 'F', 'J', 'K', 'Space']
 };
 
 // 遊戲狀態
@@ -409,76 +409,108 @@ let missLanes = new Set(); // 記錄Miss的賽道
 let screenShake = 0; // 畫面震動強度
 let laneGlowStates = Array(5).fill(0); // 賽道發光狀態
 
-// 難度參數
-const DIFFICULTY_CONFIGS = {
-  beginner: {
-    name: "初學者",
-    enName: "Beginner",
+// 遊戲等級參數 (根據表格內容設計)
+const LEVEL_CONFIGS = {
+  lv1: {
+    name: "Lv.1 新手引導",
+    enName: "Level 1 - Tutorial",
     speed: 150,
-    density: 0.75,
-    keyCount: 3,
+    density: 1.0,
+    keyCount: 4,
     missBuffer: 4,
     stars: 1,
-    desc: "超簡單引導關，單鍵、慢速，適合新手",
-    judgeWindow: 300
+    desc: "第一次玩家專用，單音符、慢速、寬鬆判定",
+    judgeWindow: 350,
+    keys: ['D', 'F', 'J', 'K'],
+    holdSupport: false,
+    simultaneousNotes: 1,
+    specialRules: "無長音支援，單音符為主"
   },
-  casual: {
-    name: "休閒玩家",
-    enName: "Casual",
+  lv2: {
+    name: "Lv.2 入門體驗",
+    enName: "Level 2 - Beginner",
     speed: 180,
-    density: 1.25,
-    keyCount: 3,
+    density: 1.5,
+    keyCount: 4,
     missBuffer: 3,
     stars: 2,
-    desc: "慢速，簡單長音與雙鍵，適合放鬆體驗",
-    judgeWindow: 250
+    desc: "入門玩家，簡單短長音、偶有雙鍵",
+    judgeWindow: 300,
+    keys: ['D', 'F', 'J', 'K'],
+    holdSupport: true,
+    holdType: "simple",
+    simultaneousNotes: 2,
+    specialRules: "簡單短長音支援"
   },
-  hard: {
-    name: "困難模式",
-    enName: "Hard",
+  lv3: {
+    name: "Lv.3 有經驗者",
+    enName: "Level 3 - Experienced",
     speed: 200,
-    density: 1.75,
+    density: 2.0,
     keyCount: 4,
     missBuffer: 2,
     stars: 3,
-    desc: "中速、密度提升，偶爾出現連打與疊音",
-    judgeWindow: 200
+    desc: "有經驗者，中長音、雙鍵同時出現",
+    judgeWindow: 300,
+    keys: ['D', 'F', 'J', 'K'],
+    holdSupport: true,
+    holdType: "medium",
+    simultaneousNotes: 2,
+    specialRules: "中長音支援，雙鍵常態"
   },
-  extreme: {
-    name: "極限挑戰",
-    enName: "Extreme",
+  lv4: {
+    name: "Lv.4 挑戰變化",
+    enName: "Level 4 - Challenge",
     speed: 230,
-    density: 2.25,
+    density: 3.0,
     keyCount: 5,
     missBuffer: 1,
     stars: 4,
-    desc: "偏快，有長音、雙鍵組合與簡單干擾特效",
-    judgeWindow: 150
+    desc: "喜歡挑戰變化，多段長音、三鍵偶有",
+    judgeWindow: 250,
+    keys: ['D', 'F', 'J', 'K', 'Space'],
+    holdSupport: true,
+    holdType: "multi",
+    simultaneousNotes: 3,
+    specialRules: "多段長音，Space鍵加入，判定鬆緊"
   },
-  master: {
-    name: "大師級",
-    enName: "Master",
+  lv5: {
+    name: "Lv.5 進階玩家",
+    enName: "Level 5 - Advanced",
     speed: 260,
-    density: 2.75,
+    density: 4.0,
     keyCount: 5,
     missBuffer: 1,
     stars: 5,
-    desc: "高速混合，反應與記憶挑戰",
-    judgeWindow: 100
+    desc: "進階玩家，長音密集、四鍵偶有",
+    judgeWindow: 150,
+    keys: ['D', 'F', 'J', 'K', 'Space'],
+    holdSupport: true,
+    holdType: "intensive",
+    simultaneousNotes: 4,
+    specialRules: "長音密集，特效數多，節奏混淆"
   },
-  fate: {
-    name: "命運之路",
-    enName: "Fate Mode",
+  lv6: {
+    name: "Lv.6 高手挑戰",
+    enName: "Level 6 - Master",
     speed: 280,
-    density: 3.0,
+    density: 5.5,
     keyCount: 5,
     missBuffer: 0,
     stars: 6,
-    desc: "隱藏關卡，需解鎖，特製譜設計，閃爍星星",
-    locked: true,
-    judgeWindow: 80
+    desc: "高手/彩蛋挑戰，4~5鍵並列、特殊長音",
+    judgeWindow: 100,
+    keys: ['D', 'F', 'J', 'K', 'Space'],
+    holdSupport: true,
+    holdType: "special",
+    simultaneousNotes: 5,
+    specialRules: "特殊長音，高速連打，極限判定",
+    locked: false
   }
 };
+
+// 保持向後相容性
+const DIFFICULTY_CONFIGS = LEVEL_CONFIGS;
 
 // 全域變數宣告
 let holdKeyLane = null;
@@ -524,34 +556,84 @@ function showScreen(screen) {
 // 音符生成 (Note Generation)
 // ===============================
 function generateNotes(difficulty, duration = 60) {
-    const config = DIFFICULTY_CONFIGS[difficulty];
+    const config = LEVEL_CONFIGS[difficulty];
     if (!config) {
-        console.error('無效的難度設定:', difficulty);
+        console.error('無效的等級設定:', difficulty);
         return [];
     }
     notes = [];
-    KEY_LIST = KEY_LISTS[config.keyCount === 4 ? 'four' : 'five'];
+    KEY_LIST = config.keys;
     const noteCount = Math.floor(duration * config.density * 2);
     const timeStep = duration / noteCount;
+    
     // 編排優化：記錄每 lane 最後長音符結束時間
     const laneEndTime = Array(KEY_LIST.length).fill(0);
-    // 每秒最多 2 音符
+    // 根據等級調整每秒音符數量
+    const maxNotesPerSecond = Math.min(config.simultaneousNotes, 3);
     const timeBuckets = {};
-        for (let i = 0; i < noteCount; i++) {
+    
+    for (let i = 0; i < noteCount; i++) {
         let time = i * timeStep + Math.random() * 2;
+        
         // 找出可用 lane
         let availableLanes = KEY_LIST.map((_, idx) => idx).filter(idx => time >= laneEndTime[idx]);
-        if (availableLanes.length === 0) continue; // 無可用 lane
-        // 每秒最多 2 音符
+        if (availableLanes.length === 0) continue;
+        
+        // 根據等級限制每秒音符數量
         const sec = Math.floor(time);
         if (!timeBuckets[sec]) timeBuckets[sec] = 0;
-        if (timeBuckets[sec] >= 2) continue;
+        if (timeBuckets[sec] >= maxNotesPerSecond) continue;
         timeBuckets[sec]++;
-        // 決定是否長音符
-        let isHold = Math.random() < 0.3;
+        
+        // 根據等級決定是否長音符
+        let isHold = false;
+        if (config.holdSupport) {
+            switch (config.holdType) {
+                case 'simple':
+                    isHold = Math.random() < 0.2; // 20% 機率
+                    break;
+                case 'medium':
+                    isHold = Math.random() < 0.3; // 30% 機率
+                    break;
+                case 'multi':
+                    isHold = Math.random() < 0.4; // 40% 機率
+                    break;
+                case 'intensive':
+                    isHold = Math.random() < 0.5; // 50% 機率
+                    break;
+                case 'special':
+                    isHold = Math.random() < 0.6; // 60% 機率
+                    break;
+                default:
+                    isHold = Math.random() < 0.3;
+            }
+        }
+        
         let lane = availableLanes[Math.floor(Math.random() * availableLanes.length)];
+        
         if (isHold) {
-            const holdDuration = 0.8 + Math.random() * 1.5;
+            // 根據等級調整長音符持續時間
+            let holdDuration;
+            switch (config.holdType) {
+                case 'simple':
+                    holdDuration = 0.5 + Math.random() * 0.8; // 0.5-1.3秒
+                    break;
+                case 'medium':
+                    holdDuration = 0.8 + Math.random() * 1.2; // 0.8-2.0秒
+                    break;
+                case 'multi':
+                    holdDuration = 1.0 + Math.random() * 1.5; // 1.0-2.5秒
+                    break;
+                case 'intensive':
+                    holdDuration = 1.2 + Math.random() * 1.8; // 1.2-3.0秒
+                    break;
+                case 'special':
+                    holdDuration = 1.5 + Math.random() * 2.0; // 1.5-3.5秒
+                    break;
+                default:
+                    holdDuration = 0.8 + Math.random() * 1.5;
+            }
+            
             notes.push({
                 time: time,
                 lane: lane,
@@ -562,8 +644,8 @@ function generateNotes(difficulty, duration = 60) {
                 holdHit: false,
                 group: i
             });
-            laneEndTime[lane] = time + holdDuration + 0.1; // 長音符結束後 0.1 秒才允許新音符
-            } else {
+            laneEndTime[lane] = time + holdDuration + 0.1;
+        } else {
             notes.push({
                 time: time,
                 lane: lane,
@@ -572,11 +654,12 @@ function generateNotes(difficulty, duration = 60) {
                 missed: false,
                 group: i
             });
-            laneEndTime[lane] = time + 0.2; // 短音符間隔
+            laneEndTime[lane] = time + 0.2;
         }
     }
+    
     notes.sort((a, b) => a.time - b.time);
-    console.log(`生成 ${notes.length} 個音符，難度: ${difficulty}`);
+    console.log(`生成 ${notes.length} 個音符，等級: ${difficulty}, 密度: ${config.density}/秒`);
     return notes;
 }
 
@@ -667,7 +750,7 @@ function realStartGame() {
         resizeCanvas();
 
     // 生成音符
-    console.log('準備生成音符，難度:', selectedDifficulty);
+    console.log('準備生成音符，等級:', selectedDifficulty);
     notes = generateNotes(selectedDifficulty);
     
     // 檢查 notes 是否正確產生
@@ -1689,7 +1772,7 @@ function drawBackground(now) {
 
 function drawNotes(now) {
     if (!ctx) return;
-    const config = DIFFICULTY_CONFIGS[selectedDifficulty];
+    const config = LEVEL_CONFIGS[selectedDifficulty];
     const noteSpeed = config.speed;
     notes.forEach((note, index) => {
         const noteY = (currentTime - note.time) * noteSpeed;
@@ -1937,7 +2020,7 @@ function drawNotes(now) {
 // 判定系統 (Judgment System)
 // ===============================
 function judgeNote(lane) {
-    const config = DIFFICULTY_CONFIGS[selectedDifficulty];
+    const config = LEVEL_CONFIGS[selectedDifficulty];
     const noteSpeed = config.speed;
     const judgeLineY = canvas.height - 100;
     // 判定時間誤差（毫秒）
@@ -2048,7 +2131,7 @@ function resetCombo() {
 }
 
 function showMissBuffer() {
-    console.log(`容錯觸發: ${missBufferCount}/${DIFFICULTY_CONFIGS[selectedDifficulty].missBuffer}`);
+    console.log(`容錯觸發: ${missBufferCount}/${LEVEL_CONFIGS[selectedDifficulty].missBuffer}`);
     // 可以在這裡添加視覺效果
 }
 
@@ -2116,7 +2199,7 @@ function startAutoMissCheck() {
     if (autoMissCheckId) clearInterval(autoMissCheckId);
     autoMissCheckId = setInterval(() => {
         if (!gameStarted || gamePaused || gameEnded) return;
-        const config = DIFFICULTY_CONFIGS[selectedDifficulty];
+        const config = LEVEL_CONFIGS[selectedDifficulty];
         const noteSpeed = config.speed;
         const judgeLineY = canvas.height - 100;
         const missThreshold = 100;
@@ -2152,7 +2235,7 @@ function renderDifficultyStars() {
     if (!difficultyBtns) return;
     difficultyBtns.forEach(btn => {
         const diff = btn.dataset.difficulty;
-        const config = DIFFICULTY_CONFIGS[diff];
+        const config = LEVEL_CONFIGS[diff];
         if (!config) return;
         let stars = '';
         for (let i = 0; i < 6; i++) {
@@ -2175,24 +2258,24 @@ function renderDifficultyStars() {
             tooltip.className = 'tooltip';
             btn.appendChild(tooltip);
         }
-        tooltip.textContent = `${config.enName}（${config.name}）\n${config.desc}`;
+        tooltip.textContent = `${config.enName}（${config.name}）\n${config.desc}\n特殊規則: ${config.specialRules}`;
     });
 }
 
-// final難度解鎖條件：通關3首normal以上
+// Lv.6 解鎖條件：通關3首 Lv.3 以上
 function checkFinalUnlock() {
     const hiddenBtn = document.querySelector('.hidden-difficulty');
     if (!hiddenBtn) return;
-    // 假設 localStorage 記錄 normal+ 通關次數
+    // 假設 localStorage 記錄 Lv.3+ 通關次數
     let cleared = parseInt(localStorage.getItem('normalCleared') || '0', 10);
     if (cleared >= 3) {
         hiddenBtn.disabled = false;
         hiddenBtn.classList.add('unlocked-final');
-        DIFFICULTY_CONFIGS.fate.locked = false;
+        LEVEL_CONFIGS.lv6.locked = false;
     } else {
         hiddenBtn.disabled = true;
         hiddenBtn.classList.remove('unlocked-final');
-        DIFFICULTY_CONFIGS.fate.locked = true;
+        LEVEL_CONFIGS.lv6.locked = true;
     }
     renderDifficultyStars();
 }
@@ -2221,7 +2304,7 @@ document.head.appendChild(style);
 
 // missBuffer UI
 function updateMissBufferUI() {
-    const config = DIFFICULTY_CONFIGS[selectedDifficulty];
+    const config = LEVEL_CONFIGS[selectedDifficulty];
     const missBufferDiv = document.getElementById('miss-buffer-ui');
     if (!config || !missBufferDiv) {
         missBufferDiv.style.display = 'none';
@@ -2241,11 +2324,11 @@ function setMissBufferCount(count) {
 function startGame() {
     if (gameStarted || isCountingDown) return;
     if (!selectedSong || !selectedDifficulty) {
-        showToast('請先選擇歌曲與難度');
+        showToast('請先選擇歌曲與等級');
         return;
     }
     showCountdown(realStartGame);
-    const config = DIFFICULTY_CONFIGS[selectedDifficulty];
+    const config = LEVEL_CONFIGS[selectedDifficulty];
     missBufferCount = config ? config.missBuffer : 0;
     setMissBufferCount(missBufferCount);
 }
@@ -2583,7 +2666,7 @@ window.addEventListener('DOMContentLoaded', function() {
             // 長音符頭部判定
             if (!holdKeyLane) {
                 const judgeLineY = canvas.height - 100;
-                const config = DIFFICULTY_CONFIGS[selectedDifficulty];
+                const config = LEVEL_CONFIGS[selectedDifficulty];
                 const noteSpeed = config.speed;
                 let best = null, bestIdx = -1, minDist = 9999;
                 for (let i = 0; i < notes.length; i++) {
@@ -2618,7 +2701,7 @@ window.addEventListener('DOMContentLoaded', function() {
         const keyIndex = KEY_LIST.indexOf(key);
         if (keyIndex !== -1 && holdKeyLane === keyIndex && holdKeyNote) {
             const judgeLineY = canvas.height - 100;
-            const noteSpeed = DIFFICULTY_CONFIGS[selectedDifficulty].speed;
+            const noteSpeed = LEVEL_CONFIGS[selectedDifficulty].speed;
             const tailY = (currentTime - (holdKeyNote.time + holdKeyNote.duration)) * noteSpeed;
             // 尾部過線判定
             if (Math.abs(tailY - judgeLineY) < 40) {
@@ -2680,7 +2763,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
 // 通關 normal 以上難度時 localStorage.normalCleared++
 function onSongClear() {
-    const config = DIFFICULTY_CONFIGS[selectedDifficulty];
+    const config = LEVEL_CONFIGS[selectedDifficulty];
     if (config && config.stars >= 3) {
         let cleared = parseInt(localStorage.getItem('normalCleared') || '0', 10);
         localStorage.setItem('normalCleared', cleared + 1);
