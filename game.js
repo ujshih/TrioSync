@@ -379,7 +379,7 @@ const KEY_COLORS = ['#ff6f91', '#4ecdc4', '#ffe066', '#5f6fff', '#ffb347'];
 let KEY_LIST = ['D', 'F', 'J', 'K'];
 const KEY_LISTS = {
     four: ['D', 'F', 'J', 'K'],
-    five: ['D', 'F', 'J', 'K', 'Space']
+    five: ['D', 'F', ' ', 'J', 'K']
 };
 
 // 遊戲狀態
@@ -468,7 +468,7 @@ const LEVEL_CONFIGS = {
     stars: 4,
     desc: "喜歡挑戰變化，多段長音、三鍵偶有",
     judgeWindow: 250,
-    keys: ['D', 'F', 'J', 'K', 'Space'],
+    keys: ['D', 'F', ' ', 'J', 'K'],
     holdSupport: true,
     holdType: "multi",
     simultaneousNotes: 3,
@@ -484,7 +484,7 @@ const LEVEL_CONFIGS = {
     stars: 5,
     desc: "進階玩家，長音密集、四鍵偶有",
     judgeWindow: 150,
-    keys: ['D', 'F', 'J', 'K', 'Space'],
+    keys: ['D', 'F', ' ', 'J', 'K'],
     holdSupport: true,
     holdType: "intensive",
     simultaneousNotes: 4,
@@ -500,7 +500,7 @@ const LEVEL_CONFIGS = {
     stars: 6,
     desc: "高手/彩蛋挑戰，4~5鍵並列、特殊長音",
     judgeWindow: 100,
-    keys: ['D', 'F', 'J', 'K', 'Space'],
+    keys: ['D', 'F', ' ', 'J', 'K'],
     holdSupport: true,
     holdType: "special",
     simultaneousNotes: 5,
@@ -2465,20 +2465,25 @@ function updateComboDisplay() {
 
 function updateKeyHints() {
     if (!keyHints) return;
-    
     keyHints.innerHTML = '';
-    
     // 根據當前難度獲取按鍵配置
     let currentKeys = ['D', 'F', 'J', 'K']; // 預設4鍵
     if (selectedDifficulty && LEVEL_CONFIGS[selectedDifficulty]) {
         currentKeys = LEVEL_CONFIGS[selectedDifficulty].keys;
     }
-    
+    console.log('[updateKeyHints] keys:', currentKeys); // debug
     currentKeys.forEach((key, index) => {
         const keyElement = document.createElement('div');
         keyElement.className = 'key';
-        keyElement.textContent = key === ' ' ? 'SPACE' : key;
-        keyElement.dataset.key = key;
+        if (key === ' ' || (typeof key === 'string' && key.toUpperCase() === 'SPACE')) {
+            keyElement.textContent = 'SPACE';
+            keyElement.dataset.key = ' ';
+            keyElement.style.minWidth = '80px';
+            keyElement.style.letterSpacing = '2px';
+        } else {
+            keyElement.textContent = key;
+            keyElement.dataset.key = key;
+        }
         keyHints.appendChild(keyElement);
     });
 }
