@@ -400,8 +400,8 @@ header {
 }
 
 .difficulty-btn {
-    width: 120px;
-    height: 120px;
+    width: 136px;
+    height: 136px;
     border-radius: 50%;
     border: none;
     cursor: pointer;
@@ -433,29 +433,30 @@ header {
     transform: translateX(100%);
 }
 
+/* 莫蘭迪色系難度底色 */
 .difficulty-btn.easy {
-    background: linear-gradient(135deg, #4ecdc4, #44a08d);
-    color: #fff;
+  background: linear-gradient(135deg, #c7bca1, #a3a380); /* 抹茶色 */
+  color: #4b4a3f;
 }
-
 .difficulty-btn.normal {
-    background: linear-gradient(135deg, #0ff, #39f);
-    color: #000;
+  background: linear-gradient(135deg, #52796f, #354f52); /* 深綠 */
+  color: #e9f5e1;
 }
-
 .difficulty-btn.hard {
-    background: linear-gradient(135deg, #f0f, #ff6f91);
-    color: #fff;
+  background: linear-gradient(135deg, #74c0fc, #4ea8de); /* 水藍 */
+  color: #1b263b;
 }
-
 .difficulty-btn.master {
-    background: linear-gradient(135deg, #fff700, #ffb347);
-    color: #000;
+  background: linear-gradient(135deg, #38b6ff, #60efbc); /* 土耳其藍 */
+  color: #1b263b;
 }
-
 .difficulty-btn.ultimate {
-    background: linear-gradient(135deg, #ff6f91, #f0f);
-    color: #fff;
+  background: linear-gradient(135deg, #ff9770, #ff6f61); /* 橘紅 */
+  color: #fff5e6;
+}
+.difficulty-btn.hidden-difficulty {
+  background: linear-gradient(135deg, #e63946, #b5838d); /* 莫蘭迪紅+紫灰 */
+  color: #fff0f3;
 }
 
 .difficulty-btn:hover, .difficulty-btn.active {
