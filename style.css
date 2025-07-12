@@ -10,19 +10,10 @@
 }
 
 body {
-    margin: 0;
-    padding: 0;
     background: #0a0a1a;
-    color: #fff;
-    font-family: 'Orbitron', 'Audiowide', '微軟正黑體', Arial, sans-serif;
     min-height: 100vh;
-    letter-spacing: 1.5px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    overflow-x: hidden;
-    position: relative;
+    font-family: 'Orbitron', 'Audiowide', '微軟正黑體', Arial, sans-serif;
+    color: #fff;
 }
 
 /* 粒子背景 Canvas */
@@ -76,6 +67,11 @@ body::before {
     align-items: center;
     justify-content: flex-start;
     overflow-y: auto;
+    background: linear-gradient(135deg, #181a2a 0%, #23235a 100%);
+    background-blend-mode: lighten;
+    border-radius: 30px;
+    box-shadow: 0 8px 40px 0 rgba(0,0,0,0.18);
+    padding: 2rem 0;
 }
 
 /* 音訊解鎖遮罩 */
@@ -246,6 +242,11 @@ header {
     width: 100%;
     max-width: 1200px;
     padding: 2rem;
+    background: rgba(255,255,255,0.25);
+    border-radius: 24px;
+    box-shadow: 0 4px 32px 0 rgba(0,0,0,0.10);
+    backdrop-filter: blur(8px);
+    border: 1.5px solid rgba(255,255,255,0.18);
 }
 
 /* 區塊標題 */
@@ -719,75 +720,76 @@ header {
 
 /* 遊戲區域 */
 #game-area {
-    width: 100vw;
-    height: 100vh;
+    position: relative;
+    width: 700px;
+    height: 700px;
+    margin: 0 auto;
     display: none;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
-    position: relative;
-    background: 
-        radial-gradient(circle at 50% 20%, rgba(138, 43, 226, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 50% 80%, rgba(108, 45, 199, 0.05) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, #0D0E52 0%, #1C1C80 30%, #2A1B3D 70%, #000 100%);
+    background: linear-gradient(135deg, #b2f0ff 0%, #e0e7ff 100%), url('https://www.transparenttextures.com/patterns/geometry.png');
+    background-blend-mode: lighten;
+    overflow: visible;
+    clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
+    box-shadow: 0 0 60px 0 rgba(0,255,255,0.08);
+    border-radius: 0 0 40px 40px;
+    overflow: hidden;
 }
 
 .game-header {
     position: absolute;
-    top: 2rem;
+    top: 1.5rem;
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 1rem;
+    gap: 2.5rem;
     z-index: 10;
 }
 
-#score-display {
-    font-size: 1.5rem;
-    color: #0ff;
-    text-shadow: 0 0 20px #0ff;
+#score-display, #timer-display {
+    font-size: 2.2rem;
+    color: #222;
+    background: rgba(255,255,255,0.45);
+    border-radius: 18px;
+    padding: 0.5rem 2.2rem;
+    box-shadow: 0 2px 16px 0 rgba(0,0,0,0.08);
+    font-family: 'Orbitron', 'Audiowide', Arial, sans-serif;
     font-weight: bold;
+    letter-spacing: 2px;
+    backdrop-filter: blur(6px);
+    border: 1.5px solid rgba(255,255,255,0.25);
+    text-shadow: 0 2px 8px #fff, 0 0 2px #0ff;
 }
 
 #combo-display {
-    font-size: 3rem;
+    font-size: 4rem;
     color: #fff700;
-    text-shadow: 0 0 30px #fff700;
+    text-shadow: 0 0 30px #fff700, 0 0 10px #fff, 0 0 2px #0ff;
+    font-family: 'Orbitron', 'Audiowide', Arial, sans-serif;
     font-weight: bold;
-    animation: combo-pulse 0.4s ease-out;
+    letter-spacing: 2px;
+    background: rgba(255,255,255,0.18);
+    border-radius: 16px;
+    padding: 0.2rem 1.2rem;
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,0.08);
+    border: 1.5px solid rgba(255,255,255,0.18);
+    backdrop-filter: blur(4px);
 }
 
-@keyframes combo-pulse {
-    0% { transform: scale(0.8); opacity: 0.7; }
-    50% { transform: scale(1.2); opacity: 1; }
-    100% { transform: scale(1); opacity: 1; }
-}
-
-#game-canvas {
-    border-radius: 15px;
-    box-shadow: 
-        0 0 30px rgba(0,255,255,0.5),
-        0 0 60px rgba(138, 43, 226, 0.3),
-        inset 0 0 20px rgba(108, 45, 199, 0.1);
-    background: #0a0a1a;
-    border: 2px solid rgba(138, 43, 226, 0.3);
-    position: relative;
-}
-
-#game-canvas::before {
+/* 賽道細白線 */
+#game-canvas::after {
     content: '';
     position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(45deg, #8A2BE2, #6C2DC7, #0D0E52, #1C1C80);
-    border-radius: 17px;
-    z-index: -1;
-    opacity: 0.5;
-    animation: canvas-border-glow 4s ease-in-out infinite;
+    left: 19.5%;
+    right: 19.5%;
+    top: 0;
+    bottom: 0;
+    border-left: 2px solid rgba(255,255,255,0.7);
+    border-right: 2px solid rgba(255,255,255,0.7);
+    pointer-events: none;
+    z-index: 3;
 }
 
 /* 擊中特效增強 */
@@ -917,9 +919,8 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 
-        0 0 15px rgba(0,255,255,0.3),
-        0 0 30px rgba(138, 43, 226, 0.2);
+    box-shadow: 0 0 8px #0ff;
+    border: 1.5px solid #0ff;
     transition: all 0.1s ease;
     text-shadow: 0 0 5px #0ff;
     position: relative;
@@ -961,6 +962,7 @@ header {
     display: flex;
     align-items: center;
     justify-content: center;
+    filter: drop-shadow(0 0 10px #fff700) drop-shadow(0 0 6px #0ff);
 }
 
 .combo-effect {
@@ -1046,6 +1048,11 @@ header {
     border-radius: 20px;
     box-shadow: 0 0 40px rgba(0,255,255,0.5);
     border: 2px solid #0ff;
+    background: rgba(255,255,255,0.25);
+    border-radius: 24px;
+    box-shadow: 0 4px 32px 0 rgba(0,0,0,0.10);
+    backdrop-filter: blur(8px);
+    border: 1.5px solid rgba(255,255,255,0.18);
 }
 
 .result-title {
@@ -1083,27 +1090,23 @@ header {
 }
 
 .action-btn {
-    background: linear-gradient(135deg, #0ff, #39f);
-    color: #000;
-    border: none;
+    background: linear-gradient(90deg, #0ff 0%, #fff700 100%);
+    color: #222;
     border-radius: 12px;
-    padding: 1rem 2rem;
-    font-size: 1.2rem;
+    border: none;
+    font-family: 'Orbitron', 'Audiowide', Arial, sans-serif;
     font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    box-shadow: 0 0 20px rgba(0,255,255,0.4);
-    transition: all 0.3s ease;
-    text-shadow: 0 0 5px rgba(255,255,255,0.5);
+    font-size: 1.1rem;
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,0.08);
+    padding: 0.7rem 2.2rem;
+    margin: 0.5rem;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
 }
 
 .action-btn:hover {
-    background: linear-gradient(135deg, #f0f, #0ff);
-    color: #fff;
-    box-shadow: 0 0 30px rgba(240,0,255,0.6);
-    transform: scale(1.05);
+    background: linear-gradient(90deg, #fff700 0%, #0ff 100%);
+    color: #000;
+    box-shadow: 0 4px 24px 0 rgba(0,255,255,0.18);
 }
 
 .btn-icon {
@@ -1269,4 +1272,179 @@ header {
 
 .slide-in-right {
     animation: slideInRight 0.5s ease-out;
+} 
+
+/* ====== 新現代科技感風格 ====== */
+
+body {
+    background: linear-gradient(135deg, #0a0a1a 0%, #1C1C80 100%);
+    min-height: 100vh;
+    font-family: 'Orbitron', 'Audiowide', '微軟正黑體', Arial, sans-serif;
+    color: #fff;
+}
+
+#main-wrapper {
+    background: linear-gradient(135deg, #181a2a 0%, #23235a 100%);
+    background-blend-mode: lighten;
+    border-radius: 30px;
+    box-shadow: 0 8px 40px 0 rgba(0,0,0,0.18);
+    padding: 2rem 0;
+}
+
+#game-area {
+    position: relative;
+    width: 700px;
+    height: 700px;
+    margin: 0 auto;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #181a2a 0%, #23235a 100%), url('https://www.transparenttextures.com/patterns/geometry.png');
+    background-blend-mode: lighten;
+    overflow: visible;
+    clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
+    box-shadow: 0 0 60px 0 rgba(0,255,255,0.08);
+    border-radius: 0 0 40px 40px;
+    overflow: hidden;
+}
+
+#game-canvas {
+    width: 100%;
+    height: 100%;
+    border-radius: 0 0 40px 40px;
+    box-shadow: 0 0 40px 0 rgba(0,255,255,0.15);
+    background: linear-gradient(180deg, #181a2a 60%, #23235a 100%);
+    border: none;
+    clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
+    position: relative;
+    z-index: 2;
+}
+
+.game-header {
+    position: absolute;
+    top: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2.5rem;
+    z-index: 10;
+}
+
+#score-display, #timer-display {
+    font-size: 2.2rem;
+    color: #222;
+    background: rgba(255,255,255,0.45);
+    border-radius: 18px;
+    padding: 0.5rem 2.2rem;
+    box-shadow: 0 2px 16px 0 rgba(0,0,0,0.08);
+    font-family: 'Orbitron', 'Audiowide', Arial, sans-serif;
+    font-weight: bold;
+    letter-spacing: 2px;
+    backdrop-filter: blur(6px);
+    border: 1.5px solid rgba(255,255,255,0.25);
+    text-shadow: 0 2px 8px #fff, 0 0 2px #0ff;
+}
+
+#combo-display {
+    font-size: 4rem;
+    color: #fff700;
+    text-shadow: 0 0 30px #fff700, 0 0 10px #fff, 0 0 2px #0ff;
+    font-family: 'Orbitron', 'Audiowide', Arial, sans-serif;
+    font-weight: bold;
+    letter-spacing: 2px;
+    background: rgba(255,255,255,0.18);
+    border-radius: 16px;
+    padding: 0.2rem 1.2rem;
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,0.08);
+    border: 1.5px solid rgba(255,255,255,0.18);
+    backdrop-filter: blur(4px);
+}
+
+/* 賽道細白線 */
+#game-canvas::after {
+    content: '';
+    position: absolute;
+    left: 19.5%;
+    right: 19.5%;
+    top: 0;
+    bottom: 0;
+    border-left: 2px solid rgba(255,255,255,0.7);
+    border-right: 2px solid rgba(255,255,255,0.7);
+    pointer-events: none;
+    z-index: 3;
+}
+
+/* MISS/CHAIN 樣式 */
+.miss-label, .chain-label {
+    font-size: 2.5rem !important;
+    font-family: 'Orbitron', 'Audiowide', Arial, sans-serif;
+    color: #ff6f91 !important;
+    text-shadow: 0 0 12px #fff, 0 0 8px #ff6f91;
+    opacity: 0.95;
+    letter-spacing: 2px;
+    font-weight: bold;
+}
+.chain-label {
+    color: #00CFFF !important;
+    text-shadow: 0 0 12px #fff, 0 0 8px #00CFFF;
+}
+
+/* 分數區塊玻璃感 */
+#score-display, #timer-display {
+    background: rgba(255,255,255,0.45);
+    backdrop-filter: blur(6px);
+    border: 1.5px solid rgba(255,255,255,0.25);
+}
+
+/* 亮色多邊形背景 */
+#game-area {
+    background: linear-gradient(135deg, #b2f0ff 0%, #e0e7ff 100%), url('https://www.transparenttextures.com/patterns/geometry.png');
+    background-blend-mode: lighten;
+}
+
+/* 其他細節微調 */
+#key-hints .key {
+    background: rgba(255,255,255,0.25);
+    color: #0ff;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    font-family: 'Orbitron', 'Audiowide', Arial, sans-serif;
+    box-shadow: 0 0 8px #0ff;
+    border: 1.5px solid #0ff;
+}
+
+#combo-container {
+    filter: drop-shadow(0 0 10px #fff700) drop-shadow(0 0 6px #0ff);
+}
+
+/* 讓選單、結算畫面也有玻璃感 */
+#select-area, #result-screen {
+    background: rgba(24,26,42,0.85);
+    border-radius: 24px;
+    box-shadow: 0 4px 32px 0 rgba(0,0,0,0.18);
+    backdrop-filter: blur(8px);
+    border: 1.5px solid rgba(255,255,255,0.10);
+    color: #fff;
+}
+
+/* 讓按鈕更現代感 */
+button, .action-btn {
+    background: linear-gradient(90deg, #0ff 0%, #23235a 100%);
+    color: #fff;
+    border-radius: 12px;
+    border: none;
+    font-family: 'Orbitron', 'Audiowide', Arial, sans-serif;
+    font-weight: bold;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,0.08);
+    padding: 0.7rem 2.2rem;
+    margin: 0.5rem;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+button:hover, .action-btn:hover {
+    background: linear-gradient(90deg, #fff700 0%, #0ff 100%);
+    color: #000;
+    box-shadow: 0 4px 24px 0 rgba(0,255,255,0.18);
 } 
