@@ -409,7 +409,7 @@ header {
 
 .difficulty-btn {
     width: 128px;      /* 原本 160px，0.8 倍 */
-    height: auto;
+    height: 140px !important;
     padding: 0.8rem;   /* 原本 1rem，0.8 倍 */
     border-radius: 12.8px; /* 原本 16px，0.8 倍 */
     display: flex;
