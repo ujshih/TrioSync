@@ -184,18 +184,18 @@ const audioManager = {
     fadeTimer: null,
     cache: {},
     paths: {
-        bgm: 'audio/DRIVE.mp3',
+        bgm: 'VibeCoding組_王祐昇_運行程式及遊戲素材/audio/DRIVE.mp3',
         tracks: {
-            'Champion': 'audio/Champion.mp3',
-            'Bliss': 'audio/Bliss.mp3',
-            'Canon': 'audio/Canon.mp3',
-            'HappyBirthday': 'audio/HappyBirthday.mp3',
-            'MainTheme': 'audio/MainTheme.mp3',
-            'MagicalMoments': 'audio/MagicalMoments.mp3',
-            'Noise': 'audio/Noise.mp3',
-            'HammerMASTER': 'audio/HammerMASTER.mp3',
-            'InspiringDreams': 'audio/InspiringDreams.mp3',
-            'inspiringguitar': 'audio/inspiringguitar.mp3'
+            'Champion': 'VibeCoding組_王祐昇_運行程式及遊戲素材/audio/Champion.mp3',
+            'Bliss': 'VibeCoding組_王祐昇_運行程式及遊戲素材/audio/Bliss.mp3',
+            'Canon': 'VibeCoding組_王祐昇_運行程式及遊戲素材/audio/Canon.mp3',
+            'HappyBirthday': 'VibeCoding組_王祐昇_運行程式及遊戲素材/audio/HappyBirthday.mp3',
+            'MainTheme': 'VibeCoding組_王祐昇_運行程式及遊戲素材/audio/MainTheme.mp3',
+            'MagicalMoments': 'VibeCoding組_王祐昇_運行程式及遊戲素材/audio/MagicalMoments.mp3',
+            'Noise': 'VibeCoding組_王祐昇_運行程式及遊戲素材/audio/Noise.mp3',
+            'HammerMASTER': 'VibeCoding組_王祐昇_運行程式及遊戲素材/audio/HammerMASTER.mp3',
+            'InspiringDreams': 'VibeCoding組_王祐昇_運行程式及遊戲素材/audio/InspiringDreams.mp3',
+            'inspiringguitar': 'VibeCoding組_王祐昇_運行程式及遊戲素材/audio/inspiringguitar.mp3'
         }
     },
     
