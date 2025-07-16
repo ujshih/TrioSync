@@ -2995,13 +2995,45 @@ volumeSlider.addEventListener('input', function() {
 
 // 遊戲說明 modal
 const helpBtn = document.getElementById('help-btn');
-const helpModal = document.createElement('div');
-helpModal.id = 'help-modal';
-helpModal.innerHTML = `<div id="help-modal-content"><button id="help-modal-close">&times;</button><h2>遊戲說明</h2><ul><li>選擇歌曲與難度後，點擊「開始遊戲」或按 Enter 鍵。</li><li>依畫面提示按下 D F 空白 J K 鍵擊打音符。</li><li>連續擊中可獲得 Combo，失誤會中斷。</li><li>終極幻想難度需玩三次才解鎖。</li><li>可按 Esc 暫停/繼續，左上角可調整音量。</li></ul></div>`;
-document.body.appendChild(helpModal);
-helpBtn.addEventListener('click', () => helpModal.classList.add('active'));
-document.getElementById('help-modal-close').addEventListener('click', () => helpModal.classList.remove('active'));
-helpModal.addEventListener('click', e => { if (e.target === helpModal) helpModal.classList.remove('active'); });
+const helpModal = document.getElementById('help-modal');
+helpModal.innerHTML = `
+  <div id="help-modal-content" style="background:#222;color:#fff;padding:2rem 1.5rem;border-radius:1rem;max-width:400px;margin:5vh auto;position:relative;box-shadow:0 4px 32px #000b;">
+    <button id="help-modal-close" style="position:absolute;top:0.5rem;right:0.5rem;font-size:2rem;background:none;border:none;color:#fff;cursor:pointer;">&times;</button>
+    <h2 style="margin-top:0;">遊戲玩法與勝負規則</h2>
+    <ul style="padding-left:1.2em;">
+      <li>選擇歌曲與難度後，點擊「開始遊戲」或按 Enter 鍵開始。</li>
+      <li>依畫面提示按下 <b>D F 空白 J K</b> 鍵擊打音符。</li>
+      <li>連續擊中可獲得 Combo，失誤會中斷。</li>
+      <li>分數依照準確度與連擊數計算。</li>
+      <li>遊戲結束時，分數最高者獲勝（單人則挑戰高分）。</li>
+      <li>終極幻想難度需玩三次才解鎖。</li>
+      <li>可按 Esc 暫停/繼續，左上角可調整音量與高對比。</li>
+    </ul>
+  </div>
+`;
+helpModal.style.display = 'none';
+helpModal.style.position = 'fixed';
+helpModal.style.top = '0';
+helpModal.style.left = '0';
+helpModal.style.width = '100vw';
+helpModal.style.height = '100vh';
+helpModal.style.background = 'rgba(0,0,0,0.6)';
+helpModal.style.zIndex = '10001';
+helpModal.style.justifyContent = 'center';
+helpModal.style.alignItems = 'center';
+helpModal.style.display = 'none';
+helpModal.style.transition = 'opacity 0.2s';
+
+helpBtn.addEventListener('click', () => {
+  helpModal.style.display = 'flex';
+  helpModal.style.opacity = '1';
+});
+document.getElementById('help-modal-close').onclick = function() {
+  helpModal.style.display = 'none';
+};
+helpModal.onclick = function(e) {
+  if (e.target === helpModal) helpModal.style.display = 'none';
+};
 
 // 進入歌曲時顯示難度選擇
 function showDifficultySelect() {
