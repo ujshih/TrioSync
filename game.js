@@ -2702,6 +2702,65 @@ function endGame() {
     
     showScreen('result');
     console.log(`遊戲結束 - 分數: ${score}, 等級: ${grade}, 準確率: ${accuracy}%`);
+
+    // ====== 新增排行榜與暱稱輸入 ======
+    let leaderboardDiv = document.getElementById('leaderboard');
+    if (!leaderboardDiv) {
+        leaderboardDiv = document.createElement('div');
+        leaderboardDiv.id = 'leaderboard';
+        leaderboardDiv.style = 'margin:32px auto;max-width:420px;background:rgba(0,0,0,0.7);border-radius:16px;padding:24px 16px 16px 16px;box-shadow:0 0 24px #0ff3;';
+        resultScreen.appendChild(leaderboardDiv);
+    }
+    leaderboardDiv.innerHTML = '';
+
+    // 暱稱輸入
+    let nicknameInput = document.createElement('input');
+    nicknameInput.type = 'text';
+    nicknameInput.maxLength = 15;
+    nicknameInput.placeholder = '請輸入暱稱 (最多15字)';
+    nicknameInput.style = 'width:70%;padding:8px 12px;border-radius:8px;border:1px solid #0ff;font-size:1.1em;margin-bottom:8px;';
+    leaderboardDiv.appendChild(nicknameInput);
+    let confirmBtn = document.createElement('button');
+    confirmBtn.textContent = '確認上榜';
+    confirmBtn.style = 'margin-left:8px;padding:8px 18px;border-radius:8px;background:#0ff;color:#222;font-weight:bold;border:none;cursor:pointer;font-size:1.1em;';
+    leaderboardDiv.appendChild(confirmBtn);
+
+    // 排行榜區塊
+    let table = document.createElement('table');
+    table.style = 'width:100%;margin-top:18px;border-collapse:collapse;background:rgba(0,0,0,0.5);';
+    table.innerHTML = `<thead><tr style="color:#0ff;font-size:1.1em;"><th style="text-align:left">名次</th><th style="text-align:left">暱稱</th><th style="text-align:right">分數</th><th style="text-align:center">等級</th></tr></thead><tbody id="leaderboard-body"></tbody>`;
+    leaderboardDiv.appendChild(table);
+
+    // 讀取排行榜資料
+    let leaderboard = [];
+    try {
+        leaderboard = JSON.parse(localStorage.getItem('fatekeys_leaderboard')||'[]');
+    } catch(e) { leaderboard = []; }
+
+    // 新增紀錄
+    confirmBtn.onclick = function() {
+        let nickname = nicknameInput.value.trim() || '無名玩家';
+        if (nickname.length > 15) nickname = nickname.slice(0, 15);
+        leaderboard.push({ nickname, score, grade });
+        leaderboard.sort((a, b) => b.score - a.score);
+        leaderboard = leaderboard.slice(0, 20); // 只保留前20名
+        localStorage.setItem('fatekeys_leaderboard', JSON.stringify(leaderboard));
+        renderLeaderboard();
+        confirmBtn.disabled = true;
+        nicknameInput.disabled = true;
+    };
+
+    // 排行榜渲染
+    function renderLeaderboard() {
+        let body = leaderboardDiv.querySelector('#leaderboard-body');
+        body.innerHTML = '';
+        leaderboard.forEach((item, idx) => {
+            let tr = document.createElement('tr');
+            tr.innerHTML = `<td style="color:#ffe066;font-weight:bold;">${idx+1}</td><td>${item.nickname}</td><td style="text-align:right;">${item.score.toLocaleString()}</td><td style="text-align:center;">${item.grade}</td>`;
+            body.appendChild(tr);
+        });
+    }
+    renderLeaderboard();
 }
 
 function calculateGrade(accuracy, maxCombo) {
@@ -3071,6 +3130,9 @@ window.addEventListener('DOMContentLoaded', function() {
     
     // 鍵盤事件 - 支援 Mac 鍵盤
     document.addEventListener('keydown', function(e) {
+        // 修正：如果焦點在input或textarea，不處理遊戲按鍵
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+        if (!gameStarted || gamePaused || gameEnded) return;
         console.log('[keydown] 按鍵:', e.key, '代碼:', e.code, '鍵碼:', e.keyCode);
         
         // 遊戲暫停功能（Esc）
