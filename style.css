@@ -2,6 +2,14 @@
 /* Fate Keys 命運節奏 - 現代化 UI 樣式 */
 /* =============================== */
 
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 /* 基本重置與背景 */
 * {
     margin: 0;
@@ -400,21 +408,23 @@ header {
 }
 
 .difficulty-btn {
-    width: 136px;
-    height: 136px;
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
+    width: 160px;
+    height: auto;
+    padding: 1rem;
+    border-radius: 16px;
     display: flex;
     flex-direction: column;
-    align-items: center;
     justify-content: center;
-    font-family: inherit;
-    font-weight: bold;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 0 20px rgba(0,255,255,0.3);
+    align-items: center;
+    position: relative; /* for ::before */
+    /*overflow: hidden;    防止 hover 動畫溢出 */
+}
+
+.difficulty-name {
+    font-size: 0.9rem;
+    text-align: center;
+    word-break: break-word;
+    line-height: 1.2rem;
 }
 
 .difficulty-btn::before {
@@ -459,11 +469,16 @@ header {
   color: #fff0f3;
 }
 
-.difficulty-btn:hover, .difficulty-btn.active {
-    transform: scale(0.95);
-    box-shadow: 
-        0 0 30px rgba(0,255,255,0.6),
-        0 0 60px rgba(240,0,255,0.4);
+.difficulty-btn:hover,
+.difficulty-btn.active {
+    transform: scale(0.98);
+    box-shadow:
+        0 0 16px rgba(0, 255, 255, 0.4),
+        0 0 24px rgba(240, 0, 255, 0.25);
+}
+
+.difficulty-btn:first-child {
+    margin-left: 1rem;
 }
 
 .difficulty-icon {
@@ -548,6 +563,7 @@ header {
     pointer-events: none;
     filter: grayscale(0.7);
 }
+
 .miss-buffer-ui {
     margin: 0.5rem auto 0.5rem auto;
     padding: 0.3rem 1.2rem;
@@ -571,34 +587,8 @@ header {
     60% { transform: scale(1.15); opacity: 1; }
     100% { transform: scale(1); opacity: 1; }
 }
-.difficulty-btn .tooltip {
-    display: none;
-    position: absolute;
-    left: 50%;
-    top: 110%;
-    transform: translateX(-50%);
-    background: #222b;
-    color: #ffe066;
-    padding: 0.3rem 0.8rem;
-    border-radius: 0.7rem;
-    font-size: 1rem;
-    white-space: pre-line;
-    z-index: 10;
-    box-shadow: 0 0 8px #ffe06655;
-    pointer-events: none;
-    font-family: 'Orbitron', 'Audiowide', '微軟正黑體', Arial, sans-serif;
-    font-weight: bold;
-    letter-spacing: 0.05em;
-}
-.difficulty-btn:hover .tooltip,
-.difficulty-btn:focus .tooltip {
-    display: block;
-    animation: fadeIn 0.3s;
-}
-@keyframes fadeIn {
-    0% { opacity: 0; transform: translateX(-50%) scale(0.8); }
-    100% { opacity: 1; transform: translateX(-50%) scale(1); }
-}
+
+
 
 /* 隱藏難度按鈕特殊效果 */
 .hidden-difficulty {
@@ -770,18 +760,47 @@ header {
 }
 
 #combo-display {
-    font-size: 4rem;
-    color: #fff700;
-    text-shadow: 0 0 30px #fff700, 0 0 10px #fff, 0 0 2px #0ff;
-    font-family: 'Orbitron', 'Audiowide', Arial, sans-serif;
+    position: absolute;
+    top: 12%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 3.5rem;
+    color: #FFFFFF;
     font-weight: bold;
+    text-shadow:
+        0 0 8px #BA55D3,
+        0 0 16px #00FFFF,
+        2px 2px 0 #BA55D3,
+        -2px -2px 0 #00FFFF;
+    -webkit-text-stroke: 2px #00FFFF;
     letter-spacing: 2px;
-    background: rgba(255,255,255,0.18);
-    border-radius: 16px;
-    padding: 0.2rem 1.2rem;
-    box-shadow: 0 2px 12px 0 rgba(0,0,0,0.08);
-    border: 1.5px solid rgba(255,255,255,0.18);
-    backdrop-filter: blur(4px);
+    z-index: 20;
+    transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+}
+#combo-display.combo-pulse {
+    animation: combo-scale-bounce 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes combo-scale-bounce {
+    0% { transform: translateX(-50%) scale(1); }
+    40% { transform: translateX(-50%) scale(1.12); }
+    60% { transform: translateX(-50%) scale(1.08); }
+    100% { transform: translateX(-50%) scale(1); }
+}
+#combo-display.glow {
+    text-shadow:
+        0 0 16px #fff,
+        0 0 32px #BA55D3,
+        0 0 48px #00FFFF,
+        2px 2px 0 #BA55D3,
+        -2px -2px 0 #00FFFF;
+    filter: brightness(1.2) drop-shadow(0 0 8px #fff700);
+    animation: combo-glow-shake 0.4s infinite alternate;
+}
+@keyframes combo-glow-shake {
+    0% { transform: translateX(-50%) scale(1) rotate(-1deg); }
+    50% { transform: translateX(-50%) scale(1.04) rotate(1deg); }
+    100% { transform: translateX(-50%) scale(1) rotate(-1deg); }
 }
 
 /* 賽道細白線 */
@@ -1207,6 +1226,46 @@ header {
         height: 50px;
         font-size: 1rem;
     }
+    .song-card-list {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        gap: 0.5rem;
+    }
+    .song-card {
+        min-width: 180px;
+        max-width: 220px;
+        font-size: 0.95rem;
+    }
+    .difficulty-btn-row {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    #main-wrapper {
+        padding: 0.5rem 0;
+    }
+    #game-area {
+        max-width: 100vw;
+        min-width: 0;
+        padding: 0.5rem;
+    }
+    #game-canvas {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        height: 40vw !important;
+        min-height: 200px;
+        max-height: 60vw;
+    }
+    #result-screen {
+        padding: 1rem 0.5rem;
+        font-size: 1rem;
+    }
+    .result-title {
+        font-size: 1.5rem;
+    }
+    .final-score, .final-grade {
+        font-size: 1.2rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1321,29 +1380,42 @@ body {
     padding: 2rem 0;
 }
 
+/* 移除主畫面內容層級調整，回到原本設定 */
+#main-content, .main-content, .menu, .menu-area, .main-menu {
+  position: static;
+  z-index: auto;
+}
+
 #game-area {
-    position: relative;
-    width: 700px;
-    height: 700px;
-    margin: 0 auto;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #181a2a 0%, #23235a 100%), url('https://www.transparenttextures.com/patterns/geometry.png');
-    background-blend-mode: lighten;
-    overflow: visible;
-    clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
-    box-shadow: 0 0 60px 0 rgba(0,255,255,0.08);
-    border-radius: 0 0 40px 40px;
-    overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 1000;
+  background: transparent;
+  display: none; /* 預設隱藏，遊戲時才顯示 */
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#game-area.active {
+  display: flex;
 }
 
 #game-canvas {
-    width: 100%;
-    height: 100%;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: 100vw;
+    max-height: 100vh;
+    display: block;
+    background: transparent;
     border-radius: 0 0 40px 40px;
     box-shadow: 0 0 40px 0 rgba(0,255,255,0.15);
-    background: linear-gradient(180deg, #181a2a 60%, #23235a 100%);
     border: none;
     clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
     position: relative;
@@ -1666,3 +1738,154 @@ button:hover, .action-btn:hover {
             0 0 60px rgba(0,255,255,0.6);
     }
 } 
+
+/* === 難度等級專屬樣式 === */
+.difficulty-btn.beginner { background: linear-gradient(90deg, #b2fefa, #e0c3fc); color: #222; }
+.difficulty-btn.casual      { background: linear-gradient(90deg, #a8ff78, #78ffd6); color: #222; }
+.difficulty-btn.hard    { background: linear-gradient(90deg, #43cea2, #185a9d); color: #fff; }
+.difficulty-btn.extreme      { background: linear-gradient(90deg, #ffaf7b, #d76d77); color: #fff; }
+.difficulty-btn.master    { background: linear-gradient(90deg, #f7971e, #ffd200); color: #fff; }
+.difficulty-btn.fate     { background: linear-gradient(90deg, #f953c6, #b91d73); color: #fff; border: 2px solid #fff700; box-shadow: 0 0 16px #fff70088; }
+
+/* 星星顏色與特效 */
+.difficulty-btn .star         { color: #ffe066; text-shadow: 0 0 8px #ffe06688; }
+.difficulty-btn.fate .star    { color: #fff700; text-shadow: 0 0 12px #fff700cc; }
+.difficulty-btn .star-locked  { color: #888; text-shadow: none; }
+.difficulty-btn.fate .star:last-child {
+    animation: star-glow 1.2s infinite alternate;
+}
+@keyframes star-glow {
+    0%   { text-shadow: 0 0 8px #fff700, 0 0 16px #fff70088; }
+    100% { text-shadow: 0 0 24px #fff700, 0 0 32px #fff700cc; }
+}
+
+/* 按鍵提示 - SPACE 鍵特殊樣式 */
+.key[data-key=" "] {
+    background: linear-gradient(90deg, #fff700 60%, #ffe066 100%);
+    color: #222;
+    border: 2px solid #ffe066;
+    font-weight: bold;
+    min-width: 80px;
+    letter-spacing: 2px;
+    box-shadow: 0 0 8px #fff70088;
+}
+
+/* 判定區間視覺提示（需配合JS切換class） */
+.judge-window {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: rgba(0,255,255,0.08);
+    border-top: 1.5px dashed #0ff;
+    border-bottom: 1.5px dashed #0ff;
+    pointer-events: none;
+    z-index: 2;
+    transition: height 0.3s;
+}
+.judge-window.beginner { height: 70px; }
+.judge-window.casual { height: 60px; }
+.judge-window.hard { height: 50px; }
+.judge-window.extreme { height: 40px; }
+.judge-window.master { height: 30px; }
+.judge-window.fate { height: 20px; }
+
+/* 難度說明 tooltip 強化 */
+
+.difficulty-btn.final .tooltip {
+    background: #2a1b3d;
+    color: #fff700;
+    border: 2px solid #fff700;
+    box-shadow: 0 0 16px #fff70088;
+} 
+
+.high-contrast, body.high-contrast {
+    background: #000 !important;
+    color: #fff !important;
+}
+.high-contrast #main-wrapper,
+.high-contrast #select-area,
+.high-contrast #game-area,
+.high-contrast #result-screen {
+    background: #000 !important;
+    color: #fff !important;
+    border: 2px solid #fff700 !important;
+}
+.high-contrast .song-card,
+.high-contrast .difficulty-btn,
+.high-contrast .action-btn {
+    background: #111 !important;
+    color: #fff !important;
+    border: 2px solid #fff700 !important;
+    box-shadow: 0 0 8px #fff700cc !important;
+}
+.high-contrast .key {
+    background: #fff700 !important;
+    color: #000 !important;
+    border: 2px solid #fff !important;
+}
+.high-contrast .star, .high-contrast .difficulty-stars {
+    color: #fff700 !important;
+    text-shadow: 0 0 8px #fff700cc !important;
+} 
+
+#loading-overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.loader {
+    border: 8px solid #222;
+    border-top: 8px solid #fff700;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    animation: spin-loader 1s linear infinite;
+    box-shadow: 0 0 32px #fff70088;
+}
+@keyframes spin-loader {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+} 
+
+.difficulty-btn .tooltip {
+  display: none;
+  position: absolute;
+  top: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #222;
+  color: #ffe066;
+  border: 1.5px solid #ffe066;
+  border-radius: 10px;
+  padding: 0.7em 1.2em;
+  font-size: 0.95rem;
+  font-family: 'Orbitron', 'Audiowide', '微軟正黑體', Arial, sans-serif;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  line-height: 1.4;
+  white-space: pre-line;
+  z-index: 10;
+  box-shadow: 0 0 12px #ffe06644;
+  pointer-events: none;
+  text-align: left;
+  width: 220px;
+}
+.difficulty-btn:hover .tooltip,
+.difficulty-btn:focus .tooltip {
+  display: block;
+  animation: fadeIn 0.3s ease-in-out;
+}
+@keyframes fadeIn {
+  0%   { opacity: 0; transform: translateX(-50%) scale(0.95); }
+  100% { opacity: 1; transform: translateX(-50%) scale(1); }
+}
+.difficulty-btn .tooltip::after {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-bottom-color: #222;
+}

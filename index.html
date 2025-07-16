@@ -6,7 +6,6 @@
     <title>Fate Keys 命運節奏</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Audiowide&display=swap" rel="stylesheet">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
     <!-- 粒子背景 Canvas -->
@@ -92,38 +91,39 @@
                 </div>
             </div>
             
+            <!-- 難度選擇區 -->
             <div class="difficulty-select">
                 <h2 class="section-title">選擇難度</h2>
                 <div class="difficulty-btn-row">
-                    <button class="difficulty-btn easy" data-difficulty="lv1" tabindex="0" aria-label="選擇難度 Lv.1">
-                        <div class="difficulty-level">L1</div>
-                        <div class="difficulty-name">初學者</div>
+                    <button class="difficulty-btn beginner" data-difficulty="beginner" tabindex="0" aria-label="選擇難度 Lv.1">
+                        <div class="difficulty-level">Lv.1</div>
+                        <div class="difficulty-name">初學者 Beginner</div>
                         <div class="difficulty-stars">★</div>
                     </button>
-                    <button class="difficulty-btn normal" data-difficulty="lv2" tabindex="0" aria-label="選擇難度 Lv.2">
-                        <div class="difficulty-level">L2</div>
-                        <div class="difficulty-name">休閒玩家</div>
+                    <button class="difficulty-btn casual" data-difficulty="casual" tabindex="0" aria-label="選擇難度 Lv.2">
+                        <div class="difficulty-level">Lv.2</div>
+                        <div class="difficulty-name">休閒玩家 Casual</div>
                         <div class="difficulty-stars">★★</div>
                     </button>
-                    <button class="difficulty-btn hard" data-difficulty="lv3" tabindex="0" aria-label="選擇難度 Lv.3">
-                        <div class="difficulty-level">L3</div>
-                        <div class="difficulty-name">困難模式</div>
+                    <button class="difficulty-btn hard" data-difficulty="hard" tabindex="0" aria-label="選擇難度 Lv.3">
+                        <div class="difficulty-level">Lv.3</div>
+                        <div class="difficulty-name">困難模式 Hard</div>
                         <div class="difficulty-stars">★★★</div>
                     </button>
-                    <button class="difficulty-btn master" data-difficulty="lv4" tabindex="0" aria-label="選擇難度 Lv.4">
-                        <div class="difficulty-level">L4</div>
-                        <div class="difficulty-name">極限挑戰</div>
+                    <button class="difficulty-btn extreme" data-difficulty="extreme" tabindex="0" aria-label="選擇難度 Lv.4">
+                        <div class="difficulty-level">Lv.4</div>
+                        <div class="difficulty-name">極限挑戰 Extreme</div>
                         <div class="difficulty-stars">★★★★</div>
                     </button>
-                    <button class="difficulty-btn ultimate" data-difficulty="lv5" tabindex="0" aria-label="選擇難度 Lv.5">
-                        <div class="difficulty-level">L5</div>
-                        <div class="difficulty-name">大師級</div>
+                    <button class="difficulty-btn master" data-difficulty="master" tabindex="0" aria-label="選擇難度 Lv.5">
+                        <div class="difficulty-level">Lv.5</div>
+                        <div class="difficulty-name">大師級 Master</div>
                         <div class="difficulty-stars">★★★★★</div>
                     </button>
-                    <button class="difficulty-btn hidden-difficulty" data-difficulty="lv6" tabindex="0" aria-label="選擇難度 Lv.6" disabled>
-                        <div class="difficulty-level">L6</div>
-                        <div class="difficulty-name">命運之路</div>
-                        <div class="difficulty-stars">★★★★★★</div>
+                    <button class="difficulty-btn fate hidden-difficulty" data-difficulty="fate" tabindex="0" aria-label="選擇難度 Lv.6" disabled>
+                        <div class="difficulty-level">Lv.6</div>
+                        <div class="difficulty-name">命運之路 Fate Mode</div>
+                        <div class="difficulty-stars">⭐⭐⭐⭐⭐✨</div>
                     </button>
                 </div>
                 <div id="miss-buffer-ui" class="miss-buffer-ui" style="display:none;"></div>
@@ -184,6 +184,14 @@
     
     <!-- 遊戲說明按鈕 -->
     <button id="help-btn" class="action-btn" tabindex="0" aria-label="遊戲說明" style="position: absolute; top: 1rem; right: 1rem; z-index: 10;">❓</button>
+    
+    <!-- 高對比模式切換按鈕 -->
+    <button id="contrast-btn" class="action-btn" tabindex="0" aria-label="高對比模式" style="position: absolute; top: 1rem; left: 1rem; z-index: 10;">🌓 高對比</button>
+    
+    <!-- 載入/過場動畫區塊 -->
+    <div id="loading-overlay" style="display:none;position:fixed;z-index:999999;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);align-items:center;justify-content:center;">
+        <div class="loader"></div>
+    </div>
     
     <script src="game.js"></script>
 </body>

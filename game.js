@@ -184,18 +184,18 @@ const audioManager = {
     fadeTimer: null,
     cache: {},
     paths: {
-        bgm: 'DRIVE.mp3',
+        bgm: 'audio/DRIVE.mp3',
         tracks: {
-            'Champion': 'Champion.mp3',
-            'Bliss': 'Bliss.mp3',
-            'Canon': 'Canon.mp3',
-            'HappyBirthday': 'HappyBirthday.mp3',
-            'MainTheme': 'MainTheme.mp3',
-            'MagicalMoments': 'MagicalMoments.mp3',
-            'Noise': 'Noise.mp3',
-            'HammerMASTER': 'HammerMASTER.mp3',
-            'InspiringDreams': 'InspiringDreams.mp3',
-            'inspiringguitar': 'inspiringguitar.mp3'
+            'Champion': 'audio/Champion.mp3',
+            'Bliss': 'audio/Bliss.mp3',
+            'Canon': 'audio/Canon.mp3',
+            'HappyBirthday': 'audio/HappyBirthday.mp3',
+            'MainTheme': 'audio/MainTheme.mp3',
+            'MagicalMoments': 'audio/MagicalMoments.mp3',
+            'Noise': 'audio/Noise.mp3',
+            'HammerMASTER': 'audio/HammerMASTER.mp3',
+            'InspiringDreams': 'audio/InspiringDreams.mp3',
+            'inspiringguitar': 'audio/inspiringguitar.mp3'
         }
     },
     
@@ -228,21 +228,53 @@ const audioManager = {
     fadeIn(audio, target = 1, step = 0.1, interval = 40) {
         clearInterval(this.fadeTimer);
         audio.volume = 0;
+        
+        console.log('[fadeIn] 開始淡入播放，目標音量:', target);
+        
+        // 檢查音頻是否已解鎖
+        if (!audioUnlocked) {
+            console.warn('[fadeIn] 音頻尚未解鎖，嘗試解鎖...');
+            unlockAudio();
+        }
+        
         try {
             const playPromise = audio.play();
             if (playPromise?.then) {
-                playPromise.catch(err => {
-                    if (err.name !== 'AbortError') console.error('音樂播放失敗:', err);
+                playPromise.then(() => {
+                    console.log('[fadeIn] 音樂播放成功');
+                }).catch(err => {
+                    if (err.name !== 'AbortError') {
+                        console.error('[fadeIn] 音樂播放失敗:', err);
+                        console.error('[fadeIn] 錯誤詳情:', {
+                            name: err.name,
+                            message: err.message,
+                            audioUnlocked: audioUnlocked,
+                            audioReadyState: audio.readyState,
+                            audioNetworkState: audio.networkState
+                        });
+                        
+                        // 如果是用戶交互問題，顯示提示
+                        if (err.name === 'NotAllowedError') {
+                            showAudioError('請點擊畫面以啟用音樂播放！');
+                        } else {
+                            showAudioError('音樂播放失敗，請檢查瀏覽器權限或重新載入頁面！');
+                        }
+                    }
                 });
             }
         } catch (err) {
-            if (err.name !== 'AbortError') console.error('音樂播放失敗:', err);
+            if (err.name !== 'AbortError') {
+                console.error('[fadeIn] 音樂播放異常:', err);
+                showAudioError('音樂播放異常，請檢查瀏覽器支援！');
+            }
         }
+        
         this.fadeTimer = setInterval(() => {
             if (audio.volume < target) {
                 audio.volume = Math.min(audio.volume + step, target);
             } else {
                 clearInterval(this.fadeTimer);
+                console.log('[fadeIn] 淡入完成，當前音量:', audio.volume);
             }
         }, interval);
     },
@@ -318,36 +350,49 @@ const audioManager = {
     },
     
     playGameTrack(trackName, offsetSec = null, callback = null) {
-        this.stopAll(() => {
-            const path = this.paths.tracks[trackName];
-            if (!path) {
-                showAudioError('找不到音樂檔案，請確認檔名與路徑正確！');
-                callback?.();
-                return;
-            }
-            this.preload(path);
-            const audio = new Audio(path);
-            Object.assign(audio, {
-                loop: trackName === 'HappyBirthday',
-                volume: trackName === 'Canon' ? 1.0 : 0.95,
-                currentTime: offsetSec ?? (trackName === 'Canon' ? 100 : 15),
-                onended: null,
-                onerror: () => {
-                    showAudioError('音樂檔案載入失敗，請確認伺服器已啟動、檔案存在且名稱正確（大小寫）！');
-                    callback?.();
-                }
+        if (!trackName || !this.paths.tracks[trackName]) {
+            console.error('無效的音軌名稱:', trackName);
+            return;
+        }
+        
+        // 確保音頻已解鎖
+        if (!audioUnlocked) {
+            unlockAudio();
+        }
+        
+        const path = this.paths.tracks[trackName];
+        console.log('開始播放遊戲音軌:', path);
+        
+        // 停止當前播放的音頻
+        if (this.audio) {
+            this.audio.pause();
+            this.audio = null;
+        }
+        
+        // 創建新的音頻實例
+        this.audio = new Audio(path);
+        this.audio.volume = 1.0; // 確保音量最大
+        
+        // 設置音頻參數
+        if (offsetSec !== null) {
+            this.audio.currentTime = offsetSec;
+        }
+        
+        // 播放音頻
+        const playPromise = this.audio.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                console.log('音樂開始播放');
+                if (callback) callback();
+            }).catch(error => {
+                console.error('音樂播放失敗:', error);
+                // 嘗試重新解鎖並播放
+                unlockAudio();
+                setTimeout(() => this.playGameTrack(trackName, offsetSec, callback), 1000);
             });
-            this.audio = audio;
-            this.currentType = 'game';
-            this.currentTrack = trackName;
-            this.showNowPlaying(trackName);
-            audio.onplay = () => {
-                hideAudioError();
-                audioVisualizer.start(audio);
-                callback?.();
-            };
-            this.fadeIn(audio, trackName === 'Canon' ? 1.0 : 0.95);
-        });
+        }
+        
+        return this.audio;
     },
     
     resumeBackground() {
@@ -411,101 +456,125 @@ let laneGlowStates = Array(5).fill(0); // 賽道發光狀態
 
 // 遊戲等級參數 (根據表格內容設計)
 const LEVEL_CONFIGS = {
-  lv1: {
-    name: "Lv.1 新手引導",
-    enName: "Level 1 - Tutorial",
-    speed: 150,
-    density: 1.0,
+    beginner: {
+        name: 'Beginner',
+        judgeWindow: 0.25,
+        scoreMultiplier: 1.2,
+        gradeThresholds: { S: 80, A: 70, B: 60, C: 30, D: 0 },
+        comboForgiveness: 100,
+        noteDensity: 1.25, // 固定值
+        enName: "Beginner",
+        stars: 1,
+    speed: 120,
+        density: 1.25, // 1.0–1.5
     keyCount: 4,
-    missBuffer: 4,
-    stars: 1,
-    desc: "第一次玩家專用，單音符、慢速、寬鬆判定",
-    judgeWindow: 350,
+    missBuffer: 100, // 增加容錯次數，讓新手更容易
+        desc: "✨ 基礎節奏入門！單鍵點擊、節奏緩和，讓你無壓力進入命運世界。",
     keys: ['D', 'F', 'J', 'K'],
     holdSupport: false,
     simultaneousNotes: 1,
     specialRules: "無長音支援，單音符為主"
   },
-  lv2: {
-    name: "Lv.2 入門體驗",
-    enName: "Level 2 - Beginner",
-    speed: 180,
-    density: 1.5,
+    casual: {
+        name: 'Casual',
+        judgeWindow: 0.2,
+        scoreMultiplier: 1,
+        gradeThresholds: { S: 80, A: 70, B: 60, C: 50, D: 0 },
+        comboForgiveness: 100,
+        noteDensity: 1.5,
+        enName: "Casual",
+        stars: 2,
+    speed: 150,
+        density: 1.5, // 1.5–2.0
     keyCount: 4,
-    missBuffer: 3,
-    stars: 2,
-    desc: "入門玩家，簡單短長音、偶有雙鍵",
-    judgeWindow: 300,
+    missBuffer: 100,
+        desc: "🎵 旋律稍起波瀾，簡短長音與雙鍵節奏交織，輕鬆享受流動的音樂律動。",
     keys: ['D', 'F', 'J', 'K'],
     holdSupport: true,
     holdType: "simple",
-    simultaneousNotes: 2,
+    simultaneousNotes: 1,
     specialRules: "簡單短長音支援"
   },
-  lv3: {
-    name: "Lv.3 有經驗者",
-    enName: "Level 3 - Experienced",
-    speed: 200,
-    density: 2.0,
+    hard: {
+        name: 'Hard',
+        judgeWindow: 0.15,
+        scoreMultiplier: 1,
+        gradeThresholds: { S: 90, A: 80, B: 70, C: 50, D: 0 },
+        comboForgiveness: 100,
+        noteDensity: 2,
+        enName: "Hard",
+        stars: 3,
+    speed: 180,
+        density: 2.2, // 2.0–3.0
     keyCount: 4,
-    missBuffer: 2,
-    stars: 3,
-    desc: "有經驗者，中長音、雙鍵同時出現",
-    judgeWindow: 300,
+    missBuffer: 100,
+        desc: "🔥 節奏加速進化！中長音與雙鍵組合考驗反應與穩定度，是實力的試煉場。",
     keys: ['D', 'F', 'J', 'K'],
     holdSupport: true,
     holdType: "medium",
     simultaneousNotes: 2,
     specialRules: "中長音支援，雙鍵常態"
   },
-  lv4: {
-    name: "Lv.4 挑戰變化",
-    enName: "Level 4 - Challenge",
-    speed: 230,
-    density: 3.0,
+    extreme: {
+        name: 'Extreme',
+        judgeWindow: 0.1,
+        scoreMultiplier: 1.3,
+        gradeThresholds: { S: 90, A: 85, B: 80, C: 70, D: 0 },
+        comboForgiveness: 10,
+        noteDensity: 3.5,
+        enName: "Extreme",
+        stars: 4,
+    speed: 210,
+        density: 3.5, // 3.0–4.0
     keyCount: 5,
-    missBuffer: 1,
-    stars: 4,
-    desc: "喜歡挑戰變化，多段長音、三鍵偶有",
-    judgeWindow: 250,
+    missBuffer: 10,
+        desc: "⚡ 音流如電！高速節奏、多段長音、空白鍵加入，全面挑戰你的極限操作。",
     keys: ['D', 'F', ' ', 'J', 'K'],
     holdSupport: true,
     holdType: "multi",
-    simultaneousNotes: 3,
+    simultaneousNotes: 2,
     specialRules: "多段長音，Space鍵加入，判定鬆緊"
   },
-  lv5: {
-    name: "Lv.5 進階玩家",
-    enName: "Level 5 - Advanced",
-    speed: 260,
-    density: 4.0,
+    master: {
+        name: 'Master',
+        judgeWindow: 0.09,
+        scoreMultiplier: 1.5,
+        gradeThresholds: { S: 99, A: 95, B: 90, C: 80, D: 0 },
+        comboForgiveness: 10,
+        noteDensity: 4.75,
+        enName: "Master",
+        stars: 5,
+    speed: 220,
+        density: 4.75, // 4.0–5.5
     keyCount: 5,
-    missBuffer: 1,
-    stars: 5,
-    desc: "進階玩家，長音密集、四鍵偶有",
-    judgeWindow: 150,
+    missBuffer: 10,
+        desc: "👑 節奏王者之道！節拍密集如雨、判定超嚴苛，特效爆閃，唯高手能穩步前行。",
     keys: ['D', 'F', ' ', 'J', 'K'],
     holdSupport: true,
     holdType: "intensive",
-    simultaneousNotes: 4,
+    simultaneousNotes: 3,
     specialRules: "長音密集，特效數多，節奏混淆"
   },
-  lv6: {
-    name: "Lv.6 高手挑戰",
-    enName: "Level 6 - Master",
-    speed: 280,
-    density: 5.5,
+    fate: {
+        name: 'Fate Mode',
+        judgeWindow: 0.06,
+        scoreMultiplier: 2.0,
+        gradeThresholds: { S: 100, A: 99, B: 97, C: 90, D: 0 },
+        comboForgiveness: 10,
+        noteDensity: [5.5, 6.5],
+        enName: "Fate Mode",
+        stars: 6,
+    speed: 250,
+        density: 6, // 5.5–6.5+
     keyCount: 5,
-    missBuffer: 0,
-    stars: 6,
-    desc: "高手/彩蛋挑戰，4~5鍵並列、特殊長音",
-    judgeWindow: 100,
+    missBuffer: 10,
+        desc: "🌌 命運交響最終章！五鍵同列、極速連打、節奏錯亂，踏上無回之境的節奏試煉。",
     keys: ['D', 'F', ' ', 'J', 'K'],
     holdSupport: true,
     holdType: "special",
-    simultaneousNotes: 5,
+    simultaneousNotes: 3,
     specialRules: "特殊長音，高速連打，極限判定",
-    locked: false
+        locked: true
   }
 };
 
@@ -517,11 +586,15 @@ let holdKeyLane = null;
 let holdKeyNote = null;
 let holdKeyStartTime = null;
 
+// 新增全域變數
+let scoreMultiplier = 1.0;
+let gradeThresholds = { S: 95, A: 85, B: 70, C: 50, D: 0 };
+let comboForgiveness = 3;
+
 // ===============================
 // 畫面管理 (Screen Management)
 // ===============================
 function showScreen(screen) {
-    console.log('[showScreen] 切換到畫面:', screen, { selectArea, gameArea, resultScreen });
     if (!selectArea || !gameArea || !resultScreen) {
         selectArea = document.getElementById('select-area');
         gameArea = document.getElementById('game-area');
@@ -538,14 +611,31 @@ function showScreen(screen) {
         case 'select':
             selectArea.style.display = 'flex';
             selectArea.classList.add('fade-in');
+            if (audioUnlocked) {
+                audioManager.playBackground();
+            }
             break;
         case 'game':
             gameArea.style.display = 'flex';
             gameArea.classList.add('fade-in');
-            if (gameArea.style.display !== 'flex') {
-                gameArea.style.display = 'flex';
-                showAudioError('gameArea 未正確顯示，已強制顯示');
+            // 強制重新取得 canvas/ctx 並加 log
+            canvas = document.getElementById('game-canvas');
+            ctx = canvas ? canvas.getContext('2d') : null;
+            console.log('[showScreen] canvas:', canvas, 'ctx:', ctx);
+            if (!canvas || !ctx) {
+                showAudioError('[showScreen] canvas 或 ctx 取得失敗，遊戲無法正常顯示！');
+                // 顯示明顯錯誤提示
+                const errMsg = document.getElementById('audio-error-msg');
+                if (errMsg) {
+                    errMsg.style.display = 'block';
+                    errMsg.textContent = '【嚴重錯誤】無法取得遊戲畫布，請重新整理或檢查 HTML 結構！';
+                    errMsg.style.opacity = '1';
+                }
+                throw new Error('[showScreen] canvas 或 ctx 取得失敗');
             }
+            // 自動聚焦 canvas
+            setTimeout(() => { if (canvas && typeof canvas.focus === 'function') canvas.focus(); }, 100);
+            resizeCanvas();
             break;
         case 'result':
             resultScreen.style.display = 'flex';
@@ -559,145 +649,56 @@ function showScreen(screen) {
 // 音符生成 (Note Generation)
 // ===============================
 function generateNotes(difficulty, duration = 60) {
-    const config = LEVEL_CONFIGS[difficulty];
-    if (!config) {
-        console.error('[generateNotes] 無效的難度設定:', difficulty);
-        showAudioError('無效的難度設定，請重新選擇');
-        return [];
-    }
-    console.log('[generateNotes] 開始生成音符，配置:', config);
+    console.log(`[generateNotes] 開始生成音符 - 難度: ${difficulty}, 時長: ${duration}秒`);
     
-    notes = [];
-    KEY_LIST = config.keys;
-    const noteCount = Math.floor(duration * config.density * 2);
-    const timeStep = duration / noteCount;
+    const conf = LEVEL_CONFIGS[difficulty] || LEVEL_CONFIGS['beginner'];
+    console.log('[generateNotes] 使用配置:', conf);
     
-    // 編排優化：記錄每 lane 最後長音符結束時間
-    const laneEndTime = Array(KEY_LIST.length).fill(0);
-    // 根據難度調整每秒音符數量
-    const maxNotesPerSecond = Math.min(config.simultaneousNotes, 3);
-    const timeBuckets = {};
-    
-    let attempts = 0;
-    const maxAttempts = noteCount * 3; // 最大嘗試次數
-    
-    for (let i = 0; i < noteCount && attempts < maxAttempts; i++) {
-        attempts++;
-        let time = i * timeStep + Math.random() * 2;
-        
-        // 找出可用 lane
-        let availableLanes = KEY_LIST.map((_, idx) => idx).filter(idx => time >= laneEndTime[idx]);
-        
-        // 如果沒有可用 lane，重置所有 lane 的結束時間
-        if (availableLanes.length === 0) {
-            laneEndTime.fill(0);
-            availableLanes = KEY_LIST.map((_, idx) => idx);
-        }
-        
-        // 根據難度限制每秒音符數量
-        const sec = Math.floor(time);
-        if (!timeBuckets[sec]) timeBuckets[sec] = 0;
-        if (timeBuckets[sec] >= maxNotesPerSecond) {
-            // 如果這秒音符太多，跳到下一秒
-            time = (sec + 1) + Math.random() * 0.5;
-            if (!timeBuckets[sec + 1]) timeBuckets[sec + 1] = 0;
-            timeBuckets[sec + 1]++;
-        } else {
-            timeBuckets[sec]++;
-        }
-        
-        // 根據難度決定是否長音符
-        let isHold = false;
-        if (config.holdSupport) {
-            switch (config.holdType) {
-                case 'simple':
-                    isHold = Math.random() < 0.2; // 20% 機率
-                    break;
-                case 'medium':
-                    isHold = Math.random() < 0.3; // 30% 機率
-                    break;
-                case 'multi':
-                    isHold = Math.random() < 0.4; // 40% 機率
-                    break;
-                case 'intensive':
-                    isHold = Math.random() < 0.5; // 50% 機率
-                    break;
-                case 'special':
-                    isHold = Math.random() < 0.6; // 60% 機率
-                    break;
-                default:
-                    isHold = Math.random() < 0.3;
-            }
-        }
-        
-        let lane = availableLanes[Math.floor(Math.random() * availableLanes.length)];
-        
-        if (isHold) {
-            // 根據難度調整長音符持續時間
-            let holdDuration;
-            switch (config.holdType) {
-                case 'simple':
-                    holdDuration = 0.5 + Math.random() * 0.8; // 0.5-1.3秒
-                    break;
-                case 'medium':
-                    holdDuration = 0.8 + Math.random() * 1.2; // 0.8-2.0秒
-                    break;
-                case 'multi':
-                    holdDuration = 1.0 + Math.random() * 1.5; // 1.0-2.5秒
-                    break;
-                case 'intensive':
-                    holdDuration = 1.2 + Math.random() * 1.8; // 1.2-3.0秒
-                    break;
-                case 'special':
-                    holdDuration = 1.5 + Math.random() * 2.0; // 1.5-3.5秒
-                    break;
-                default:
-                    holdDuration = 0.8 + Math.random() * 1.5;
-            }
-            
-            notes.push({
-                time: time,
-                lane: lane,
-                duration: holdDuration,
-                hit: false,
-                missed: false,
-                holdActive: false,
-                holdHit: false,
-                group: i
-            });
-            laneEndTime[lane] = time + holdDuration + 0.1;
-        } else {
-            notes.push({
-                time: time,
-                lane: lane,
-                duration: 0,
-                hit: false,
-                missed: false,
-                group: i
-            });
-            laneEndTime[lane] = time + 0.2;
-        }
+    // 處理音符密度
+    let density;
+    if (Array.isArray(conf.noteDensity)) {
+        const [minDensity, maxDensity] = conf.noteDensity;
+        density = minDensity + Math.random() * (maxDensity - minDensity);
+    } else {
+        density = conf.noteDensity || 1.5;
     }
     
-    // 確保至少有一些音符
-    if (notes.length === 0) {
-        console.warn('音符生成失敗，生成基本音符');
-        for (let i = 0; i < 10; i++) {
-            const time = i * 2 + Math.random();
-            const lane = Math.floor(Math.random() * KEY_LIST.length);
-            notes.push({
-                time: time,
-                lane: lane,
-                duration: 0,
-                hit: false,
-                missed: false,
-                group: i
-            });
+    const noteCount = Math.floor(density * duration);
+    const lanes = conf.keys || ['D', 'F', 'J', 'K'];
+    
+    console.log(`[generateNotes] 密度: ${density.toFixed(2)}, 音符數量: ${noteCount}, 賽道: ${lanes.join(', ')}`);
+    
+    const notes = [];
+    
+    // 確保至少有幾個音符
+    const minNotes = Math.max(5, Math.floor(duration / 10));
+    const actualNoteCount = Math.max(noteCount, minNotes);
+    
+    for (let i = 0; i < actualNoteCount; i++) {
+        // 均勻分布在 1~duration 內，避免在0秒時就有音符
+        const t = 1 + (i * (duration - 1)) / actualNoteCount;
+        // 隨機選一個賽道
+        const lane = Math.floor(Math.random() * lanes.length);
+        
+        // 添加一些變化：偶爾生成長音符
+        let noteDuration = 0;
+        if (Math.random() < 0.2 && conf.holdSupport) {
+            noteDuration = 0.5 + Math.random() * 1.5; // 0.5-2秒的長音符
         }
+        
+        notes.push({ 
+            time: t, 
+            lane,
+            duration: noteDuration,
+            hit: false,
+            missed: false,
+            group: i
+        });
     }
     
-    notes.sort((a, b) => a.time - b.time);
-    console.log(`[generateNotes] 生成 ${notes.length} 個音符，難度: ${difficulty}, 密度: ${config.density}/秒`);
+    console.log(`[generateNotes] 生成完成 - 實際音符數量: ${notes.length}`);
+    console.log('[generateNotes] 前5個音符:', notes.slice(0, 5));
+    
     return notes;
 }
 
@@ -705,18 +706,67 @@ function generateNotes(difficulty, duration = 60) {
 // Canvas 管理 (Canvas Management)
 // ===============================
 function resizeCanvas() {
-    if (!canvas) return;
+    console.log('[resizeCanvas] 開始調整 canvas 尺寸');
     
+    // 獲取 canvas 元素
+    canvas = document.getElementById('game-canvas');
+    if (!canvas) {
+        console.error('[resizeCanvas] 找不到 game-canvas 元素');
+        return;
+    }
+    
+    // 獲取 2D 上下文
+    ctx = canvas.getContext('2d');
+    if (!ctx) {
+        console.error('[resizeCanvas] 無法獲取 2D 上下文');
+        return;
+    }
+    
+    console.log('[resizeCanvas] canvas 和 ctx 初始化成功');
+    
+    // 獲取容器尺寸
     const container = gameArea;
     let containerWidth = container ? container.clientWidth : 900;
     let containerHeight = container ? container.clientHeight : 700;
-    if (!containerWidth || !isFinite(containerWidth)) containerWidth = 900;
-    if (!containerHeight || !isFinite(containerHeight)) containerHeight = 700;
+    
+    // 驗證容器尺寸
+    if (!containerWidth || !isFinite(containerWidth)) {
+        console.warn('[resizeCanvas] 容器寬度無效，使用預設值 900');
+        containerWidth = 900;
+    }
+    if (!containerHeight || !isFinite(containerHeight)) {
+        console.warn('[resizeCanvas] 容器高度無效，使用預設值 700');
+        containerHeight = 700;
+    }
+    
+    // 計算 canvas 尺寸
     canvas.width = Math.min(containerWidth - 40, 800);
     canvas.height = Math.min(containerHeight - 200, 600);
-    if (!canvas.width || !isFinite(canvas.width)) canvas.width = 800;
-    if (!canvas.height || !isFinite(canvas.height)) canvas.height = 600;
-    console.log(`Canvas 大小調整為: ${canvas.width} x ${canvas.height}`);
+    
+    // 最終驗證 canvas 尺寸
+    if (!canvas.width || !isFinite(canvas.width) || isNaN(canvas.width) || canvas.width <= 0) {
+        console.warn('[resizeCanvas] canvas 寬度無效，使用預設值 800');
+        canvas.width = 800;
+    }
+    if (!canvas.height || !isFinite(canvas.height) || isNaN(canvas.height) || canvas.height <= 0) {
+        console.warn('[resizeCanvas] canvas 高度無效，使用預設值 600');
+        canvas.height = 600;
+    }
+    
+    console.log(`[resizeCanvas] 完成調整 - canvas: ${!!canvas}, width: ${canvas.width}, height: ${canvas.height}`);
+    
+    // 驗證 ctx.canvas 是否正確設置
+    if (ctx.canvas !== canvas) {
+        console.warn('[resizeCanvas] ctx.canvas 與 canvas 不匹配，嘗試修復');
+        // 重新獲取上下文
+        ctx = canvas.getContext('2d');
+        if (!ctx) {
+            console.error('[resizeCanvas] 重新獲取上下文失敗');
+            return;
+        }
+    }
+    
+    console.log('[resizeCanvas] canvas 調整完成，ctx.canvas 驗證通過');
 }
 
 // ===============================
@@ -724,9 +774,6 @@ function resizeCanvas() {
 // ===============================
 // 倒數動畫防重複 flag
 let isCountingDown = false;
-
-// 倒數音效資源
-const countdownAudio = new Audio('countdown.mp3'); // 請確保有 countdown.mp3
 
 function showCountdown(callback) {
     console.log('[showCountdown] start', { callback });
@@ -744,14 +791,10 @@ function showCountdown(callback) {
     text.textContent = count;
     // 禁用所有互動
     document.body.style.pointerEvents = 'none';
-    countdownAudio.currentTime = 0;
-    countdownAudio.play().catch(()=>{});
     const timer = setInterval(() => {
         count--;
         if (count > 0) {
             text.textContent = count;
-            countdownAudio.currentTime = 0;
-            countdownAudio.play().catch(()=>{});
         } else {
             clearInterval(timer);
             overlay.style.display = 'none';
@@ -765,30 +808,76 @@ function showCountdown(callback) {
 
 // --- startGame ---
 function startGame() {
-    console.log('[startGame] called', { gameStarted, isCountingDown, selectedSong, selectedDifficulty });
-    if (gameStarted || isCountingDown) return;
-    if (!selectedSong || !selectedDifficulty) {
-        showToast('請先選擇歌曲與難度');
+    if (!selectedSong) {
+        showToast('請先選擇一首歌曲！');
         return;
     }
-    showCountdown(realStartGame);
-    const config = LEVEL_CONFIGS[selectedDifficulty];
-    missBufferCount = config ? config.missBuffer : 0;
-    setMissBufferCount(missBufferCount);
+    
+    if (gameStarted) {
+        console.warn('遊戲已經開始！');
+        return;
+    }
+    
+    // 確保音頻已解鎖
+    unlockAudio();
+    
+    // 停止所有音樂並播放遊戲音樂
+    audioManager.stopAll(() => {
+        audioManager.playGameTrack(selectedSong, 0, () => {
+            console.log('遊戲音樂播放開始');
+        });
+    });
+    
+    // 初始化遊戲狀態
+    gameStarted = true;
+    gamePaused = false;
+    gameEnded = false;
+    score = 0;
+    combo = 0;
+    maxCombo = 0;
+    perfectCount = 0;
+    greatCount = 0;
+    goodCount = 0;
+    missCount = 0;
+    
+    // 生成音符
+    const noteDuration = 60; // 60秒的音符
+    activeNotes = generateNotes(selectedDifficulty, noteDuration);
+    
+    // 開始倒計時
+    showCountdown(() => {
+        gameStartTime = Date.now();
+        requestAnimationFrame(gameLoop);
+        startAutoMissCheck();
+    });
+    
+    // 更新界面顯示
+    updateScoreDisplay();
+    updateComboDisplay();
+    updateMissBufferUI();
 }
 
 // --- realStartGame ---
 function realStartGame() {
     console.log('[realStartGame] called', { selectedSong, selectedDifficulty });
+    
+    // 檢查音頻是否已解鎖
+    if (!audioUnlocked) {
+        console.warn('[realStartGame] 音頻尚未解鎖，嘗試解鎖...');
+        unlockAudio();
+    }
+    
     if (!selectedSong || !selectedDifficulty) {
         showAudioError('遊戲參數錯誤，請重新選擇歌曲與難度');
         return;
     }
+    
     const config = LEVEL_CONFIGS[selectedDifficulty];
     if (!config) {
         showAudioError('無效的難度設定，請重新選擇');
         return;
     }
+    
     gameStarted = true;
     gamePaused = false;
     gameEnded = false;
@@ -797,40 +886,185 @@ function realStartGame() {
     maxCombo = 0;
     missCount = 0;
     hitCount = 0;
-    console.log('[realStartGame] 準備切換到遊戲畫面');
+    
+    // 先設置遊戲開始時間，確保音符時間計算正確
+    gameStartTime = performance.now();
+    gameEndTime = gameStartTime + GAME_DURATION * 1000;
+    
+    console.log('[realStartGame] 遊戲開始時間設置:', {
+        gameStartTime,
+        gameEndTime,
+        currentTime: (Date.now() - gameStartTime) / 1000
+    });
+    
+    // 確保音符數據正確設置
+    if (window.gameNoteData && window.gameNoteData.length > 0) {
+        console.log('[realStartGame] 重新設置音符數據，數量:', window.gameNoteData.length);
+        spawnNotes(window.gameNoteData);
+    } else {
+        console.warn('[realStartGame] 沒有找到音符數據，重新生成');
+        let noteData = generateNotes(selectedDifficulty, GAME_DURATION);
+        if (noteData && noteData.length > 0) {
+            console.log('[realStartGame] 音符數據生成成功，數量:', noteData.length);
+            spawnNotes(noteData);
+        } else {
+            console.error('[realStartGame] 音符數據生成失敗');
+        }
+    }
+    
+    // 驗證音符數據是否正確設置
+    console.log('[realStartGame] 驗證音符數據:', {
+        activeNotes: activeNotes,
+        activeNotesLength: activeNotes ? activeNotes.length : 0,
+        gameNoteData: window.gameNoteData
+    });
+    
+    if (window.gameEndTimeout) clearTimeout(window.gameEndTimeout);
+    window.gameEndTimeout = setTimeout(() => {
+        endGame();
+    }, GAME_DURATION * 1000);
+    
     showScreen('game');
-    console.log('[realStartGame] 準備調整 Canvas 大小');
     resizeCanvas();
+    
     const laneCount = config.keyCount || 4;
     laneManager.setLaneCount(laneCount);
-    console.log(`[realStartGame] 設定賽道數量: ${laneCount}`);
-    notes = generateNotes(selectedDifficulty);
-    if (!notes || notes.length === 0) {
-        showAudioError('音符產生失敗，請重試');
-        gameStarted = false;
-        gamePaused = false;
-        gameEnded = false;
-        return;
-    }
-    console.log('[realStartGame] 音符生成成功，數量:', notes.length);
+    
     const trackName = selectedSong.replace('.mp3', '');
-    console.log('[realStartGame] 準備播放音樂:', trackName);
     let offset = 0;
     if (trackName === 'Canon') offset = 2.5;
     if (trackName === 'HappyBirthday') offset = 0.5;
     if (trackName === 'Noise') offset = 0.2;
     if (trackName === 'HammerMASTER') offset = 0.8;
     if (trackName === 'inspiringguitar') offset = 0.5;
+    
+    console.log('[realStartGame] 準備播放遊戲音樂:', trackName, 'offset:', offset);
+    
     audioManager.playGameTrack(trackName, offset, () => {
-        console.log('[realStartGame] 音樂開始播放，啟動遊戲迴圈');
-        gameStartTime = Date.now();
+        console.log('[realStartGame] 遊戲音樂播放回調執行');
+        if (!window._gameLoopStarted) {
+            window._gameLoopStarted = true;
+            console.log('[gameLoop] 開始執行');
+        }
+        // 不要重新設置 gameStartTime，保持與音符時間計算一致
         gameLoop();
         startAutoMissCheck();
     });
+    
     updateScoreDisplay();
     updateComboDisplay();
     updateKeyHints();
-    console.log('[realStartGame] 遊戲開始！');
+    
+    if (LEVEL_CONFIGS[selectedDifficulty] && LEVEL_CONFIGS[selectedDifficulty].judgeWindow) {
+        judgeWindow = LEVEL_CONFIGS[selectedDifficulty].judgeWindow;
+        console.log('[realStartGame] 設定判定寬容度:', judgeWindow, '秒');
+    }
+    
+    if (LEVEL_CONFIGS[selectedDifficulty]) {
+        const conf = LEVEL_CONFIGS[selectedDifficulty];
+        if (conf.scoreMultiplier) scoreMultiplier = conf.scoreMultiplier;
+        if (conf.gradeThresholds) gradeThresholds = conf.gradeThresholds;
+        if (conf.comboForgiveness !== undefined) comboForgiveness = conf.comboForgiveness;
+            console.log('[realStartGame] 判定寬容度:', judgeWindow, '分數倍率:', scoreMultiplier, '評級門檻:', gradeThresholds, 'combo容錯:', comboForgiveness);
+    
+    // 添加測試函數到全局，方便調試
+    window.testNotes = function() {
+        console.log('=== 音符測試 ===');
+        console.log('activeNotes:', activeNotes);
+        console.log('activeNotes.length:', activeNotes ? activeNotes.length : 0);
+        console.log('currentTime:', currentTime);
+        console.log('gameStartTime:', gameStartTime);
+        console.log('selectedDifficulty:', selectedDifficulty);
+        console.log('gameStarted:', gameStarted);
+        console.log('gamePaused:', gamePaused);
+        console.log('gameEnded:', gameEnded);
+        
+        if (activeNotes && activeNotes.length > 0) {
+            console.log('前3個音符:', activeNotes.slice(0, 3));
+            activeNotes.forEach((note, i) => {
+                const noteY = (currentTime - note.time) * LEVEL_CONFIGS[selectedDifficulty].speed;
+                console.log(`音符 ${i}: time=${note.time}, lane=${note.lane}, Y=${noteY.toFixed(1)}`);
+            });
+        }
+    };
+    
+    // 添加強制音符生成測試
+    window.forceGenerateNotes = function() {
+        console.log('=== 強制生成音符測試 ===');
+        if (!selectedDifficulty) {
+            console.error('未選擇難度');
+            return;
+        }
+        
+        const noteData = generateNotes(selectedDifficulty, GAME_DURATION);
+        console.log('生成的音符數據:', noteData);
+        
+        if (noteData && noteData.length > 0) {
+            spawnNotes(noteData);
+            console.log('音符已設置到 activeNotes');
+        }
+    };
+    
+    // 添加音符位置測試
+    window.testNotePositions = function() {
+        console.log('=== 音符位置測試 ===');
+        if (!activeNotes || activeNotes.length === 0) {
+            console.log('沒有活動音符');
+            return;
+        }
+        
+        const config = LEVEL_CONFIGS[selectedDifficulty];
+        const noteSpeed = config.speed;
+        
+        activeNotes.forEach((note, i) => {
+            const noteY = (currentTime - note.time) * noteSpeed;
+            const noteX = (note.lane + 0.5) * (canvas.width / laneManager.laneCount);
+            console.log(`音符 ${i}: time=${note.time}, lane=${note.lane}, X=${noteX.toFixed(1)}, Y=${noteY.toFixed(1)}, 是否在畫面內=${noteY > -50 && noteY < canvas.height + 50}`);
+        });
+    };
+    
+    // 添加音頻測試函數
+    window.testAudio = function() {
+        console.log('=== 音頻測試 ===');
+        console.log('audioUnlocked:', audioUnlocked);
+        console.log('audioManager:', audioManager);
+        console.log('current audio:', audioManager.audio);
+        
+        if (audioManager.audio) {
+            console.log('音頻狀態:', {
+                readyState: audioManager.audio.readyState,
+                networkState: audioManager.audio.networkState,
+                paused: audioManager.audio.paused,
+                currentTime: audioManager.audio.currentTime,
+                duration: audioManager.audio.duration,
+                volume: audioManager.audio.volume,
+                src: audioManager.audio.src
+            });
+        }
+        
+        if (selectedSong) {
+            console.log('選中的歌曲:', selectedSong);
+            const trackName = selectedSong.replace('.mp3', '');
+            console.log('音頻路徑:', audioManager.paths.tracks[trackName]);
+        }
+    };
+    
+    // 添加強制音頻播放測試
+    window.forcePlayAudio = function() {
+        console.log('=== 強制音頻播放測試 ===');
+        if (!selectedSong) {
+            console.error('未選擇歌曲');
+            return;
+        }
+        
+        const trackName = selectedSong.replace('.mp3', '');
+        console.log('嘗試播放:', trackName);
+        
+        audioManager.playGameTrack(trackName, 0, () => {
+            console.log('音頻播放回調執行');
+        });
+    };
+}
 }
 
 // ===============================
@@ -838,7 +1072,23 @@ function realStartGame() {
 // ===============================
 function gameLoop(now) {
     if (!gameStarted || gamePaused || gameEnded) return;
-    currentTime = (Date.now() - gameStartTime) / 1000;
+    
+    // 使用 performance.now() 確保時間計算一致性
+    if (now === undefined) now = performance.now();
+    currentTime = (now - gameStartTime) / 1000;
+    // 只印一次開始
+    if (!window._gameLoopStarted) {
+        window._gameLoopStarted = true;
+        console.log('[gameLoop] 開始執行');
+    }
+    if (now % 1000 < 20) console.log('[gameLoop] running, currentTime:', currentTime.toFixed(2));
+    
+    // 檢查 ctx 是否可用
+    if (!ctx) {
+        console.warn('[gameLoop] ctx 不可用，跳過繪製');
+        animationId = requestAnimationFrame(gameLoop);
+        return;
+    }
     
     // 更新動態互動狀態
     dynamicInteractionManager.updateFeverMode();
@@ -847,7 +1097,7 @@ function gameLoop(now) {
     // 更新倒數計時顯示
     const timerDisplay = document.getElementById('timer-display');
     if (timerDisplay) {
-        const remain = Math.max(0, Math.ceil(60 - currentTime));
+        const remain = Math.max(0, Math.ceil(GAME_DURATION - currentTime));
         timerDisplay.textContent = remain;
     }
     
@@ -859,7 +1109,19 @@ function gameLoop(now) {
         ctx.translate(shakeX, shakeY);
     }
     
-    drawBackground(now);
+    drawBackground(ctx);
+    
+    // 添加音符調試信息
+    if (now % 1000 < 20) {
+        console.log('[gameLoop] 音符狀態:', {
+            activeNotesLength: activeNotes ? activeNotes.length : 0,
+            currentTime: currentTime.toFixed(2),
+            gameStarted: gameStarted,
+            gamePaused: gamePaused,
+            gameEnded: gameEnded
+        });
+    }
+    
     drawNotes(now);
     
     // 更新和繪製音符特效
@@ -1683,157 +1945,130 @@ const noteEffectManager = {
     }
 };
 
-function drawBackground(now) {
-    if (!ctx || !canvas || !isFinite(canvas.width) || !isFinite(canvas.height)) return;
-    
-    // 深空背景 - 紫紅漸層與靛藍延展
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2;
-    const maxRadius = Math.max(canvas.width, canvas.height) * 0.8;
-    
-    // 主背景漸層 - 靛藍延展
-    const mainGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, maxRadius);
-    mainGradient.addColorStop(0, '#0D0E52'); // 深靛藍中心
-    mainGradient.addColorStop(0.3, '#1C1C80'); // 靛藍延展
-    mainGradient.addColorStop(0.7, '#2A1B3D'); // 深紫過渡
-    mainGradient.addColorStop(1, '#000'); // 純黑邊緣
-    
-    ctx.fillStyle = mainGradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // 中央聚焦星雲 - 紫紅漸層
-    const nebulaGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, maxRadius * 0.6);
-    nebulaGradient.addColorStop(0, '#8A2BE2'); // 亮紫中心
-    nebulaGradient.addColorStop(0.4, '#6C2DC7'); // 紫紅過渡
-    nebulaGradient.addColorStop(0.8, '#4A1B5A'); // 深紫外圍
-    nebulaGradient.addColorStop(1, 'transparent'); // 透明邊緣
-    
-    ctx.save();
-    let nebulaAlpha = 0.3 + deepSpaceManager.comboIntensity * 0.2; // Combo影響星雲亮度
-    
-    // Fever模式下的背景脈動
-    if (feverMode) {
-        const feverPulse = Math.sin(Date.now() * 0.01) * 0.2 + 0.8;
-        nebulaAlpha *= feverPulse;
-        
-        // Fever模式下的額外光暈
-        const feverGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, maxRadius * 0.8);
-        feverGradient.addColorStop(0, 'rgba(255, 215, 0, 0.3)'); // 金色光暈
-        feverGradient.addColorStop(0.5, 'rgba(255, 215, 0, 0.1)');
-        feverGradient.addColorStop(1, 'transparent');
-        
-        ctx.globalAlpha = feverPulse * 0.5;
-        ctx.fillStyle = feverGradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+function drawBackground(ctx) {
+    // 檢查 ctx 和 canvas 是否可用
+    if (!ctx) {
+        console.warn('[drawBackground] ctx 不存在');
+        return;
     }
     
-    ctx.globalAlpha = nebulaAlpha;
-    ctx.fillStyle = nebulaGradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.restore();
-    
-    // 初始化深空管理器
-    if (!deepSpaceManager.stars.length) {
-        deepSpaceManager.init();
+    if (!ctx.canvas) {
+        console.warn('[drawBackground] ctx.canvas 不存在');
+        return;
     }
     
-    // 更新深空效果
-    deepSpaceManager.update(16, currentTime, combo);
+    const canvas = ctx.canvas;
     
-    // 繪製星雲粒子流動
-    deepSpaceManager.nebulaParticles.forEach(particle => {
-        ctx.save();
-        ctx.globalAlpha = particle.opacity;
-        
-        // 星雲雜訊紋理
-        const noiseGradient = ctx.createRadialGradient(particle.x, particle.y, 0, particle.x, particle.y, particle.size);
-        noiseGradient.addColorStop(0, particle.color + '80');
-        noiseGradient.addColorStop(0.7, particle.color + '40');
-        noiseGradient.addColorStop(1, 'transparent');
-        
-        ctx.fillStyle = noiseGradient;
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // 流動動畫效果
-        const flowOffset = Math.sin(particle.flow) * 5;
-        ctx.globalAlpha = particle.opacity * 0.5;
-        ctx.beginPath();
-        ctx.arc(particle.x + flowOffset, particle.y + flowOffset, particle.size * 0.8, 0, Math.PI * 2);
-        ctx.fill();
-        
-        ctx.restore();
-    });
-    
-    // 繪製深空星點
-    deepSpaceManager.stars.forEach(star => {
-        const scale = 1000 / star.z;
-        const x = (star.x - centerX) * scale + centerX;
-        const y = (star.y - centerY) * scale + centerY;
-        const size = star.size * scale;
-        
-        if (x > 0 && x < canvas.width && y > 0 && y < canvas.height && size > 0.3) {
-            ctx.save();
-            
-            // 星點亮度受Combo影響
-            const brightness = star.brightness * (1 + deepSpaceManager.comboIntensity * 0.5);
-            ctx.globalAlpha = scale * brightness;
-            
-            ctx.fillStyle = star.color;
-            ctx.shadowColor = star.color;
-            ctx.shadowBlur = size * 4;
-            ctx.beginPath();
-            ctx.arc(x, y, size, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // 星點光暈
-            ctx.globalAlpha = scale * brightness * 0.4;
-            ctx.beginPath();
-            ctx.arc(x, y, size * 2.5, 0, Math.PI * 2);
-            ctx.fill();
-            
-            ctx.restore();
-        }
-    });
-    
-    // 節奏同步閃爍效果
-    if (deepSpaceManager.rhythmFlash > 0) {
-        ctx.save();
-        ctx.globalAlpha = deepSpaceManager.rhythmFlash * 0.08;
-        ctx.fillStyle = '#8A2BE2';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.restore();
+    // 檢查 canvas 尺寸是否有效
+    if (!isFinite(canvas.width) || !isFinite(canvas.height) || canvas.width <= 0 || canvas.height <= 0) {
+        console.warn('[drawBackground] canvas 尺寸異常', { width: canvas.width, height: canvas.height });
+        return;
     }
     
-    // 中央聚焦光線效果
-    const time = now * 0.001;
-    ctx.save();
-    ctx.globalAlpha = 0.03 + deepSpaceManager.comboIntensity * 0.02;
-    for (let i = 0; i < 4; i++) {
-        const angle = time * 0.3 + (i * Math.PI / 2);
-        const x = centerX + Math.cos(angle) * 80;
-        const y = centerY + Math.sin(angle) * 80;
-        const gradient = ctx.createRadialGradient(x, y, 0, x, y, 150);
-        gradient.addColorStop(0, '#8A2BE2');
-        gradient.addColorStop(1, 'transparent');
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+    const radius = Math.min(cx, cy);
+    
+    // 檢查計算結果是否有效
+    if (!isFinite(cx) || !isFinite(cy) || !isFinite(radius) || radius <= 0) {
+        console.warn('[drawBackground] 座標/半徑異常', { cx, cy, radius });
+        return;
+    }
+    
+    try {
+        // 創建徑向漸層背景
+        const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+        gradient.addColorStop(0, '#000');
+        gradient.addColorStop(1, '#333');
+        
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // 如果繪製成功，重置警告標記
+        if (window._drawBgWarned) {
+            window._drawBgWarned = false;
+            console.log('[drawBackground] 背景繪製恢復正常');
+        }
+    } catch (error) {
+        console.error('[drawBackground] 繪製背景時發生錯誤:', error);
+        if (!window._drawBgWarned) {
+            window._drawBgWarned = true;
+            console.warn('[drawBackground] 背景繪製失敗，已設置警告標記');
+        }
     }
-    ctx.restore();
 }
 
 function drawNotes(now) {
-    if (!ctx) return;
+    // 檢查 ctx 和 canvas 是否可用
+    if (!ctx) {
+        console.warn('[drawNotes] ctx 不存在');
+        return;
+    }
+    
+    if (!ctx.canvas) {
+        console.warn('[drawNotes] ctx.canvas 不存在');
+        return;
+    }
+    
+    const canvas = ctx.canvas;
+    
+    // 檢查 canvas 尺寸是否有效
+    if (!isFinite(canvas.width) || !isFinite(canvas.height) || canvas.width <= 0 || canvas.height <= 0) {
+        console.warn('[drawNotes] canvas 尺寸異常', { width: canvas.width, height: canvas.height });
+        return;
+    }
+    
+    // 檢查遊戲狀態
+    if (!selectedDifficulty || !LEVEL_CONFIGS[selectedDifficulty]) {
+        console.warn('[drawNotes] 未選擇難度或難度配置無效');
+        return;
+    }
+    
+    // 檢查音符數據
+    if (!activeNotes || activeNotes.length === 0) {
+        // 只在第一次顯示警告，避免重複輸出
+        if (!window._noNotesWarned) {
+            console.warn('[drawNotes] 沒有活動音符', { 
+                activeNotes: activeNotes, 
+                activeNotesLength: activeNotes ? activeNotes.length : 0,
+                currentTime: currentTime,
+                gameStartTime: gameStartTime
+            });
+            window._noNotesWarned = true;
+        }
+        return;
+    } else {
+        // 重置警告標記
+        window._noNotesWarned = false;
+    }
+    
     const config = LEVEL_CONFIGS[selectedDifficulty];
     const noteSpeed = config.speed;
     const laneCount = laneManager.laneCount;
     const laneWidth = canvas.width / laneCount;
-    
-    notes.forEach((note, index) => {
+    let drawn = 0;
+    activeNotes.forEach((note, index) => {
+        if (!note) return;
         const noteY = (currentTime - note.time) * noteSpeed;
         const noteX = (note.lane + 0.5) * laneWidth;
+        
+        // 添加詳細的調試信息
+        if (index < 3) { // 只顯示前3個音符的詳細信息
+            console.log(`[drawNotes] 音符 ${index}:`, {
+                noteTime: note.time,
+                currentTime: currentTime,
+                timeDiff: currentTime - note.time,
+                noteSpeed: noteSpeed,
+                noteY: noteY,
+                noteX: noteX,
+                canvasHeight: canvas.height,
+                shouldDraw: noteY > -50 && noteY < canvas.height + 50 && !note.hit && !note.missed
+            });
+        }
+        
         if (noteY > -50 && noteY < canvas.height + 50 && !note.hit && !note.missed) {
+            drawn++;
+            console.log(`[drawNotes] 繪製音符 index=${index}, lane=${note.lane}, x=${noteX.toFixed(1)}, y=${noteY.toFixed(1)}, time=${note.time}`);
             // 長音符 - 宇宙能量光束
             if (note.duration && note.duration > 0) {
                 const tailY = (currentTime - (note.time + note.duration)) * noteSpeed;
@@ -2067,105 +2302,124 @@ function drawNotes(now) {
     ctx.stroke();
     
     ctx.restore();
+    if (drawn > 0) console.log(`[drawNotes] 畫出 ${drawn} 個音符 (currentTime=${currentTime.toFixed(2)})`);
 }
 
 // ===============================
 // 判定系統 (Judgment System)
 // ===============================
+// 判定線配置
+const JUDGE_LINE = {
+    POSITION: 100,  // 判定線距離底部的距離
+    PERFECT_RANGE: 50,  // Perfect判定範圍（上下各50像素）
+    GREAT_RANGE: 80,   // Great判定範圍（上下各80像素）
+    GOOD_RANGE: 100,   // Good判定範圍（上下各100像素）
+    MISS_RANGE: 150    // Miss判定範圍（超過判定線150像素）
+};
+
+// 音符判定函數
 function judgeNote(lane) {
-    const config = LEVEL_CONFIGS[selectedDifficulty];
-    const noteSpeed = config.speed;
-    const judgeLineY = canvas.height - 100;
-    // 判定時間誤差（毫秒）
-    const judgeWindow = config.judgeWindow || 200;
-    let hitNote = null;
+    if (!activeNotes || activeNotes.length === 0) return;
+    
+    const now = (Date.now() - gameStartTime) / 1000;
     let hitIndex = -1;
-    for (let i = 0; i < notes.length; i++) {
-        const note = notes[i];
+    let hitTiming = Infinity;
+    let hitNote = null;
+    
+    // 獲取判定線位置
+    const judgeLine = canvas.height - JUDGE_LINE.POSITION;
+    
+    // 查找最近的音符
+    for (let i = 0; i < activeNotes.length; i++) {
+        const note = activeNotes[i];
         if (note.lane === lane && !note.hit && !note.missed) {
-            const noteY = (currentTime - note.time) * noteSpeed;
-            const distance = Math.abs(noteY - judgeLineY);
-            if (distance <= (noteSpeed * (judgeWindow/1000))) { // 動態判定
-                if (!hitNote || distance < Math.abs(hitNote.y - judgeLineY)) {
-                    hitNote = { ...note, y: noteY };
+            // 計算音符的當前 Y 位置
+            const noteY = (currentTime - note.time) * LEVEL_CONFIGS[selectedDifficulty].speed;
+            
+            // 檢查音符是否在判定範圍內
+            const distanceToJudgeLine = Math.abs(noteY - judgeLine);
+            
+            // 判定範圍檢查
+            if (distanceToJudgeLine <= JUDGE_LINE.MISS_RANGE) {
+                const timing = Math.abs(note.time - now);
+                if (timing < hitTiming) {
+                    hitTiming = timing;
                     hitIndex = i;
+                    hitNote = note;
                 }
             }
         }
     }
-    if (hitNote) {
-        const noteY = hitNote.y;
-        const distance = Math.abs(noteY - judgeLineY);
-        let judgment = '';
-        if (distance <= noteSpeed * (config.judgeWindow/1000) * (100/ judgeWindow)) { // 最寬容度的1/3
-            judgment = 'PERFECT';
+    
+    // 判定結果
+    if (hitIndex !== -1 && hitNote) {
+        const distanceToJudgeLine = Math.abs((currentTime - hitNote.time) * LEVEL_CONFIGS[selectedDifficulty].speed - judgeLine);
+        
+        if (distanceToJudgeLine <= JUDGE_LINE.PERFECT_RANGE) {
+            hitNoteSuccess(hitIndex, 'perfect');
+            score += 1000;
+            combo++;
+            maxCombo = Math.max(maxCombo, combo);
+            effectManager.triggerPerfectEffect(lane);
+        } else if (distanceToJudgeLine <= JUDGE_LINE.GREAT_RANGE) {
+            hitNoteSuccess(hitIndex, 'great');
+            score += 500;
+            combo++;
+            maxCombo = Math.max(maxCombo, combo);
+            effectManager.triggerPerfectEffect(lane);
+        } else if (distanceToJudgeLine <= JUDGE_LINE.GOOD_RANGE) {
+            hitNoteSuccess(hitIndex, 'good');
             score += 100;
             combo++;
             maxCombo = Math.max(maxCombo, combo);
-            showComboEffect(combo);
-            
-            // 完美擊中 - 金白閃光特效
-            const judgeLineY = canvas.height - 100;
-            const laneCount = laneManager.laneCount;
-            const laneWidth = canvas.width / laneCount;
-            const noteX = (lane + 0.5) * laneWidth;
-            const intensity = Math.min(2.0, 1.0 + combo / 100); // Combo破百後強化特效
-            
-            noteEffectManager.createGoldenFlashEffect(noteX, judgeLineY, intensity);
-            
-            // 觸發Perfect動態互動
-            dynamicInteractionManager.triggerPerfectEffect(lane);
-            
-            // Canvas閃爍效果
-            if (canvas) {
-                canvas.classList.add('hit-flash');
-                setTimeout(() => canvas.classList.remove('hit-flash'), 200);
-            }
-        } else if (distance <= noteSpeed * (config.judgeWindow/1000) * (200/ judgeWindow)) {
-            judgment = 'GOOD';
-            score += 50;
-            combo++;
-            maxCombo = Math.max(maxCombo, combo);
-            showComboEffect(combo);
-            
-            // 良好擊中 - 星爆亮片特效
-            const judgeLineY = canvas.height - 100;
-            const laneCount = laneManager.laneCount;
-            const laneWidth = canvas.width / laneCount;
-            const noteX = (lane + 0.5) * laneWidth;
-            const intensity = Math.min(1.5, 0.8 + combo / 150);
-            
-            noteEffectManager.createStarBurstEffect(noteX, judgeLineY, intensity);
-        } else if (distance <= noteSpeed * (config.judgeWindow/1000)) {
-            judgment = 'BAD';
-            score += 10;
-            // Combo 不變
+        } else {
+            missNote();
+            return;
         }
-        notes.splice(hitIndex, 1); // 音符消失
-        hitCount++;
+        
+        // 更新顯示
         updateScoreDisplay();
         updateComboDisplay();
-        updateKeyHints();
-        console.log(`判定: ${judgment}, 距離: ${distance.toFixed(1)}, Combo: ${combo}`);
+        
+        // 檢查是否進入 Fever 模式
+        effectManager.checkFeverMode();
     } else {
-        // Miss - 不扣分，只重置combo
-        missCount++;
-        combo = 0;
-        resetCombo();
-        showMissEffect();
-        
-        // 觸發Miss動態互動
-        dynamicInteractionManager.triggerMissEffect(lane);
-        
-        updateScoreDisplay();
-        updateComboDisplay();
-        updateKeyHints();
-        console.log('Miss!');
+        // 沒有可以擊中的音符，判定為 Miss
+        missNote(true);
     }
 }
 
+function hitNoteSuccess(index, type) {
+    if (index >= 0 && index < activeNotes.length) {
+        const note = activeNotes[index];
+        note.hit = true;
+        note.hitType = type;
+        
+        // 立即從活動音符列表中移除
+        activeNotes.splice(index, 1);
+        
+        // 顯示判定結果
+        showJudgement(type);
+    }
+}
+
+function showJudgement(type) {
+    const judgementEl = document.createElement('div');
+    judgementEl.className = 'judgement ' + type;
+    judgementEl.textContent = type.toUpperCase();
+    document.body.appendChild(judgementEl);
+    
+    // 添加消失動畫
+    setTimeout(() => {
+        judgementEl.style.opacity = '0';
+        setTimeout(() => {
+            judgementEl.remove();
+        }, 500);
+    }, 100);
+}
+
 function updateComboForPolyphony(group) {
-    const groupNotes = notes.filter(n => n.group === group);
+    const groupNotes = activeNotes.filter(n => n.group === group);
     const allHit = groupNotes.every(n => n.hit);
     
     if (allHit) {
@@ -2192,8 +2446,8 @@ function showMissBuffer() {
 
 // 命中音符時，讓音符立即消失
 function hitNote(index, type) {
-    if (index >= 0 && index < notes.length) {
-        notes.splice(index, 1); // 立即移除音符
+    if (index >= 0 && index < activeNotes.length) {
+        activeNotes.splice(index, 1); // 立即移除音符
         hitCount++;
         if (type === 'perfect') {
             score += 100;
@@ -2243,8 +2497,17 @@ function missNote(isWrongKey = false) {
     if (!isWrongKey) {
         resetCombo();
     }
+    // 移除容錯次數限制，讓遊戲可以無限 Miss
+    // missBufferCount--;
+    // setMissBufferCount(missBufferCount);
+    console.log(`[missNote] Miss 計數: ${missCount}`);
+    // 移除遊戲結束邏輯，讓玩家可以繼續遊玩
+    // if (missBufferCount < 0) {
+    //     console.log('[missNote] 容錯次數用完，結束遊戲');
+    //     endGame();
+    //     return;
+    // }
     console.log(`Miss: ${missCount}`);
-    setMissBufferCount(missBufferCount);
 }
 
 // ===============================
@@ -2257,20 +2520,27 @@ function startAutoMissCheck() {
         const config = LEVEL_CONFIGS[selectedDifficulty];
         const noteSpeed = config.speed;
         const judgeLineY = canvas.height - 100;
-        const missThreshold = 100;
-        notes.forEach((note, index) => {
+        // 根據難度調整 Miss 閾值，讓新手更容易
+        const missThreshold = selectedDifficulty === 'beginner' ? 150 : 100;
+        
+        activeNotes.forEach((note, index) => {
             if (!note.hit && !note.missed) {
                 // 新公式：音符下落
                 const noteY = (currentTime - note.time) * noteSpeed;
                 if (noteY > judgeLineY + missThreshold) {
                     note.missed = true;
-    missNote();
+                    console.log(`[AutoMiss] 音符 ${index} 超過判定線，位置: ${noteY.toFixed(1)}, 閾值: ${judgeLineY + missThreshold}`);
+                    missNote();
                 }
             }
         });
-        const remainingNotes = notes.filter(n => !n.hit && !n.missed);
+        
+        // 檢查是否所有音符都處理完畢，但移除自動結束遊戲的邏輯
+        const remainingNotes = activeNotes.filter(n => !n.hit && !n.missed);
         if (remainingNotes.length === 0 && currentTime > 5) {
-            setTimeout(() => endGame(), 1000);
+            console.log('[AutoMiss] 所有音符處理完畢，但遊戲繼續運行');
+            // 移除自動結束遊戲，讓玩家可以繼續遊玩
+            // setTimeout(() => endGame(), 1000);
         }
     }, 100);
 }
@@ -2323,11 +2593,11 @@ function checkFinalUnlock() {
     if (cleared >= 3) {
         hiddenBtn.disabled = false;
         hiddenBtn.classList.add('unlocked-final');
-        LEVEL_CONFIGS.lv6.locked = false;
+        LEVEL_CONFIGS.fate.locked = false;
     } else {
         hiddenBtn.disabled = true;
         hiddenBtn.classList.remove('unlocked-final');
-        LEVEL_CONFIGS.lv6.locked = true;
+        LEVEL_CONFIGS.fate.locked = true;
     }
     renderDifficultyStars();
 }
@@ -2336,8 +2606,8 @@ function checkFinalUnlock() {
 function setDifficulty(diff) {
     if (!LEVEL_CONFIGS[diff]) {
         showAudioError('難度參數錯誤，已自動切回新手難度');
-        selectedDifficulty = 'lv1';
-        diff = 'lv1';
+        selectedDifficulty = 'superEasy';
+        diff = 'superEasy';
     } else {
         selectedDifficulty = diff;
     }
@@ -2361,21 +2631,21 @@ const style = document.createElement('style');
 style.innerHTML = `@keyframes scale-in-glow {0%{transform:scale(0.7);box-shadow:0 0 0 #ffe066;}60%{transform:scale(1.18);box-shadow:0 0 32px #ffe066;}100%{transform:scale(1.12);box-shadow:0 0 24px #ffe066cc;}}`;
 document.head.appendChild(style);
 
-// missBuffer UI
+// missBuffer UI - 現在顯示無限模式
 function updateMissBufferUI() {
-    const config = LEVEL_CONFIGS[selectedDifficulty];
     const missBufferDiv = document.getElementById('miss-buffer-ui');
-    if (!config || !missBufferDiv) {
-        missBufferDiv.style.display = 'none';
+    if (!missBufferDiv) {
         return;
     }
-    missBufferDiv.textContent = `剩餘容錯次數：${config.missBuffer}`;
+    // 改為顯示無限模式
+    missBufferDiv.textContent = `無限模式 - Miss 次數：${missCount}`;
     missBufferDiv.classList.add('visible');
 }
 function setMissBufferCount(count) {
     const missBufferDiv = document.getElementById('miss-buffer-ui');
     if (missBufferDiv) {
-        missBufferDiv.textContent = `剩餘容錯次數：${count}`;
+        // 改為顯示無限模式
+        missBufferDiv.textContent = `無限模式 - Miss 次數：${missCount}`;
     }
 }
 
@@ -2396,6 +2666,10 @@ function startGame() {
 // 遊戲結束 (Game End)
 // ===============================
 function endGame() {
+    if (window.gameEndTimeout) {
+        clearTimeout(window.gameEndTimeout);
+        window.gameEndTimeout = null;
+    }
     if (gameEnded) return;
     
     gameEnded = true;
@@ -2414,7 +2688,7 @@ function endGame() {
     audioManager.stopAll();
     
     // 計算成績
-    const totalNotes = notes.length;
+    const totalNotes = activeNotes.length;
     const accuracy = totalNotes > 0 ? (hitCount / totalNotes * 100).toFixed(1) : 0;
     const grade = calculateGrade(accuracy, maxCombo);
     
@@ -2452,10 +2726,15 @@ function updateScoreDisplay() {
 function updateComboDisplay() {
     if (comboDisplay) {
         comboDisplay.textContent = combo;
+        comboDisplay.classList.remove('combo-pulse', 'glow');
         if (combo > 0) {
-            comboDisplay.style.animation = 'none';
-            comboDisplay.offsetHeight; // 觸發重繪
-            comboDisplay.style.animation = 'combo-pulse 0.4s ease-out';
+            // scale 放大動畫
+            comboDisplay.classList.add('combo-pulse');
+            setTimeout(() => comboDisplay.classList.remove('combo-pulse'), 300);
+        }
+        if (combo >= 10) {
+            // 高連擊發光顫抖
+            comboDisplay.classList.add('glow');
         }
     }
 }
@@ -2537,20 +2816,29 @@ function showToast(msg) {
 }
 
 function unlockAudio() {
-    if (audioUnlocked) return;
+    if (audioUnlocked) {
+        console.log('[unlockAudio] 音頻已經解鎖');
+        return;
+    }
     
-    console.log('解鎖音訊...');
+    console.log('[unlockAudio] 開始解鎖音訊...');
     audioUnlocked = true;
     
     const mask = document.getElementById('unlock-audio-mask');
     if (mask) {
         mask.style.display = 'none';
+        console.log('[unlockAudio] 隱藏音頻解鎖遮罩');
     }
     
     // 播放背景音樂
+    try {
+        console.log('[unlockAudio] 嘗試播放背景音樂...');
         audioManager.playBackground();
+    } catch (error) {
+        console.error('[unlockAudio] 播放背景音樂失敗:', error);
+    }
     
-    console.log('音訊已解鎖');
+    console.log('[unlockAudio] 音訊解鎖完成');
 }
 
 function showAudioError(msg) {
@@ -2713,8 +3001,8 @@ window.addEventListener('DOMContentLoaded', function() {
     
     // 設定預設難度並同步 UI
     if (!selectedDifficulty || !LEVEL_CONFIGS[selectedDifficulty]) {
-        selectedDifficulty = 'lv1';
-        setDifficulty('lv1');
+        selectedDifficulty = 'beginner';
+        setDifficulty('beginner');
         console.log('設定預設難度:', selectedDifficulty);
     }
     
@@ -2986,6 +3274,47 @@ window.addEventListener('DOMContentLoaded', function() {
     renderDifficultyStars(); // 確保初始化時呼叫
     
     console.log('遊戲初始化完成！');
+    
+    // 難度按鈕 class 對應表
+    const diffClassMap = {
+        beginner: 'beginner',
+        casual: 'casual',
+        hard: 'hard',
+        extreme: 'extreme',
+        master: 'master',
+        fate: 'fate'
+    };
+    if (difficultyBtns) {
+        difficultyBtns.forEach(btn => {
+            const diff = btn.dataset.difficulty;
+            // 先移除所有自訂難度 class
+            btn.classList.remove('beginner', 'casual', 'hard', 'extreme', 'master', 'fate');
+            // 加上對應 class
+            if (diffClassMap[diff]) {
+                btn.classList.add(diffClassMap[diff]);
+            }
+        });
+    }
+
+    // 移除自動啟動遊戲的邏輯，讓用戶手動選擇歌曲和難度
+    console.log('遊戲已準備就緒，請選擇歌曲和難度後開始遊戲');
+
+    // 高對比模式切換
+    const contrastBtn = document.getElementById('contrast-btn');
+    if (contrastBtn) {
+        contrastBtn.addEventListener('click', function() {
+            document.body.classList.toggle('high-contrast');
+        });
+    }
+    // 載入/過場動畫控制
+    window.showLoading = function() {
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) overlay.style.display = 'flex';
+    };
+    window.hideLoading = function() {
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) overlay.style.display = 'none';
+    };
 });
 
 // 通關 normal 以上難度時 localStorage.normalCleared++
@@ -3006,3 +3335,178 @@ window.addEventListener('beforeunload', function() {
         fetch('/shutdown', {method: 'POST', keepalive: true}).catch(()=>{});
     }
 });
+
+let GAME_DURATION = 60; // 遊戲時長（秒）
+
+// ====== 音符資料管理 ======
+let activeNotes = [];
+
+function spawnNotes(noteData) {
+    console.log('[spawnNotes] 開始設置音符數據', { noteDataLength: noteData ? noteData.length : 0 });
+    
+    // 僅允許根據 noteData 初始化 activeNotes，完全移除預設音符 fallback
+    if (!noteData || noteData.length === 0) {
+        console.warn('[spawnNotes] 音符數據為空，清空 activeNotes');
+        activeNotes = [];
+        return;
+    }
+    
+    // 音符物件補齊必要欄位
+    activeNotes = noteData.map((n, i) => ({
+        ...n,
+        duration: n.duration || 0,
+        hit: false,
+        missed: false,
+        group: n.group || i
+    }));
+    
+    console.log(`[spawnNotes] 音符設置完成 - 數量: ${activeNotes.length}`);
+    console.log('[spawnNotes] 前3個音符:', activeNotes.slice(0, 3));
+    
+    // 驗證音符數據
+    let validNotes = 0;
+    activeNotes.forEach((note, i) => {
+        if (note && typeof note.time === 'number' && typeof note.lane === 'number') {
+            validNotes++;
+        } else {
+            console.warn(`[spawnNotes] 音符 ${i} 數據無效:`, note);
+        }
+    });
+    
+    console.log(`[spawnNotes] 有效音符數量: ${validNotes}/${activeNotes.length}`);
+}
+
+// 按鍵配置
+const KEY_CONFIG = {
+    'KeyD': 0,  // 最左邊的軌道
+    'KeyF': 1,  // 左中軌道
+    'Space': 2, // 中間軌道
+    'KeyJ': 3,  // 右中軌道
+    'KeyK': 4   // 最右邊的軌道
+};
+
+// 添加按鍵事件監聽
+window.addEventListener('keydown', (event) => {
+    if (!gameStarted || gamePaused || gameEnded) return;
+    
+    const lane = KEY_CONFIG[event.code];
+    if (lane !== undefined) {
+        event.preventDefault(); // 防止空格鍵滾動頁面
+        judgeNote(lane);
+    }
+});
+
+// 在遊戲初始化時初始化特效管理器
+function initGame() {
+    // ... 其他初始化代碼 ...
+    effectManager.init();
+    // ... 其他初始化代碼 ...
+}
+
+// 特效管理器
+const effectManager = {
+    init() {
+        // 初始化特效系統
+        this.canvas = document.getElementById('game-canvas');
+        this.ctx = this.canvas.getContext('2d');
+    },
+    
+    triggerPerfectEffect(lane) {
+        if (!this.canvas) return;
+        
+        // 獲取軌道位置
+        const laneWidth = this.canvas.width / 5;
+        const x = lane * laneWidth + laneWidth / 2;
+        const y = this.canvas.height - 50; // 判定線位置
+        
+        // 創建閃光效果
+        this.createFlashEffect(x, y);
+    },
+    
+    triggerMissEffect(lane) {
+        if (!this.canvas) return;
+        
+        const laneWidth = this.canvas.width / 5;
+        const x = lane * laneWidth + laneWidth / 2;
+        const y = this.canvas.height - 50;
+        
+        // 創建Miss效果
+        this.createMissEffect(x, y);
+    },
+    
+    createFlashEffect(x, y) {
+        const ctx = this.ctx;
+        ctx.save();
+        
+        // 創建漸變
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, 50);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        
+        // 繪製閃光
+        ctx.globalAlpha = 0.5;
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(x, y, 50, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.restore();
+    },
+    
+    createMissEffect(x, y) {
+        const ctx = this.ctx;
+        ctx.save();
+        
+        // 繪製紅色X
+        ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(x - 20, y - 20);
+        ctx.lineTo(x + 20, y + 20);
+        ctx.moveTo(x + 20, y - 20);
+        ctx.lineTo(x - 20, y + 20);
+        ctx.stroke();
+        
+        ctx.restore();
+    },
+    
+    playPerfectSound() {
+        // 播放Perfect音效
+        const audio = new Audio('perfect.mp3');
+        audio.volume = 0.3;
+        audio.play().catch(err => console.warn('無法播放音效:', err));
+    },
+    
+    playFailSound() {
+        // 播放Miss音效
+        const audio = new Audio('miss.mp3');
+        audio.volume = 0.3;
+        audio.play().catch(err => console.warn('無法播放音效:', err));
+    },
+    
+    checkFeverMode() {
+        // 檢查是否進入Fever模式的邏輯
+        if (combo >= 50) { // 當連擊數達到50時進入Fever模式
+            this.triggerFeverMode();
+        }
+    },
+    
+    triggerFeverMode() {
+        // Fever模式特效
+        if (!this.canvas) return;
+        
+        const ctx = this.ctx;
+        ctx.save();
+        
+        // 添加全屏發光效果
+        const gradient = ctx.createLinearGradient(0, 0, this.canvas.width, 0);
+        gradient.addColorStop(0, 'rgba(255, 215, 0, 0.2)');
+        gradient.addColorStop(0.5, 'rgba(255, 215, 0, 0.3)');
+        gradient.addColorStop(1, 'rgba(255, 215, 0, 0.2)');
+        
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        ctx.restore();
+    }
+};
