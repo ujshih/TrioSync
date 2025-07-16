@@ -435,13 +435,9 @@ header {
     width: 100%;
     height: 100%;
     background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
-    transform: translateX(-100%);
     transition: transform 0.5s ease;
 }
 
-.difficulty-btn:hover::before {
-    transform: translateX(100%);
-}
 
 /* 莫蘭迪色系難度底色 */
 .difficulty-btn.easy {
