@@ -298,12 +298,12 @@ header {
 }
 
 .song-card {
-    min-width: 200px;
-    height: 220px;
+    min-width: 160px; /* 原本 200px，0.8 倍 */
+    height: 176px;    /* 原本 220px，0.8 倍 */
     background: linear-gradient(135deg, rgba(24,24,40,0.8) 0%, rgba(34,34,68,0.9) 100%);
     border: 2px solid #0ff;
     border-radius: 15px;
-    padding: 1.5rem;
+    padding: 1.2rem;  /* 原本 1.5rem，0.8 倍 */
     cursor: pointer;
     scroll-snap-align: center;
     transition: all 0.3s ease;
@@ -368,7 +368,7 @@ header {
 }
 
 .song-card-icon {
-    font-size: 3rem;
+    font-size: 2.4rem; /* 原本 3rem，0.8 倍 */
     margin-bottom: 1rem;
     filter: drop-shadow(0 0 10px #0ff);
     transition: all 0.3s ease;
@@ -380,7 +380,7 @@ header {
 }
 
 .song-card-title {
-    font-size: 1.1rem;
+    font-size: 0.88rem; /* 原本 1.1rem，0.8 倍 */
     font-weight: bold;
     color: #fff;
     margin-bottom: 0.5rem;
@@ -388,7 +388,7 @@ header {
 }
 
 .song-card-bpm {
-    font-size: 0.9rem;
+    font-size: 0.72rem; /* 原本 0.9rem，0.8 倍 */
     color: #4ecdc4;
     opacity: 0.8;
 }
@@ -408,10 +408,10 @@ header {
 }
 
 .difficulty-btn {
-    width: 160px;
+    width: 128px;      /* 原本 160px，0.8 倍 */
     height: auto;
-    padding: 1rem;
-    border-radius: 16px;
+    padding: 0.8rem;   /* 原本 1rem，0.8 倍 */
+    border-radius: 12.8px; /* 原本 16px，0.8 倍 */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -421,10 +421,10 @@ header {
 }
 
 .difficulty-name {
-    font-size: 0.9rem;
+    font-size: 0.72rem; /* 原本 0.9rem，0.8 倍 */
     text-align: center;
     word-break: break-word;
-    line-height: 1.2rem;
+    line-height: 0.96rem; /* 原本 1.2rem，0.8 倍 */
 }
 
 .difficulty-btn::before {
@@ -482,7 +482,7 @@ header {
 }
 
 .difficulty-icon {
-    font-size: 1.5rem;
+    font-size: 1.2rem; /* 原本 1.5rem，0.8 倍 */
     margin-bottom: 0.3rem;
 }
 
@@ -492,13 +492,13 @@ header {
 }
 
 .difficulty-desc {
-    font-size: 0.7rem;
+    font-size: 0.56rem; /* 原本 0.7rem，0.8 倍 */
     opacity: 0.8;
 }
 
 .difficulty-stars {
     margin: 0.2rem 0 0.2rem 0;
-    font-size: 1.3rem;
+    font-size: 1.04rem; /* 原本 1.3rem，0.8 倍 */
     letter-spacing: 0.1em;
     color: #ffe066;
     text-shadow: 0 0 8px #ffe066, 0 0 16px #fffae3;
@@ -509,7 +509,7 @@ header {
     user-select: none;
 }
 .star {
-    font-size: 1.3em;
+    font-size: 1.04em; /* 原本 1.3em，0.8 倍 */
     margin: 0 0.05em;
     transition: color 0.3s, filter 0.3s;
 }
