@@ -3004,14 +3004,16 @@ helpModal.innerHTML = `
     <button id="help-modal-close" style="position:absolute;top:0.5rem;right:0.5rem;font-size:2rem;background:none;border:none;color:#fff;cursor:pointer;">&times;</button>
     <h2 style="margin-top:0;">遊戲玩法與勝負規則</h2>
     <ul style="padding-left:1.2em;">
-      <li>選擇歌曲與難度後，點擊「開始遊戲」或按 Enter 鍵開始。</li>
-      <li>依畫面提示按下 <b>D F 空白 J K</b> 鍵擊打音符。</li>
-      <li>連續擊中可獲得 Combo，失誤會中斷。</li>
-      <li>分數依照準確度與連擊數計算。</li>
-      <li>遊戲結束時，分數最高者獲勝（單人則挑戰高分）。</li>
-      <li>終極幻想難度需玩三次才解鎖。</li>
-      <li>左上角可調整音量與高對比。</li>
+      <li>1. 選擇你喜歡的歌曲與難度，點擊「開始遊戲」或按 Enter 鍵進入遊戲。</li>
+      <li>2. 遊戲時，請根據畫面下落的音符，準確按下 <b>D F 空白 J K</b> 鍵。</li>
+      <li>3. 每次正確擊中音符可獲得分數，連續擊中會累積 Combo，失誤則 Combo 歸零。</li>
+      <li>4. 分數依照擊中準確度與連擊數計算，越準確、連擊越高分數越多。</li>
+      <li>5. 遊戲結束時會顯示本局總分，分數越高代表表現越好，快來挑戰自己的極限！</li>
+      <li>6. 「命運之路」(Fate Mode) 需完成三場遊戲才會解鎖。</li>
+      <li>7. 可於左上角調整音量，並切換高對比模式以提升可視性。</li>
+      <li>8. 遊戲支援鍵盤操作，建議使用電腦體驗最佳。</li>
     </ul>
+    <div style="margin-top:1em;font-size:0.95em;color:#ffd700;">小提示：保持節奏感，盡量連擊，挑戰更高分數吧！</div>
   </div>
 `;
 helpModal.style.display = 'none';
