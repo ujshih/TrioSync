@@ -2718,16 +2718,19 @@ function endGame() {
     leaderboardDiv.innerHTML = '';
 
     // 暱稱輸入
+    let nicknameRow = document.createElement('div');
+    nicknameRow.style = 'display:flex;flex-direction:row;align-items:center;justify-content:center;width:100%;margin-bottom:8px;';
     let nicknameInput = document.createElement('input');
     nicknameInput.type = 'text';
     nicknameInput.maxLength = 15;
     nicknameInput.placeholder = '請輸入暱稱 (最多15字)';
-    nicknameInput.style = 'width:70%;padding:8px 12px;border-radius:8px;border:1px solid #0ff;font-size:1.1em;margin-bottom:8px;';
-    leaderboardDiv.appendChild(nicknameInput);
+    nicknameInput.style = 'width:60%;padding:8px 12px;border-radius:8px;border:1px solid #0ff;font-size:1.1em;';
     let confirmBtn = document.createElement('button');
     confirmBtn.textContent = '確認上榜';
-    confirmBtn.style = 'margin-left:8px;padding:8px 18px;border-radius:8px;background:#0ff;color:#222;font-weight:bold;border:none;cursor:pointer;font-size:1.1em;';
-    leaderboardDiv.appendChild(confirmBtn);
+    confirmBtn.style = 'margin-left:8px;padding:8px 18px;border-radius:8px;background:#0ff;color:#222;font-weight:bold;border:none;cursor:pointer;font-size:1.1em;white-space:nowrap;';
+    nicknameRow.appendChild(nicknameInput);
+    nicknameRow.appendChild(confirmBtn);
+    leaderboardDiv.appendChild(nicknameRow);
 
     // 排行榜區塊
     let table = document.createElement('table');
