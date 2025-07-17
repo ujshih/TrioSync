@@ -3128,7 +3128,29 @@ window.addEventListener('DOMContentLoaded', function() {
     // 難度選擇事件
     if (difficultyBtns) {
         difficultyBtns.forEach(btn => {
+            // 先確保tooltip存在
+            let tooltip = btn.querySelector('.tooltip');
+            if (!tooltip) {
+                tooltip = document.createElement('div');
+                tooltip.className = 'tooltip';
+                btn.appendChild(tooltip);
+            }
+            // 預設隱藏
+            tooltip.style.display = 'none';
+            // hover顯示
+            btn.addEventListener('mouseenter', function() {
+                tooltip.style.display = 'block';
+            });
+            // 移出隱藏
+            btn.addEventListener('mouseleave', function() {
+                tooltip.style.display = 'none';
+            });
+            // 點擊時如果有顯示則隱藏
             btn.addEventListener('click', function() {
+                if (tooltip.style.display === 'block') {
+                    tooltip.style.display = 'none';
+                }
+                // 原本的setDifficulty邏輯
                 const difficulty = this.dataset.difficulty;
                 setDifficulty(difficulty);
             });
