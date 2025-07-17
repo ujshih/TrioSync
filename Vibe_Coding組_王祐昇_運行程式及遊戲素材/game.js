@@ -2697,14 +2697,14 @@ function endGame() {
     
     // 更新結算畫面
     finalScore.textContent = `分數: ${score.toLocaleString()}`;
-    finalGrade.textContent = `等級: ${grade}`;
+    finalGrade.textContent = `最大Combo: ${maxCombo}`;
     
     // 增加遊戲次數
     gamePlayCount++;
     checkFinalUnlock();
     
     showScreen('result');
-    console.log(`遊戲結束 - 分數: ${score}, 等級: ${grade}, 準確率: ${accuracy}%`);
+    console.log(`遊戲結束 - 分數: ${score}, 最大Combo: ${maxCombo}, 準確率: ${accuracy}%`);
 
     // ====== 新增排行榜與暱稱輸入 ======
     let leaderboardDiv = document.getElementById('leaderboard');
@@ -2731,7 +2731,7 @@ function endGame() {
     // 排行榜區塊
     let table = document.createElement('table');
     table.style = 'width:100%;margin-top:18px;border-collapse:collapse;background:rgba(0,0,0,0.5);';
-    table.innerHTML = `<thead><tr style="color:#0ff;font-size:1.1em;"><th style="text-align:left">名次</th><th style="text-align:left">暱稱</th><th style="text-align:right">分數</th><th style="text-align:center">等級</th></tr></thead><tbody id="leaderboard-body"></tbody>`;
+    table.innerHTML = `<thead><tr style="color:#0ff;font-size:1.1em;"><th style="text-align:left">名次</th><th style="text-align:left">暱稱</th><th style="text-align:right">分數</th><th style="text-align:center">最大Combo</th></tr></thead><tbody id="leaderboard-body"></tbody>`;
     leaderboardDiv.appendChild(table);
 
     // 讀取排行榜資料
@@ -2744,7 +2744,7 @@ function endGame() {
     confirmBtn.onclick = function() {
         let nickname = nicknameInput.value.trim() || '無名玩家';
         if (nickname.length > 15) nickname = nickname.slice(0, 15);
-        leaderboard.push({ nickname, score, grade });
+        leaderboard.push({ nickname, score, maxCombo });
         leaderboard.sort((a, b) => b.score - a.score);
         leaderboard = leaderboard.slice(0, 20); // 只保留前20名
         localStorage.setItem('fatekeys_leaderboard', JSON.stringify(leaderboard));
@@ -2759,7 +2759,7 @@ function endGame() {
         body.innerHTML = '';
         leaderboard.forEach((item, idx) => {
             let tr = document.createElement('tr');
-            tr.innerHTML = `<td style="color:#ffe066;font-weight:bold;">${idx+1}</td><td>${item.nickname}</td><td style="text-align:right;">${item.score.toLocaleString()}</td><td style="text-align:center;">${item.grade}</td>`;
+            tr.innerHTML = `<td style="color:#ffe066;font-weight:bold;">${idx+1}</td><td>${item.nickname}</td><td style="text-align:right;">${item.score.toLocaleString()}</td><td style="text-align:center;">${item.maxCombo}</td>`;
             body.appendChild(tr);
         });
     }
