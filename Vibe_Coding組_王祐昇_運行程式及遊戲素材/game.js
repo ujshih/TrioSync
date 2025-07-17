@@ -2336,38 +2336,37 @@ function judgeNote(lane) {
         if (note.lane === lane && !note.hit && !note.missed) {
             // 計算音符的當前 Y 位置
             const noteY = (currentTime - note.time) * LEVEL_CONFIGS[selectedDifficulty].speed;
-            
-            // 檢查音符是否在判定範圍內
-            const distanceToJudgeLine = Math.abs(noteY - judgeLine);
-            
-            // 判定範圍檢查
-            if (distanceToJudgeLine <= JUDGE_LINE.MISS_RANGE) {
-                const timing = Math.abs(note.time - now);
-                if (timing < hitTiming) {
-                    hitTiming = timing;
-                    hitIndex = i;
-                    hitNote = note;
+            // 只判定通過終止線的音符
+            if (noteY >= judgeLine) {
+                const distanceToJudgeLine = Math.abs(noteY - judgeLine);
+                // 判定範圍檢查
+                if (distanceToJudgeLine <= JUDGE_LINE.MISS_RANGE) {
+                    const timing = Math.abs(note.time - now);
+                    if (timing < hitTiming) {
+                        hitTiming = timing;
+                        hitIndex = i;
+                        hitNote = note;
+                    }
                 }
             }
         }
     }
-    
     // 判定結果
     if (hitIndex !== -1 && hitNote) {
-        const distanceToJudgeLine = Math.abs((currentTime - hitNote.time) * LEVEL_CONFIGS[selectedDifficulty].speed - judgeLine);
-        
+        const noteY = (currentTime - hitNote.time) * LEVEL_CONFIGS[selectedDifficulty].speed;
+        const distanceToJudgeLine = Math.abs(noteY - judgeLine);
+        // 命中時整個軌道高亮
+        dynamicInteractionManager.triggerPerfectEffect(lane);
         if (distanceToJudgeLine <= JUDGE_LINE.PERFECT_RANGE) {
             hitNoteSuccess(hitIndex, 'perfect');
             score += 1000;
             combo++;
             maxCombo = Math.max(maxCombo, combo);
-            effectManager.triggerPerfectEffect(lane);
         } else if (distanceToJudgeLine <= JUDGE_LINE.GREAT_RANGE) {
             hitNoteSuccess(hitIndex, 'great');
             score += 500;
             combo++;
             maxCombo = Math.max(maxCombo, combo);
-            effectManager.triggerPerfectEffect(lane);
         } else if (distanceToJudgeLine <= JUDGE_LINE.GOOD_RANGE) {
             hitNoteSuccess(hitIndex, 'good');
             score += 100;
@@ -2377,11 +2376,9 @@ function judgeNote(lane) {
             missNote();
             return;
         }
-        
         // 更新顯示
         updateScoreDisplay();
         updateComboDisplay();
-        
         // 檢查是否進入 Fever 模式
         effectManager.checkFeverMode();
     } else {
@@ -2611,6 +2608,11 @@ function setDifficulty(diff) {
         diff = 'superEasy';
     } else {
         selectedDifficulty = diff;
+    }
+    // 根據難度自動設定賽道數量
+    const config = LEVEL_CONFIGS[diff];
+    if (config && config.keyCount) {
+        laneManager.setLaneCount(config.keyCount);
     }
     difficultyBtns.forEach(btn => {
         btn.classList.remove('active');
@@ -3465,19 +3467,28 @@ function spawnNotes(noteData) {
 }
 
 // 按鍵配置
-const KEY_CONFIG = {
-    'KeyD': 0,  // 最左邊的軌道
-    'KeyF': 1,  // 左中軌道
-    'Space': 2, // 中間軌道
-    'KeyJ': 3,  // 右中軌道
-    'KeyK': 4   // 最右邊的軌道
+const KEY_CONFIGS = {
+    four: {
+        'KeyD': 0,
+        'KeyF': 1,
+        'KeyJ': 2,
+        'KeyK': 3
+    },
+    five: {
+        'KeyD': 0,
+        'KeyF': 1,
+        'Space': 2,
+        'KeyJ': 3,
+        'KeyK': 4
+    }
 };
 
 // 添加按鍵事件監聽
 window.addEventListener('keydown', (event) => {
     if (!gameStarted || gamePaused || gameEnded) return;
-    
-    const lane = KEY_CONFIG[event.code];
+    // 根據目前賽道數量選擇正確的key config
+    const keyConfig = laneManager.laneCount === 5 ? KEY_CONFIGS.five : KEY_CONFIGS.four;
+    const lane = keyConfig[event.code];
     if (lane !== undefined) {
         event.preventDefault(); // 防止空格鍵滾動頁面
         judgeNote(lane);
