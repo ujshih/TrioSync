@@ -27,12 +27,12 @@ body {
 /* 粒子背景 Canvas */
 #particles-bg {
     position: fixed;
-    top: 0;
-    left: 0;
+    top: 0; left: 0;
     width: 100vw;
     height: 100vh;
     z-index: 0;
     pointer-events: none;
+    display: block;
     background: radial-gradient(circle at 50% 50%, #0D0E52 0%, #1C1C80 30%, #2A1B3D 70%, #000 100%);
 }
 
@@ -66,17 +66,16 @@ body::before {
 
 /* 主容器 */
 #main-wrapper {
-    width: 100vw;
-    min-height: 100vh;
     position: relative;
     z-index: 1;
+    background: transparent !important;
+    width: 100vw;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
     overflow-y: auto;
-    background: linear-gradient(135deg, #181a2a 0%, #23235a 100%);
-    background-blend-mode: lighten;
     border-radius: 30px;
     box-shadow: 0 8px 40px 0 rgba(0,0,0,0.18);
     padding: 2rem 0;
@@ -172,6 +171,7 @@ header {
     text-align: center;
     margin: 2rem 0 1rem 0;
     padding: 1rem;
+    background: transparent !important;
 }
 
 /* 霓虹 Logo */
@@ -250,7 +250,7 @@ header {
     width: 100%;
     max-width: 1200px;
     padding: 2rem;
-    background: rgba(255,255,255,0.25);
+    background: transparent !important;
     border-radius: 24px;
     box-shadow: 0 4px 32px 0 rgba(0,0,0,0.10);
     backdrop-filter: blur(8px);
@@ -271,6 +271,7 @@ header {
 .song-select {
     margin-bottom: 3rem;
     width: 100%;
+    background: transparent !important;
 }
 
 .song-card-list {
@@ -397,6 +398,7 @@ header {
 .difficulty-select {
     margin-bottom: 3rem;
     width: 100%;
+    background: transparent !important;
 }
 
 .difficulty-btn-row {
