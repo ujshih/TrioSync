@@ -466,15 +466,15 @@ const LEVEL_CONFIGS = {
         noteDensity: 1.25, // 固定值
         enName: "Beginner",
         stars: 1,
-    speed: 120,
+        speed: Math.round(120 * 0.6),
         density: 1.25, // 1.0–1.5
-    keyCount: 4,
-    missBuffer: 100, // 增加容錯次數，讓新手更容易
+        keyCount: 4,
+        missBuffer: 100, // 增加容錯次數，讓新手更容易
         desc: "✨ 基礎節奏入門！單鍵點擊、節奏緩和，讓你無壓力進入命運世界。",
-    keys: ['D', 'F', 'J', 'K'],
-    holdSupport: false,
-    simultaneousNotes: 1,
-    specialRules: "無長音支援，單音符為主"
+        keys: ['D', 'F', 'J', 'K'],
+        holdSupport: false,
+        simultaneousNotes: 1,
+        specialRules: "無長音支援，單音符為主"
   },
     casual: {
         name: 'Casual',
@@ -485,16 +485,16 @@ const LEVEL_CONFIGS = {
         noteDensity: 1.5,
         enName: "Casual",
         stars: 2,
-    speed: 150,
+        speed: Math.round(150 * 0.6),
         density: 1.5, // 1.5–2.0
-    keyCount: 4,
-    missBuffer: 100,
+        keyCount: 4,
+        missBuffer: 100,
         desc: "🎵 旋律稍起波瀾，簡短長音與雙鍵節奏交織，輕鬆享受流動的音樂律動。",
-    keys: ['D', 'F', 'J', 'K'],
-    holdSupport: true,
-    holdType: "simple",
-    simultaneousNotes: 1,
-    specialRules: "簡單短長音支援"
+        keys: ['D', 'F', 'J', 'K'],
+        holdSupport: true,
+        holdType: "simple",
+        simultaneousNotes: 1,
+        specialRules: "簡單短長音支援"
   },
     hard: {
         name: 'Hard',
@@ -505,16 +505,16 @@ const LEVEL_CONFIGS = {
         noteDensity: 2,
         enName: "Hard",
         stars: 3,
-    speed: 180,
+        speed: Math.round(180 * 0.6),
         density: 2.2, // 2.0–3.0
-    keyCount: 4,
-    missBuffer: 100,
+        keyCount: 4,
+        missBuffer: 100,
         desc: "🔥 節奏加速進化！中長音與雙鍵組合考驗反應與穩定度，是實力的試煉場。",
-    keys: ['D', 'F', 'J', 'K'],
-    holdSupport: true,
-    holdType: "medium",
-    simultaneousNotes: 2,
-    specialRules: "中長音支援，雙鍵常態"
+        keys: ['D', 'F', 'J', 'K'],
+        holdSupport: true,
+        holdType: "medium",
+        simultaneousNotes: 2,
+        specialRules: "中長音支援，雙鍵常態"
   },
     extreme: {
         name: 'Extreme',
@@ -525,16 +525,16 @@ const LEVEL_CONFIGS = {
         noteDensity: 3.5,
         enName: "Extreme",
         stars: 4,
-    speed: 210,
+        speed: Math.round(210 * 0.6),
         density: 3.5, // 3.0–4.0
-    keyCount: 5,
-    missBuffer: 10,
+        keyCount: 5,
+        missBuffer: 10,
         desc: "⚡ 音流如電！高速節奏、多段長音、空白鍵加入，全面挑戰你的極限操作。",
-    keys: ['D', 'F', ' ', 'J', 'K'],
-    holdSupport: true,
-    holdType: "multi",
-    simultaneousNotes: 2,
-    specialRules: "多段長音，Space鍵加入，判定鬆緊"
+        keys: ['D', 'F', ' ', 'J', 'K'],
+        holdSupport: true,
+        holdType: "multi",
+        simultaneousNotes: 2,
+        specialRules: "多段長音，Space鍵加入，判定鬆緊"
   },
     master: {
         name: 'Master',
@@ -545,16 +545,16 @@ const LEVEL_CONFIGS = {
         noteDensity: 4.75,
         enName: "Master",
         stars: 5,
-    speed: 220,
+        speed: Math.round(220 * 0.6),
         density: 4.75, // 4.0–5.5
-    keyCount: 5,
-    missBuffer: 10,
+        keyCount: 5,
+        missBuffer: 10,
         desc: "👑 節奏王者之道！節拍密集如雨、判定超嚴苛，特效爆閃，唯高手能穩步前行。",
-    keys: ['D', 'F', ' ', 'J', 'K'],
-    holdSupport: true,
-    holdType: "intensive",
-    simultaneousNotes: 3,
-    specialRules: "長音密集，特效數多，節奏混淆"
+        keys: ['D', 'F', ' ', 'J', 'K'],
+        holdSupport: true,
+        holdType: "intensive",
+        simultaneousNotes: 3,
+        specialRules: "長音密集，特效數多，節奏混淆"
   },
     fate: {
         name: 'Fate Mode',
@@ -565,16 +565,16 @@ const LEVEL_CONFIGS = {
         noteDensity: [5.5, 6.5],
         enName: "Fate Mode",
         stars: 6,
-    speed: 250,
+        speed: Math.round(250 * 0.6),
         density: 6, // 5.5–6.5+
-    keyCount: 5,
-    missBuffer: 10,
+        keyCount: 5,
+        missBuffer: 10,
         desc: "🌌 命運交響最終章！五鍵同列、極速連打、節奏錯亂，踏上無回之境的節奏試煉。",
-    keys: ['D', 'F', ' ', 'J', 'K'],
-    holdSupport: true,
-    holdType: "special",
-    simultaneousNotes: 3,
-    specialRules: "特殊長音，高速連打，極限判定",
+        keys: ['D', 'F', ' ', 'J', 'K'],
+        holdSupport: true,
+        holdType: "special",
+        simultaneousNotes: 3,
+        specialRules: "特殊長音，高速連打，極限判定",
         locked: true
   }
 };
