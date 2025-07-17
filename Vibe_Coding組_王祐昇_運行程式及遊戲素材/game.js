@@ -2230,7 +2230,8 @@ function drawNotes(now) {
         if (note.animating === 'fade') {
             // 需重新定義 noteX, noteY
             const noteX = (note.lane + 0.5) * laneWidth;
-            const noteY = (currentTime - note.time) * noteSpeed;
+            // 位置固定在擊中時的終止線
+            const noteY = note.fadeY !== undefined ? note.fadeY : (currentTime - note.time) * noteSpeed;
             ctx.save();
             ctx.globalAlpha = 1 - ((currentTime - note.time) / 0.5);
             ctx.beginPath();

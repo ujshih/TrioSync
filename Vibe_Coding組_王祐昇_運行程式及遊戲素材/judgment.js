@@ -100,6 +100,7 @@ class JudgmentSystem {
             if (result.type !== 'miss') {
                 this.activeNotes[hitIndex].hit = true;
                 this.activeNotes[hitIndex].animating = 'fade';
+                this.activeNotes[hitIndex].fadeY = this.judgeLineY; // 新增：記錄擊中時的Y座標
             } else {
                 this.activeNotes[hitIndex].missed = true;
                 this.activeNotes[hitIndex].animating = 'miss';
