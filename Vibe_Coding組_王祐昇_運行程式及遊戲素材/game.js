@@ -1277,12 +1277,21 @@ const laneManager = {
             ctx.save();
             
             // 賽道主體 - 透視光橋
-            const laneGradient = ctx.createLinearGradient(laneX - laneWidth * 0.4, 0, laneX + laneWidth * 0.4, 0);
-            laneGradient.addColorStop(0, 'rgba(255, 255, 255, 0.05)');
-            laneGradient.addColorStop(0.3, `${laneColor}26`);
-            laneGradient.addColorStop(0.7, `${laneColor}26`);
-            laneGradient.addColorStop(1, 'rgba(255, 255, 255, 0.05)');
-            
+            let laneGradient;
+            if (laneGlowStates[i] === 1 || laneGlowStates[i] === 2) {
+                // 高亮時：底部稍亮、頂部較暗，亮度變化細微
+                laneGradient = ctx.createLinearGradient(laneX, 0, laneX, canvas.height);
+                laneGradient.addColorStop(0, `${laneColor}22`); // 頂部較暗
+                laneGradient.addColorStop(0.7, `${laneColor}33`); // 中段
+                laneGradient.addColorStop(1, `${laneColor}55`); // 底部稍亮
+            } else {
+                // 一般狀態
+                laneGradient = ctx.createLinearGradient(laneX - laneWidth * 0.4, 0, laneX + laneWidth * 0.4, 0);
+                laneGradient.addColorStop(0, 'rgba(255, 255, 255, 0.05)');
+                laneGradient.addColorStop(0.3, `${laneColor}26`);
+                laneGradient.addColorStop(0.7, `${laneColor}26`);
+                laneGradient.addColorStop(1, 'rgba(255, 255, 255, 0.05)');
+            }
             ctx.fillStyle = laneGradient;
             ctx.fillRect(laneX - laneWidth * 0.4, 0, laneWidth * 0.8, canvas.height);
             
