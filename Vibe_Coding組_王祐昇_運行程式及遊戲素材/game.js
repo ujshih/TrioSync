@@ -3008,7 +3008,7 @@ helpModal.innerHTML = `
       <li>分數依照準確度與連擊數計算。</li>
       <li>遊戲結束時，分數最高者獲勝（單人則挑戰高分）。</li>
       <li>終極幻想難度需玩三次才解鎖。</li>
-      <li>可按 Esc 暫停/繼續，左上角可調整音量與高對比。</li>
+      <li>左上角可調整音量與高對比。</li>
     </ul>
   </div>
 `;
@@ -3168,20 +3168,6 @@ window.addEventListener('DOMContentLoaded', function() {
         if (!gameStarted || gamePaused || gameEnded) return;
         console.log('[keydown] 按鍵:', e.key, '代碼:', e.code, '鍵碼:', e.keyCode);
         
-        // 遊戲暫停功能（Esc）
-        if (e.key === 'Escape' || e.code === 'Escape') {
-            if (gameStarted && !gameEnded) {
-                gamePaused = !gamePaused;
-                if (gamePaused) {
-                    audioManager.audio && audioManager.audio.pause();
-                } else {
-                    audioManager.audio && audioManager.audio.play();
-                }
-                showToast(gamePaused ? '遊戲已暫停（再按 Esc 恢復）' : '遊戲繼續');
-            }
-            return;
-        }
-        
         // 處理遊戲按鍵 - 支援多種按鍵格式
         let key = e.key;
         let keyCode = e.code;
@@ -3336,21 +3322,6 @@ window.addEventListener('DOMContentLoaded', function() {
             holdKeyLane = null;
             holdKeyNote = null;
             holdKeyStartTime = null;
-        }
-    });
-    
-    // 遊戲暫停功能（Esc）
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            if (gameStarted && !gameEnded) {
-                gamePaused = !gamePaused;
-                if (gamePaused) {
-                    audioManager.audio && audioManager.audio.pause();
-                } else {
-                    audioManager.audio && audioManager.audio.play();
-                }
-                showToast(gamePaused ? '遊戲已暫停（再按 Esc 恢復）' : '遊戲繼續');
-            }
         }
     });
     
