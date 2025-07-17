@@ -3405,6 +3405,29 @@ window.addEventListener('DOMContentLoaded', function() {
         const overlay = document.getElementById('loading-overlay');
         if (overlay) overlay.style.display = 'none';
     };
+
+    // 新增排行榜按鈕功能
+    const leaderboardBtn = document.getElementById('leaderboard-btn');
+    if (leaderboardBtn) {
+        leaderboardBtn.addEventListener('click', function() {
+            showLeaderboardOnly();
+        });
+    }
+
+    // 新排行榜View顯示與關閉
+    const leaderboardView = document.getElementById('leaderboard-view');
+    const leaderboardContent = document.getElementById('leaderboard-content');
+    const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn');
+    if (leaderboardBtn && leaderboardView && leaderboardContent && closeLeaderboardBtn) {
+        leaderboardBtn.addEventListener('click', function() {
+            renderLeaderboardView();
+            leaderboardView.style.display = 'flex';
+        });
+        closeLeaderboardBtn.addEventListener('click', function() {
+            leaderboardView.style.display = 'none';
+            showScreen('select');
+        });
+    }
 });
 
 // 通關 normal 以上難度時 localStorage.normalCleared++
@@ -3619,3 +3642,53 @@ const DIFFICULTY_LEVEL_MAP = {
     'master': 'L5',
     'fate': 'L6'
 };
+
+// 抽出排行榜渲染函數，供首頁按鈕呼叫
+function showLeaderboardOnly() {
+    showScreen('result');
+    let leaderboardDiv = document.getElementById('leaderboard');
+    if (!leaderboardDiv) {
+        leaderboardDiv = document.createElement('div');
+        leaderboardDiv.id = 'leaderboard';
+        leaderboardDiv.style = 'margin:32px auto;max-width:420px;background:rgba(0,0,0,0.7);border-radius:16px;padding:24px 16px 16px 16px;box-shadow:0 0 24px #0ff3;';
+        resultScreen.appendChild(leaderboardDiv);
+    }
+    leaderboardDiv.innerHTML = '';
+    // 只顯示排行榜表格
+    let table = document.createElement('table');
+    table.style = 'width:100%;margin-top:18px;border-collapse:collapse;background:rgba(0,0,0,0.5);';
+    table.innerHTML = `<thead><tr style="color:#0ff;font-size:1.1em;"><th style="text-align:left">名次</th><th style="text-align:left">暱稱</th><th style="text-align:center">難度</th><th style="text-align:right">分數</th><th style="text-align:center">最大Combo</th></tr></thead><tbody id="leaderboard-body"></tbody>`;
+    leaderboardDiv.appendChild(table);
+    let leaderboard = [];
+    try {
+        leaderboard = JSON.parse(localStorage.getItem('fatekeys_leaderboard')||'[]');
+    } catch(e) { leaderboard = []; }
+    let body = leaderboardDiv.querySelector('#leaderboard-body');
+    body.innerHTML = '';
+    leaderboard.forEach((item, idx) => {
+        let tr = document.createElement('tr');
+        tr.innerHTML = `<td style="color:#ffe066;font-weight:bold;">${idx+1}</td><td>${item.nickname}</td><td style="text-align:center;">${item.difficulty||''}</td><td style="text-align:right;">${item.score.toLocaleString()}</td><td style="text-align:center;">${item.maxCombo}</td>`;
+        body.appendChild(tr);
+    });
+    // 隱藏分數與combo顯示區
+    if(finalScore) finalScore.textContent = '';
+    if(finalGrade) finalGrade.textContent = '';
+}
+
+// 渲染排行榜View內容
+function renderLeaderboardView() {
+    const leaderboardContent = document.getElementById('leaderboard-content');
+    if (!leaderboardContent) return;
+    let leaderboard = [];
+    try {
+        leaderboard = JSON.parse(localStorage.getItem('fatekeys_leaderboard')||'[]');
+    } catch(e) { leaderboard = []; }
+    let html = '<h2 style="color:#0ff;text-align:center;margin-bottom:18px;">🏆 排行榜</h2>';
+    html += '<table style="width:100%;border-collapse:collapse;background:rgba(0,0,0,0.5);">';
+    html += '<thead><tr style="color:#0ff;font-size:1.1em;"><th style="text-align:left">名次</th><th style="text-align:left">暱稱</th><th style="text-align:center">難度</th><th style="text-align:right">分數</th><th style="text-align:center">最大Combo</th></tr></thead><tbody>';
+    leaderboard.forEach((item, idx) => {
+        html += `<tr><td style="color:#ffe066;font-weight:bold;">${idx+1}</td><td>${item.nickname}</td><td style="text-align:center;">${item.difficulty||''}</td><td style="text-align:right;">${item.score.toLocaleString()}</td><td style="text-align:center;">${item.maxCombo}</td></tr>`;
+    });
+    html += '</tbody></table>';
+    leaderboardContent.innerHTML = html;
+}

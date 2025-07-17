@@ -186,12 +186,20 @@
     <button id="contrast-btn" class="action-btn" tabindex="0" aria-label="高對比模式" style="position: absolute; top: 1rem; left: 1rem; z-index: 10;">🌓 高對比</button>
     <!-- 遊戲說明按鈕（移到高對比下方） -->
     <button id="help-btn" class="action-btn" tabindex="0" aria-label="遊戲說明" style="position: absolute; top: 4rem; left: 1rem; z-index: 10;">玩法說明</button>
+    <!-- 新增排行榜按鈕 -->
+    <button id="leaderboard-btn" class="action-btn" tabindex="0" aria-label="排行榜" style="position: absolute; top: 7rem; left: 1rem; z-index: 10;">🏆 排行榜</button>
     <!-- 遊戲規則顯示區（由JS控制顯示） -->
     <div id="help-modal" style="display:none;"></div>
     
     <!-- 載入/過場動畫區塊 -->
     <div id="loading-overlay" style="display:none;position:fixed;z-index:999999;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);align-items:center;justify-content:center;">
         <div class="loader"></div>
+    </div>
+    
+    <!-- 新增獨立排行榜View -->
+    <div id="leaderboard-view" style="display:none;position:fixed;z-index:10001;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.92);align-items:center;justify-content:center;flex-direction:column;">
+        <div id="leaderboard-content" style="max-width:480px;width:90vw;background:rgba(0,0,0,0.85);border-radius:18px;padding:32px 16px 24px 16px;box-shadow:0 0 32px #0ff6;margin:0 auto;"></div>
+        <button id="close-leaderboard-btn" class="action-btn" style="margin-top:24px;font-size:1.2em;">返回首頁</button>
     </div>
     
     <script src="./Vibe_Coding組_王祐昇_運行程式及遊戲素材/game.js"></script>
