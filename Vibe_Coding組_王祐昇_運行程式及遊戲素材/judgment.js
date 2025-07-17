@@ -138,4 +138,5 @@ class JudgmentSystem {
 
 // 導出判定系統
 const judgmentSystem = new JudgmentSystem();
-export default judgmentSystem; 
+// 請將所有 export 關鍵字移除
+// 請將所有 export 關鍵字移除 

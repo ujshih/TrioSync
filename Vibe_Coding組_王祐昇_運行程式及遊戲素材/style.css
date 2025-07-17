@@ -435,9 +435,12 @@ header {
     width: 100%;
     height: 100%;
     background: linear-gradient(45deg, transparent, rgba(255,255,255,0.2), transparent);
-    transition: transform 0.5s ease;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
-
+.difficulty-btn:hover::before {
+    opacity: 1;
+}
 
 /* 莫蘭迪色系難度底色 */
 .difficulty-btn.easy {
@@ -490,6 +493,10 @@ header {
 .difficulty-desc {
     font-size: 0.56rem; /* 原本 0.7rem，0.8 倍 */
     opacity: 0.8;
+    display: none;
+}
+.difficulty-btn:hover .difficulty-desc {
+    display: block;
 }
 
 .difficulty-stars {
@@ -1884,4 +1891,15 @@ button:hover, .action-btn:hover {
   transform: translateX(-50%);
   border: 8px solid transparent;
   border-bottom-color: #222;
+}
+
+.difficulty-desc {
+    display: none;
+}
+.difficulty-btn:hover .difficulty-desc {
+    display: block;
+}
+.difficulty-btn:active .difficulty-desc,
+.difficulty-btn.active .difficulty-desc {
+    display: none !important;
 }

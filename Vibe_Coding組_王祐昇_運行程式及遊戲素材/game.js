@@ -29,17 +29,18 @@ const particleManager = {
     
     createParticles() {
         this.particles = [];
-        const particleCount = Math.min(100, Math.floor(window.innerWidth * window.innerHeight / 10000));
+        // 增加粒子數量
+        const particleCount = Math.min(250, Math.floor(window.innerWidth * window.innerHeight / 5000));
         
         for (let i = 0; i < particleCount; i++) {
             this.particles.push({
                 x: Math.random() * this.canvas.width,
                 y: Math.random() * this.canvas.height,
-                vx: (Math.random() - 0.5) * 0.5,
-                vy: (Math.random() - 0.5) * 0.5,
-                size: Math.random() * 2 + 1,
-                opacity: Math.random() * 0.5 + 0.2,
-                color: ['#0ff', '#f0f', '#ff6f91', '#fff700'][Math.floor(Math.random() * 4)]
+                vx: (Math.random() - 0.5) * 0.7, // 稍微加快移動速度
+                vy: (Math.random() - 0.5) * 0.7,
+                size: Math.random() * 4 + 2, // 粒子變大
+                opacity: Math.random() * 0.6 + 0.4, // 更亮
+                color: ['#fff', '#0ff', '#f0f', '#ff6f91', '#fff700'][Math.floor(Math.random() * 5)]
             });
         }
     },
@@ -61,7 +62,7 @@ const particleManager = {
             this.ctx.globalAlpha = particle.opacity;
             this.ctx.fillStyle = particle.color;
             this.ctx.shadowColor = particle.color;
-            this.ctx.shadowBlur = 10;
+            this.ctx.shadowBlur = 24; // 增強發光效果
             this.ctx.beginPath();
             this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
             this.ctx.fill();
@@ -184,18 +185,18 @@ const audioManager = {
     fadeTimer: null,
     cache: {},
     paths: {
-        bgm: 'VibeCoding組_王祐昇_運行程式及遊戲素材/audio/DRIVE.mp3',
+        bgm: './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/DRIVE.mp3',
         tracks: {
-            'Champion': 'VibeCoding組_王祐昇_運行程式及遊戲素材/audio/Champion.mp3',
-            'Bliss': 'VibeCoding組_王祐昇_運行程式及遊戲素材/audio/Bliss.mp3',
-            'Canon': 'VibeCoding組_王祐昇_運行程式及遊戲素材/audio/Canon.mp3',
-            'HappyBirthday': 'VibeCoding組_王祐昇_運行程式及遊戲素材/audio/HappyBirthday.mp3',
-            'MainTheme': 'VibeCoding組_王祐昇_運行程式及遊戲素材/audio/MainTheme.mp3',
-            'MagicalMoments': 'VibeCoding組_王祐昇_運行程式及遊戲素材/audio/MagicalMoments.mp3',
-            'Noise': 'VibeCoding組_王祐昇_運行程式及遊戲素材/audio/Noise.mp3',
-            'HammerMASTER': 'VibeCoding組_王祐昇_運行程式及遊戲素材/audio/HammerMASTER.mp3',
-            'InspiringDreams': 'VibeCoding組_王祐昇_運行程式及遊戲素材/audio/InspiringDreams.mp3',
-            'inspiringguitar': 'VibeCoding組_王祐昇_運行程式及遊戲素材/audio/inspiringguitar.mp3'
+            'Champion': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/Champion.mp3',
+            'Bliss': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/Bliss.mp3',
+            'Canon': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/Canon.mp3',
+            'HappyBirthday': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/HappyBirthday.mp3',
+            'MainTheme': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/MainTheme.mp3',
+            'MagicalMoments': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/MagicalMoments.mp3',
+            'Noise': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/Noise.mp3',
+            'HammerMASTER': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/HammerMASTER.mp3',
+            'InspiringDreams': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/InspiringDreams.mp3',
+            'inspiringguitar': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/inspiringguitar.mp3'
         }
     },
     
@@ -2309,13 +2310,13 @@ function drawNotes(now) {
 // 判定系統 (Judgment System)
 // ===============================
 // 判定線配置
-const JUDGE_LINE = {
-    POSITION: 100,  // 判定線距離底部的距離
-    PERFECT_RANGE: 50,  // Perfect判定範圍（上下各50像素）
-    GREAT_RANGE: 80,   // Great判定範圍（上下各80像素）
-    GOOD_RANGE: 100,   // Good判定範圍（上下各100像素）
-    MISS_RANGE: 150    // Miss判定範圍（超過判定線150像素）
-};
+// const JUDGE_LINE = {
+//     POSITION: 100,  // 判定線距離底部的距離
+//     PERFECT_RANGE: 50,  // Perfect判定範圍（上下各50像素）
+//     GREAT_RANGE: 80,   // Great判定範圍（上下各80像素）
+//     GOOD_RANGE: 100,   // Good判定範圍（上下各100像素）
+//     MISS_RANGE: 150    // Miss判定範圍（超過判定線150像素）
+// };
 
 // 音符判定函數
 function judgeNote(lane) {
