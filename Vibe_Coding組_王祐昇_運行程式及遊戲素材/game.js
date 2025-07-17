@@ -2731,7 +2731,7 @@ function endGame() {
     // 排行榜區塊
     let table = document.createElement('table');
     table.style = 'width:100%;margin-top:18px;border-collapse:collapse;background:rgba(0,0,0,0.5);';
-    table.innerHTML = `<thead><tr style="color:#0ff;font-size:1.1em;"><th style="text-align:left">名次</th><th style="text-align:left">暱稱</th><th style="text-align:right">分數</th><th style="text-align:center">最大Combo</th></tr></thead><tbody id="leaderboard-body"></tbody>`;
+    table.innerHTML = `<thead><tr style="color:#0ff;font-size:1.1em;"><th style="text-align:left">名次</th><th style="text-align:left">暱稱</th><th style="text-align:center">難度</th><th style="text-align:right">分數</th><th style="text-align:center">最大Combo</th></tr></thead><tbody id="leaderboard-body"></tbody>`;
     leaderboardDiv.appendChild(table);
 
     // 讀取排行榜資料
@@ -2744,7 +2744,7 @@ function endGame() {
     confirmBtn.onclick = function() {
         let nickname = nicknameInput.value.trim() || '無名玩家';
         if (nickname.length > 15) nickname = nickname.slice(0, 15);
-        leaderboard.push({ nickname, score, maxCombo });
+        leaderboard.push({ nickname, score, maxCombo, difficulty: DIFFICULTY_LEVEL_MAP[selectedDifficulty] || '' });
         leaderboard.sort((a, b) => b.score - a.score);
         leaderboard = leaderboard.slice(0, 20); // 只保留前20名
         localStorage.setItem('fatekeys_leaderboard', JSON.stringify(leaderboard));
@@ -2759,7 +2759,7 @@ function endGame() {
         body.innerHTML = '';
         leaderboard.forEach((item, idx) => {
             let tr = document.createElement('tr');
-            tr.innerHTML = `<td style="color:#ffe066;font-weight:bold;">${idx+1}</td><td>${item.nickname}</td><td style="text-align:right;">${item.score.toLocaleString()}</td><td style="text-align:center;">${item.maxCombo}</td>`;
+            tr.innerHTML = `<td style="color:#ffe066;font-weight:bold;">${idx+1}</td><td>${item.nickname}</td><td style="text-align:center;">${item.difficulty||''}</td><td style="text-align:right;">${item.score.toLocaleString()}</td><td style="text-align:center;">${item.maxCombo}</td>`;
             body.appendChild(tr);
         });
     }
@@ -3608,4 +3608,14 @@ const effectManager = {
         
         ctx.restore();
     }
+};
+
+// 新增難度等級對應表
+const DIFFICULTY_LEVEL_MAP = {
+    'beginner': 'L1',
+    'casual': 'L2',
+    'hard': 'L3',
+    'extreme': 'L4',
+    'master': 'L5',
+    'fate': 'L6'
 };
