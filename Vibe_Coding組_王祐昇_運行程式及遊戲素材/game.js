@@ -2345,11 +2345,12 @@ function judgeNote(lane) {
         if (note.lane === lane && !note.hit && !note.missed) {
             // 計算音符的當前 Y 位置
             const noteY = (currentTime - note.time) * LEVEL_CONFIGS[selectedDifficulty].speed;
+            const distanceToJudgeLine = Math.abs(noteY - judgeLine);
             // 只判定通過終止線的音符
             if (noteY >= judgeLine) {
                 const distanceToJudgeLine = Math.abs(noteY - judgeLine);
                 // 判定範圍檢查
-                if (distanceToJudgeLine <= JUDGE_LINE.MISS_RANGE) {
+                if (distanceToJudgeLine <= JUDGE_LINE.PERFECT_RANGE) {
                     const timing = Math.abs(note.time - now);
                     if (timing < hitTiming) {
                         hitTiming = timing;
@@ -2369,16 +2370,6 @@ function judgeNote(lane) {
         if (distanceToJudgeLine <= JUDGE_LINE.PERFECT_RANGE) {
             hitNoteSuccess(hitIndex, 'perfect');
             score += 1000;
-            combo++;
-            maxCombo = Math.max(maxCombo, combo);
-        } else if (distanceToJudgeLine <= JUDGE_LINE.GREAT_RANGE) {
-            hitNoteSuccess(hitIndex, 'great');
-            score += 500;
-            combo++;
-            maxCombo = Math.max(maxCombo, combo);
-        } else if (distanceToJudgeLine <= JUDGE_LINE.GOOD_RANGE) {
-            hitNoteSuccess(hitIndex, 'good');
-            score += 100;
             combo++;
             maxCombo = Math.max(maxCombo, combo);
         } else {
