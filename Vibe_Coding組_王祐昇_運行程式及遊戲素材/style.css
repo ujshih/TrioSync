@@ -1916,3 +1916,30 @@ button:hover, .action-btn:hover {
 .difficulty-btn.active .difficulty-desc {
     display: none !important;
 }
+
+/* 分數加分提示動畫 */
+#score-display {
+  position: relative;
+  display: inline-block;
+}
+.score-gain-tip {
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translate(10px, -50%) scale(1);
+  margin: 0;
+  font-size: 1.2em;
+  color: #fffa70;
+  font-weight: bold;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.7s cubic-bezier(0.4,1.4,0.6,1);
+  text-shadow: 0 0 8px #fff700, 0 0 16px #fffa70;
+  z-index: 2;
+  white-space: nowrap;
+}
+.score-gain-tip.show {
+  opacity: 1;
+  transform: translate(30px, -80%) scale(1.2);
+  transition: opacity 0.2s, transform 0.7s cubic-bezier(0.4,1.4,0.6,1);
+}

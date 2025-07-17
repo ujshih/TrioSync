@@ -2371,6 +2371,7 @@ function judgeNote(lane) {
         if (distanceToJudgeLine <= JUDGE_LINE.PERFECT_RANGE) {
             hitNoteSuccess(hitIndex, 'perfect');
             score += 1000;
+            showScoreGain(1000);
             combo++;
             maxCombo = Math.max(maxCombo, combo);
         } else {
@@ -2448,13 +2449,18 @@ function hitNote(index, type) {
     if (index >= 0 && index < activeNotes.length) {
         activeNotes.splice(index, 1); // 立即移除音符
         hitCount++;
+        let gain = 0;
         if (type === 'perfect') {
-            score += 100;
+            gain = 100;
+            score += gain;
         } else if (type === 'great') {
-            score += 80;
+            gain = 80;
+            score += gain;
         } else if (type === 'good') {
-            score += 50;
+            gain = 50;
+            score += gain;
         }
+        if (gain > 0) showScoreGain(gain);
         updateScoreDisplay();
     }
 }
@@ -2785,7 +2791,11 @@ function calculateGrade(accuracy, maxCombo) {
 // ===============================
 function updateScoreDisplay() {
     if (scoreDisplay) {
-        scoreDisplay.textContent = `分數: ${score.toLocaleString()}`;
+        // 只更新分數文字，不移除加分提示
+        // 先找出現有的加分提示元素
+        const gainTip = scoreDisplay.querySelector('.score-gain-tip');
+        scoreDisplay.innerHTML = `分數: ${score.toLocaleString()}`;
+        if (gainTip) scoreDisplay.appendChild(gainTip);
     }
 }
 
@@ -3697,4 +3707,19 @@ function renderLeaderboardView() {
     });
     html += '</tbody></table>';
     leaderboardContent.innerHTML = html;
+}
+
+function showScoreGain(gain) {
+    if (!scoreDisplay) return;
+    let gainEl = document.createElement('span');
+    gainEl.className = 'score-gain-tip';
+    gainEl.textContent = `+${gain}`;
+    scoreDisplay.appendChild(gainEl);
+    // 強制觸發 reflow 以啟動動畫
+    void gainEl.offsetWidth;
+    gainEl.classList.add('show');
+    setTimeout(() => {
+        gainEl.classList.remove('show');
+        setTimeout(() => gainEl.remove(), 400);
+    }, 700);
 }
