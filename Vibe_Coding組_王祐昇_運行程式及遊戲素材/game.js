@@ -1115,6 +1115,11 @@ function gameLoop(now) {
     if (timerDisplay) {
         const remain = Math.max(0, Math.ceil(GAME_DURATION - currentTime));
         timerDisplay.textContent = remain;
+        if (remain <= 5) {
+            timerDisplay.classList.add('timer-danger');
+        } else {
+            timerDisplay.classList.remove('timer-danger');
+        }
     }
     
     // 畫面震動效果

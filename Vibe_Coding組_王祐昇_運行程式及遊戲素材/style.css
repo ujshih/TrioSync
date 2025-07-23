@@ -767,6 +767,20 @@ header {
     text-shadow: 0 2px 8px #fff, 0 0 2px #0ff;
 }
 
+/* 倒數危險紅色樣式 */
+#timer-display.timer-danger {
+    color: #fff;
+    background: #ff3b3b;
+    border: 2px solid #ff3b3b;
+    text-shadow: 0 0 16px #ff3b3b, 0 0 8px #fff;
+    animation: timer-danger-blink 0.5s alternate infinite;
+}
+
+@keyframes timer-danger-blink {
+    0% { filter: brightness(1.2); }
+    100% { filter: brightness(0.7); }
+}
+
 #combo-display {
     position: absolute;
     top: 2.5cm;
@@ -1790,6 +1804,20 @@ body {
     backdrop-filter: blur(6px);
     border: 1.5px solid rgba(255,255,255,0.25);
     text-shadow: 0 2px 8px #fff, 0 0 2px #0ff;
+}
+
+/* 倒數危險紅色樣式 */
+#timer-display.timer-danger {
+    color: #fff;
+    background: #ff3b3b;
+    border: 2px solid #ff3b3b;
+    text-shadow: 0 0 16px #ff3b3b, 0 0 8px #fff;
+    animation: timer-danger-blink 0.5s alternate infinite;
+}
+
+@keyframes timer-danger-blink {
+    0% { filter: brightness(1.2); }
+    100% { filter: brightness(0.7); }
 }
 
 #combo-display {
