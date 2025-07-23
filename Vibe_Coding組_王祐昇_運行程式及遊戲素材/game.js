@@ -859,53 +859,18 @@ function showCountdown(callback) {
 
 // --- startGame ---
 function startGame() {
-    if (!selectedSong) {
-        showToast('請先選擇一首歌曲！');
+    if (gameStarted || isCountingDown) return;
+    if (!selectedSong || !selectedDifficulty) {
+        showToast('請先選擇歌曲與難度');
         return;
     }
-    
-    if (gameStarted) {
-        console.warn('遊戲已經開始！');
-        return;
-    }
-    
-    // 確保音頻已解鎖
-    unlockAudio();
-    
-    // 停止所有音樂並播放遊戲音樂
-    audioManager.stopAll(() => {
-        audioManager.playGameTrack(selectedSong, 0, () => {
-            console.log('遊戲音樂播放開始');
-        });
-    });
-    
-    // 初始化遊戲狀態
-    gameStarted = true;
-    gamePaused = false;
-    gameEnded = false;
-    score = 0;
-    combo = 0;
-    maxCombo = 0;
-    perfectCount = 0;
-    greatCount = 0;
-    goodCount = 0;
-    missCount = 0;
-    
-    // 生成音符
-    const noteDuration = 60; // 60秒的音符
-    activeNotes = generateNotes(selectedDifficulty, noteDuration);
-    
-    // 開始倒計時
-    showCountdown(() => {
-        gameStartTime = Date.now();
-        requestAnimationFrame(gameLoop);
-        startAutoMissCheck();
-    });
-    
-    // 更新界面顯示
-    updateScoreDisplay();
-    updateComboDisplay();
-    updateMissBufferUI();
+    // 切換到遊戲畫面
+    showScreen('game');
+    // 倒數三秒後才開始遊戲
+    showCountdown(realStartGame);
+    const config = LEVEL_CONFIGS[selectedDifficulty];
+    missBufferCount = config ? config.missBuffer : 0;
+    setMissBufferCount(missBufferCount);
 }
 
 // --- realStartGame ---
@@ -2969,6 +2934,9 @@ function startGame() {
         showToast('請先選擇歌曲與難度');
         return;
     }
+    // 切換到遊戲畫面
+    showScreen('game');
+    // 倒數三秒後才開始遊戲
     showCountdown(realStartGame);
     const config = LEVEL_CONFIGS[selectedDifficulty];
     missBufferCount = config ? config.missBuffer : 0;
