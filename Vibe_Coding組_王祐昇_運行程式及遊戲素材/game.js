@@ -2423,9 +2423,29 @@ function drawNotes(now) {
                 const laneConfig = laneManager.getLaneConfig(note.lane);
                 const laneColor = laneConfig.color;
                 
-                // 軌跡效果 - 從銀河深處飛來
-                const trailLength = 80 * scale;
-                const trailGradient = ctx.createLinearGradient(noteX, noteY - trailLength, noteX, noteY);
+                // 軌跡效果 - 與賽道中心線方向一致且長度短
+                ctx.save();
+                // 計算該賽道中心線的消失點方向
+                const tL = note.lane / laneCount;
+                const tR = (note.lane + 1) / laneCount;
+                const xL0 = bottomLeft + tL * (bottomRight - bottomLeft);
+                const xR0 = bottomLeft + tR * (bottomRight - bottomLeft);
+                const yRatio = 1 - (noteY / canvas.height);
+                const xL = xL0 + (vanishX - xL0) * yRatio;
+                const xR = xR0 + (vanishX - xR0) * yRatio;
+                const xC = xL + (xR - xL) * 0.5;
+                // 拖尾方向：從音符圓心往該賽道消失點方向
+                const dx = vanishX - xC;
+                const dy = vanishY - noteY;
+                const len = Math.sqrt(dx*dx + dy*dy);
+                const unitX = dx / len;
+                const unitY = dy / len;
+                const shortLen = 60 * scale;
+                const trailStartX = noteX + unitX * shortLen;
+                const trailStartY = noteY + unitY * shortLen;
+                const trailEndX = noteX;
+                const trailEndY = noteY;
+                const trailGradient = ctx.createLinearGradient(trailStartX, trailStartY, trailEndX, trailEndY);
                 trailGradient.addColorStop(0, `${laneColor}00`);
                 trailGradient.addColorStop(0.3, `${laneColor}4D`);
                 trailGradient.addColorStop(1, `${laneColor}CC`);
@@ -2435,9 +2455,10 @@ function drawNotes(now) {
                 ctx.shadowColor = laneColor;
                 ctx.shadowBlur = 10 * scale;
                 ctx.beginPath();
-                ctx.moveTo(noteX, noteY - trailLength);
-                ctx.lineTo(noteX, noteY - 20 * scale);
+                ctx.moveTo(trailStartX, trailStartY);
+                ctx.lineTo(trailEndX, trailEndY);
                 ctx.stroke();
+                ctx.restore();
                 
                 // 外層光暈
                 const gradient = ctx.createRadialGradient(noteX, noteY, 0, noteX, noteY, 45 * scale);
