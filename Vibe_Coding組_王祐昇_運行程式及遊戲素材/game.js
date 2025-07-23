@@ -3432,10 +3432,8 @@ volumeSlider.min = 0;
 volumeSlider.max = 1;
 volumeSlider.step = 0.01;
 volumeSlider.value = 1;
-volumeSlider.style.position = 'absolute';
-volumeSlider.style.top = '1rem';
-volumeSlider.style.left = '1rem';
-volumeSlider.style.zIndex = 10000;
+volumeSlider.className = 'left-top-btn';
+volumeSlider.id = 'volume-slider';
 volumeSlider.title = '音量';
 document.body.appendChild(volumeSlider);
 volumeSlider.addEventListener('input', function() {

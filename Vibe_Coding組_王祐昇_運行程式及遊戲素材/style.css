@@ -2779,3 +2779,37 @@ body.result-bg-d::before {
 .result-detail span {
     margin-right: 8px;
 }
+
+.left-top-btn {
+    position: absolute;
+    left: 1rem;
+    width: 160px;
+    text-align: center;
+    white-space: nowrap;
+    z-index: 10;
+    box-sizing: border-box;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+}
+.left-top-btn[type="range"] {
+    height: 48px;
+    background: transparent;
+    margin: 0;
+    padding: 8px;
+}
+#volume-slider.left-top-btn {
+    top: 1rem;
+}
+#contrast-btn.left-top-btn {
+    top: calc(1rem + 48px + 4px);
+}
+#help-btn.left-top-btn {
+    top: calc(1rem + 2 * (48px + 4px));
+}
+#leaderboard-btn.left-top-btn {
+    top: calc(1rem + 3 * (48px + 4px));
+}
