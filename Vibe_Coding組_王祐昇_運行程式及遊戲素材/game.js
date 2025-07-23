@@ -738,7 +738,7 @@ function generateNotes(difficulty, duration = 60) {
         notes.push({ 
             time: t, 
             lane,
-            duration: noteDuration,
+            duration: 0, // 強制為 0
             hit: false,
             missed: false,
             group: i
