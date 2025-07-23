@@ -68,7 +68,11 @@ body::before {
 #main-wrapper {
     position: relative;
     z-index: 1;
-    background: transparent !important;
+    background: linear-gradient(135deg, rgba(24,26,42,0.55) 0%, rgba(35,35,90,0.55) 100%) !important;
+    background-blend-mode: lighten;
+    border-radius: 30px;
+    box-shadow: 0 8px 40px 0 rgba(0,0,0,0.18);
+    padding: 1rem 0;
     width: 100vw;
     min-height: 100vh;
     display: flex;
@@ -76,9 +80,6 @@ body::before {
     align-items: center;
     justify-content: flex-start;
     overflow-y: auto;
-    border-radius: 30px;
-    box-shadow: 0 8px 40px 0 rgba(0,0,0,0.18);
-    padding: 1rem 0;
 }
 
 /* 音訊解鎖遮罩 */
@@ -716,21 +717,22 @@ header {
 
 /* 遊戲區域 */
 #game-area {
-    position: relative;
-    width: 700px;
-    height: 700px;
-    margin: 0 auto;
-    display: none;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #b2f0ff 0%, #e0e7ff 100%), url('https://www.transparenttextures.com/patterns/geometry.png');
-    background-blend-mode: lighten;
-    overflow: visible;
-    clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
-    box-shadow: 0 0 60px 0 rgba(0,255,255,0.08);
-    border-radius: 0 0 40px 40px;
-    overflow: hidden;
-    transform: perspective(900px) rotateX(37deg);
+    justify-content: flex-start;
+    width: 100vw;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+#game-canvas {
+    display: block;
+    margin: 0 auto;
+    box-shadow: 0 0 24px #0ff3, 0 0 4px #222a;
+    background: #181a2a;
+    border-radius: 18px;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 .game-header {
@@ -766,7 +768,7 @@ header {
 
 #combo-display {
     position: absolute;
-    top: 12%;
+    top: 2.5cm;
     left: 50%;
     transform: translateX(-50%);
     font-size: 3.5rem;
@@ -1091,7 +1093,7 @@ header {
 
 /* 結算畫面 */
 #result-screen {
-    display: none;
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -1108,6 +1110,11 @@ header {
     box-shadow: 0 4px 32px 0 rgba(0,0,0,0.10);
     backdrop-filter: blur(8px);
     border: 1.5px solid rgba(255,255,255,0.18);
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
 }
 
 .result-title {
@@ -1119,8 +1126,15 @@ header {
 }
 
 .result-content {
-    text-align: center;
-    margin-bottom: 0.5rem; /* 調小 */
+    max-width: 500px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 32px 24px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .final-score {
@@ -1389,7 +1403,7 @@ body {
 }
 
 #main-wrapper {
-    background: linear-gradient(135deg, #181a2a 0%, #23235a 100%);
+    background: linear-gradient(135deg, rgba(24,26,42,0.55) 0%, rgba(35,35,90,0.55) 100%) !important;
     background-blend-mode: lighten;
     border-radius: 30px;
     box-shadow: 0 8px 40px 0 rgba(0,0,0,0.18);
@@ -1942,4 +1956,197 @@ button:hover, .action-btn:hover {
   opacity: 1;
   transform: translate(30px, -80%) scale(1.2);
   transition: opacity 0.2s, transform 0.7s cubic-bezier(0.4,1.4,0.6,1);
+}
+
+/* ====== 結算畫面動畫與美化 ====== */
+.result-content {
+  animation: fadeIn 0.8s cubic-bezier(.4,2,.6,1) both;
+  background: linear-gradient(135deg, rgba(24,26,42,0.7) 0%, rgba(35,35,90,0.7) 100%);
+  border-radius: 24px;
+  box-shadow: 0 0 32px #0ff4, 0 0 8px #ffe06688;
+  margin: 0 auto;
+  max-width: 480px;
+}
+.result-title {
+  font-size: 2.1rem;
+  color: #fff700;
+  text-shadow: 0 0 18px #ffe066,0 0 8px #fff;
+  margin-bottom: 8px;
+  letter-spacing: 2px;
+  font-weight: bold;
+  animation: fadeIn 1s;
+}
+.final-score {
+  font-size: 2.8rem;
+  font-weight: bold;
+  color: #ffe066;
+  text-shadow: 0 0 24px #ffe066,0 0 8px #fff;
+  letter-spacing: 2px;
+  margin: 18px 0 8px 0;
+  transition: color 0.3s;
+  animation: score-pop 1.2s cubic-bezier(.4,2,.6,1);
+}
+@keyframes score-pop {
+  0% { transform: scale(0.7); opacity: 0; }
+  60% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.final-grade {
+  font-size: 2.2rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #fff700;
+  text-shadow: 0 0 24px #fff700,0 0 8px #fff;
+  letter-spacing: 2px;
+  transition: color 0.3s;
+}
+.grade-animate {
+  animation: grade-bounce 1.1s cubic-bezier(.4,2,.6,1);
+}
+@keyframes grade-bounce {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.grade-glow {
+  animation: grade-glow-anim 1.2s infinite alternate;
+}
+@keyframes grade-glow-anim {
+  0% { text-shadow: 0 0 24px #fff700,0 0 8px #ffffff; color: #fff700; }
+  100% { text-shadow: 0 0 48px #ffe066,0 0 16px #ffffff; color: #ffe066; }
+}
+.final-combo {
+  font-size: 1.3rem;
+  color: #0ff;
+  margin-bottom: 8px;
+  text-shadow: 0 0 8px #0ff8;
+}
+.final-badge {
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+  text-align: center;
+  animation: badge-pop 1.1s cubic-bezier(.4,2,.6,1);
+}
+@keyframes badge-pop {
+  0% { transform: scale(0.7); opacity: 0; }
+  60% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.result-leaderboard {
+  width: 100%;
+  max-width: 420px;
+  margin: 18px auto 0 auto;
+  background: #000000b3;
+  border-radius: 16px;
+  padding: 16px 8px 8px 8px;
+  box-shadow: 0 0 24px #00ffff33;
+  animation: fadeIn 1.2s;
+}
+.result-leaderboard table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(0,0,0,0.5);
+}
+.result-leaderboard tr.slide-in-left {
+  animation: slideInLeft 0.7s cubic-bezier(.4,2,.6,1);
+}
+.result-leaderboard tr.slide-in-right {
+  animation: slideInRight 0.7s cubic-bezier(.4,2,.6,1);
+}
+@keyframes slideInLeft {
+  0% { transform: translateX(-60px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+@keyframes slideInRight {
+  0% { transform: translateX(60px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+.result-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 18px;
+  margin-top: 24px;
+  justify-content: center;
+}
+.action-btn {
+  padding: 10px 32px;
+  font-size: 1.2em;
+  border-radius: 12px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 12px #ffe06688;
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+.action-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 4px #ffe06688;
+}
+.action-btn:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 0 24px #ffe066cc;
+}
+.action-btn + .action-btn {
+  background: #00ffff;
+  color: #222;
+  box-shadow: 0 0 12px #00ffff88;
+}
+.action-btn + .action-btn:hover {
+  box-shadow: 0 0 24px #00ffff;
+}
+
+@media (max-width: 600px) {
+  .result-content { max-width: 98vw; padding: 12px 0; }
+  .result-leaderboard { max-width: 98vw; }
+  .final-score { font-size: 2rem; }
+  .final-grade { font-size: 1.3rem; }
+}
+
+/* ====== 結算畫面根據評級自動變色 ====== */
+body.result-bg-ss {
+  background: radial-gradient(circle at 50% 40%, #fffbe6 0%, #ffe066 40%, #ffd700 70%, #0a0a1a 100%) !important;
+}
+body.result-bg-ab {
+  background: radial-gradient(circle at 50% 40%, #e0f7fa 0%, #0ff 40%, #1c1c80 80%, #0a0a1a 100%) !important;
+}
+body.result-bg-d {
+  background: radial-gradient(circle at 50% 40%, #e0f7fa 0%, #b2ebf2 40%, #1c1c80 80%, #0a0a1a 100%) !important;
+}
+body.result-bg-ss::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.7;
+  background: radial-gradient(circle at 50% 60%, rgba(255, 224, 102, 0.5) 0%, rgba(255, 215, 0, 0.2) 60%, transparent 100%);
+}
+body.result-bg-ab::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.7;
+  background: radial-gradient(circle at 50% 60%, rgba(0,255,255,0.18) 0%, rgba(76,220,196,0.12) 60%, transparent 100%);
+}
+body.result-bg-d::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.7;
+  background: radial-gradient(circle at 50% 60%, rgba(178,235,242,0.12) 0%, rgba(28,28,128,0.08) 60%, transparent 100%);
+}
+
+.result-detail {
+    font-size: 1.1rem;
+    color: #fff;
+    margin-bottom: 10px;
+    line-height: 1.6;
+    text-align: center;
+}
+.result-detail span {
+    margin-right: 8px;
 }

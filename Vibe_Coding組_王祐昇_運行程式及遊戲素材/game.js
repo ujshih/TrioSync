@@ -461,32 +461,33 @@ const LEVEL_CONFIGS = {
         name: 'Beginner',
         judgeWindow: 0.25,
         scoreMultiplier: 1.2,
-        gradeThresholds: { S: 80, A: 70, B: 60, C: 30, D: 0 },
+        gradeThresholds: { S: 30, A: 20, B: 5, C: 1, D: 0 },
         comboForgiveness: 100,
-        noteDensity: 1.25, // 固定值
+        noteDensity: 1, // 固定值
         enName: "Beginner",
         stars: 1,
         speed: Math.round(120 * 0.6),
-        density: 1.25, // 1.0–1.5
+        density: 1, // 1.0–1.5
         keyCount: 4,
         missBuffer: 100, // 增加容錯次數，讓新手更容易
         desc: "✨ 基礎節奏入門！單鍵點擊、節奏緩和，讓你無壓力進入命運世界。",
         keys: ['D', 'F', 'J', 'K'],
         holdSupport: false,
         simultaneousNotes: 1,
-        specialRules: "無長音支援，單音符為主"
+        specialRules: "無長音支援，單音符為主",
+        scoreGradeThresholds: { SSS: 140000, SS: 120000, S: 90000, A: 50000, B: 30000, C: 2000, D: 0 }
   },
     casual: {
         name: 'Casual',
         judgeWindow: 0.2,
         scoreMultiplier: 1,
-        gradeThresholds: { S: 80, A: 70, B: 60, C: 50, D: 0 },
+        gradeThresholds: { S: 30, A: 20, B: 8, C: 1, D: 0 },
         comboForgiveness: 100,
-        noteDensity: 1.5,
+        noteDensity: 1,
         enName: "Casual",
         stars: 2,
         speed: Math.round(150 * 0.6),
-        density: 1.5, // 1.5–2.0
+        density: 1, // 1.5–2.0
         keyCount: 4,
         missBuffer: 100,
         desc: "🎵 旋律稍起波瀾，簡短長音與雙鍵節奏交織，輕鬆享受流動的音樂律動。",
@@ -494,19 +495,20 @@ const LEVEL_CONFIGS = {
         holdSupport: true,
         holdType: "simple",
         simultaneousNotes: 1,
-        specialRules: "簡單短長音支援"
+        specialRules: "簡單短長音支援",
+        scoreGradeThresholds: { SSS: 150000, SS: 130000, S: 90000, A: 50000, B: 30000, C: 2000, D: 0 }
   },
     hard: {
         name: 'Hard',
         judgeWindow: 0.15,
         scoreMultiplier: 1,
-        gradeThresholds: { S: 90, A: 80, B: 70, C: 50, D: 0 },
+        gradeThresholds: { S: 50, A: 40, B: 20, C: 5, D: 0 },
         comboForgiveness: 100,
-        noteDensity: 2,
+        noteDensity: 1.25,
         enName: "Hard",
         stars: 3,
         speed: Math.round(180 * 0.6),
-        density: 2.2, // 2.0–3.0
+        density: 1.2, // 2.0–3.0
         keyCount: 4,
         missBuffer: 100,
         desc: "🔥 節奏加速進化！中長音與雙鍵組合考驗反應與穩定度，是實力的試煉場。",
@@ -514,19 +516,20 @@ const LEVEL_CONFIGS = {
         holdSupport: true,
         holdType: "medium",
         simultaneousNotes: 2,
-        specialRules: "中長音支援，雙鍵常態"
+        specialRules: "中長音支援，雙鍵常態",
+        scoreGradeThresholds: { SSS: 160000, SS: 140000, S: 120000, A: 80000, B: 30000, C: 2000, D: 0 }
   },
     extreme: {
         name: 'Extreme',
         judgeWindow: 0.1,
         scoreMultiplier: 1.3,
-        gradeThresholds: { S: 90, A: 85, B: 80, C: 70, D: 0 },
+        gradeThresholds: { S: 50, A: 40, B: 20, C: 5, D: 0 },
         comboForgiveness: 10,
-        noteDensity: 3.5,
+        noteDensity: 1.5,
         enName: "Extreme",
         stars: 4,
         speed: Math.round(210 * 0.6),
-        density: 3.5, // 3.0–4.0
+        density: 1.5, // 3.0–4.0
         keyCount: 5,
         missBuffer: 10,
         desc: "⚡ 音流如電！高速節奏、多段長音、空白鍵加入，全面挑戰你的極限操作。",
@@ -534,19 +537,20 @@ const LEVEL_CONFIGS = {
         holdSupport: true,
         holdType: "multi",
         simultaneousNotes: 2,
-        specialRules: "多段長音，Space鍵加入，判定鬆緊"
+        specialRules: "多段長音，Space鍵加入，判定鬆緊",
+        scoreGradeThresholds: { SSS: 170000, SS: 150000, S: 130000, A: 100000, B: 30000, C: 2000, D: 0 }
   },
     master: {
         name: 'Master',
         judgeWindow: 0.09,
         scoreMultiplier: 1.5,
-        gradeThresholds: { S: 99, A: 95, B: 90, C: 80, D: 0 },
+        gradeThresholds: { S: 50, A: 40, B: 20, C: 5, D: 0 },
         comboForgiveness: 10,
-        noteDensity: 4.75,
+        noteDensity: 1.75,
         enName: "Master",
         stars: 5,
         speed: Math.round(220 * 0.6),
-        density: 4.75, // 4.0–5.5
+        density: 1.75, // 4.0–5.5
         keyCount: 5,
         missBuffer: 10,
         desc: "👑 節奏王者之道！節拍密集如雨、判定超嚴苛，特效爆閃，唯高手能穩步前行。",
@@ -554,19 +558,20 @@ const LEVEL_CONFIGS = {
         holdSupport: true,
         holdType: "intensive",
         simultaneousNotes: 3,
-        specialRules: "長音密集，特效數多，節奏混淆"
+        specialRules: "長音密集，特效數多，節奏混淆",
+        scoreGradeThresholds: { SSS: 180000, SS: 160000, S: 140000, A: 100000, B: 30000, C: 2000, D: 0 }
   },
     fate: {
         name: 'Fate Mode',
         judgeWindow: 0.06,
         scoreMultiplier: 2.0,
-        gradeThresholds: { S: 100, A: 99, B: 97, C: 90, D: 0 },
+        gradeThresholds: { S: 50, A: 40, B: 20, C: 5, D: 0 },
         comboForgiveness: 10,
-        noteDensity: [5.5, 6.5],
+        noteDensity: [1.75, 2.5],
         enName: "Fate Mode",
         stars: 6,
         speed: Math.round(250 * 0.6),
-        density: 6, // 5.5–6.5+
+        density: 1.75, // 5.5–6.5+
         keyCount: 5,
         missBuffer: 10,
         desc: "🌌 命運交響最終章！五鍵同列、極速連打、節奏錯亂，踏上無回之境的節奏試煉。",
@@ -575,7 +580,8 @@ const LEVEL_CONFIGS = {
         holdType: "special",
         simultaneousNotes: 3,
         specialRules: "特殊長音，高速連打，極限判定",
-        locked: true
+        locked: true,
+        scoreGradeThresholds: { SSS: 190000, SS: 160000, S: 140000, A: 120000, B: 100000, C: 50000, D: 0 }
   }
 };
 
@@ -591,6 +597,11 @@ let holdKeyStartTime = null;
 let scoreMultiplier = 1.0;
 let gradeThresholds = { S: 95, A: 85, B: 70, C: 50, D: 0 };
 let comboForgiveness = 3;
+
+// 在全域變數區加上：
+let perfectCount = 0;
+let greatCount = 0;
+let goodCount = 0;
 
 // ===============================
 // 畫面管理 (Screen Management)
@@ -670,21 +681,47 @@ function generateNotes(difficulty, duration = 60) {
     console.log(`[generateNotes] 密度: ${density.toFixed(2)}, 音符數量: ${noteCount}, 賽道: ${lanes.join(', ')}`);
     
     const notes = [];
+    // 新增：記錄每個賽道的最後一個長音符結束時間
+    let laneHoldEndTimes = Array(lanes.length).fill(0);
     
     // 確保至少有幾個音符
     const minNotes = Math.max(5, Math.floor(duration / 10));
     const actualNoteCount = Math.max(noteCount, minNotes);
     
-    for (let i = 0; i < actualNoteCount; i++) {
+    let attempts = 0;
+    let i = 0;
+    // 設定不同難度的音符截止秒數
+    let cutoff = 2; // 預設
+    if (difficulty === 'beginner' || difficulty === 'casual' || difficulty === 'hard') {
+        cutoff = 4;
+    } else if (difficulty === 'extreme' || difficulty === 'master' || difficulty === 'fate') {
+        cutoff = 3;
+    }
+    while (i < actualNoteCount && attempts < actualNoteCount * 5) {
         // 均勻分布在 1~duration 內，避免在0秒時就有音符
         const t = 1 + (i * (duration - 1)) / actualNoteCount;
+        // 新增：根據難度剩下 cutoff 秒不產生音符
+        if (t > duration - cutoff) {
+            i++;
+            continue;
+        }
         // 隨機選一個賽道
         const lane = Math.floor(Math.random() * lanes.length);
+        
+        // 檢查這個賽道是否在長音符期間
+        if (t < laneHoldEndTimes[lane]) {
+            attempts++;
+            continue; // 跳過這個音符，換下一個嘗試
+        }
         
         // 添加一些變化：偶爾生成長音符
         let noteDuration = 0;
         if (Math.random() < 0.2 && conf.holdSupport) {
             noteDuration = 0.5 + Math.random() * 1.5; // 0.5-2秒的長音符
+        }
+        // 如果是長音符，更新該賽道的結束時間
+        if (noteDuration > 0) {
+            laneHoldEndTimes[lane] = t + noteDuration;
         }
         
         notes.push({ 
@@ -695,6 +732,8 @@ function generateNotes(difficulty, duration = 60) {
             missed: false,
             group: i
         });
+        i++;
+        attempts++;
     }
     
     console.log(`[generateNotes] 生成完成 - 實際音符數量: ${notes.length}`);
@@ -742,7 +781,7 @@ function resizeCanvas() {
     
     // 計算 canvas 尺寸
     canvas.width = Math.min(containerWidth - 40, 800);
-    canvas.height = Math.min(containerHeight - 200, 600);
+    canvas.height = Math.min(containerHeight - 120, 500); // 預留底部空間給key hints
     
     // 最終驗證 canvas 尺寸
     if (!canvas.width || !isFinite(canvas.width) || isNaN(canvas.width) || canvas.width <= 0) {
@@ -933,7 +972,7 @@ function realStartGame() {
     
     const trackName = selectedSong.replace('.mp3', '');
     let offset = 0;
-    if (trackName === 'Canon') offset = 2.5;
+    if (trackName === 'Canon') offset = 140;
     if (trackName === 'HappyBirthday') offset = 0.5;
     if (trackName === 'Noise') offset = 0.2;
     if (trackName === 'HammerMASTER') offset = 0.8;
@@ -1260,11 +1299,7 @@ const laneManager = {
             let glowIntensity = 1.0;
             
             // 動態配色處理
-            if (missLanes.has(i)) {
-                // Miss狀態 - 轉為灰色
-                laneColor = '#666666';
-                glowIntensity = 0.3;
-            } else if (laneGlowStates[i] === 1) {
+            if (laneGlowStates[i] === 1) {
                 // Perfect狀態 - 閃光效果
                 laneColor = '#FFFFFF';
                 glowIntensity = 2.0;
@@ -1383,14 +1418,13 @@ const laneManager = {
 const dynamicInteractionManager = {
     // Miss特效 - 賽道轉灰 + 慢速消散
     triggerMissEffect(lane) {
-        missLanes.add(lane);
-        laneGlowStates[lane] = -1; // 負值表示Miss狀態
-        
-        // 3秒後恢復賽道顏色
-        setTimeout(() => {
-            missLanes.delete(lane);
-            laneGlowStates[lane] = 0;
-        }, 3000);
+        // 註解：不做任何Miss特效
+        // missLanes.add(lane);
+        // laneGlowStates[lane] = -1; // 負值表示Miss狀態
+        // setTimeout(() => {
+        //     missLanes.delete(lane);
+        //     laneGlowStates[lane] = 0;
+        // }, 3000);
     },
     
     // Perfect特效 - 閃光 + 撞擊擴散圈
@@ -2124,12 +2158,12 @@ function drawNotes(now) {
                 headGradient.addColorStop(1, 'transparent');
                 ctx.fillStyle = headGradient;
                 ctx.beginPath();
-                ctx.arc(noteX, noteY, 40, 0, Math.PI * 2);
+                if (40 > 0) ctx.arc(noteX, noteY, 40, 0, Math.PI * 2);
                 ctx.fill();
                 
                 // 核心
                 ctx.beginPath();
-                ctx.arc(noteX, noteY, 24, 0, Math.PI * 2);
+                if (24 > 0) ctx.arc(noteX, noteY, 24, 0, Math.PI * 2);
                 ctx.fillStyle = note.holdActive ? '#fff700' : laneColor;
                 ctx.shadowColor = note.holdActive ? '#fff700' : laneColor;
                 ctx.shadowBlur = 25;
@@ -2137,7 +2171,7 @@ function drawNotes(now) {
                 
                 // 內核
                 ctx.beginPath();
-                ctx.arc(noteX, noteY, 12, 0, Math.PI * 2);
+                if (12 > 0) ctx.arc(noteX, noteY, 12, 0, Math.PI * 2);
                 ctx.fillStyle = '#fff';
                 ctx.shadowColor = '#fff';
                 ctx.shadowBlur = 15;
@@ -2152,11 +2186,11 @@ function drawNotes(now) {
                 tailGradient.addColorStop(1, 'transparent');
                 ctx.fillStyle = tailGradient;
                 ctx.beginPath();
-                ctx.arc(noteX, tailY, 25, 0, Math.PI * 2);
+                if (25 > 0) ctx.arc(noteX, tailY, 25, 0, Math.PI * 2);
                 ctx.fill();
                 
                 ctx.beginPath();
-                ctx.arc(noteX, tailY, 18, 0, Math.PI * 2);
+                if (18 > 0) ctx.arc(noteX, tailY, 18, 0, Math.PI * 2);
                 ctx.fillStyle = '#fff';
                 ctx.shadowColor = '#fff';
                 ctx.shadowBlur = 12;
@@ -2198,7 +2232,7 @@ function drawNotes(now) {
                 
                 // 核心
                 ctx.beginPath();
-                ctx.arc(noteX, noteY, 22, 0, Math.PI * 2);
+                if (22 > 0) ctx.arc(noteX, noteY, 22, 0, Math.PI * 2);
                 ctx.fillStyle = laneColor;
                 ctx.shadowColor = laneColor;
                 ctx.shadowBlur = 25;
@@ -2206,7 +2240,7 @@ function drawNotes(now) {
                 
                 // 內核
                 ctx.beginPath();
-                ctx.arc(noteX, noteY, 12, 0, Math.PI * 2);
+                if (12 > 0) ctx.arc(noteX, noteY, 12, 0, Math.PI * 2);
                 ctx.fillStyle = '#fff';
                 ctx.shadowColor = '#fff';
                 ctx.shadowBlur = 20;
@@ -2218,7 +2252,7 @@ function drawNotes(now) {
                     const particleX = noteX + Math.cos(angle) * 35;
                     const particleY = noteY + Math.sin(angle) * 35;
                     ctx.beginPath();
-                    ctx.arc(particleX, particleY, 2, 0, Math.PI * 2);
+                    if (2 > 0)  ctx.arc(particleX, particleY, 2, 0, Math.PI * 2);
                     ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
                     ctx.fill();
                 }
@@ -2235,41 +2269,41 @@ function drawNotes(now) {
             ctx.save();
             ctx.globalAlpha = 1 - ((currentTime - note.time) / 0.5);
             ctx.beginPath();
-            ctx.arc(noteX, noteY, 22 * (1 - (currentTime - note.time) / 0.5), 0, Math.PI * 2);
-            ctx.fillStyle = '#fff700';
-            ctx.shadowColor = '#fff700';
-            ctx.shadowBlur = 16;
-            ctx.fill();
+            const fadeRadius = 22 * (1 - (currentTime - note.time) / 0.5);
+            if (fadeRadius > 0) {
+                ctx.arc(noteX, noteY, fadeRadius, 0, Math.PI * 2);
+                ctx.fillStyle = '#fff700';
+                ctx.shadowColor = '#fff700';
+                ctx.shadowBlur = 16;
+                ctx.fill();
+            }
             ctx.restore();
             if ((currentTime - note.time) > 0.5) note.animating = null;
         }
         if (note.animating === 'miss') {
-            const noteX = (note.lane + 0.5) * laneWidth;
-            const noteY = (currentTime - note.time) * noteSpeed;
-            ctx.save();
-            
-            // Miss狀態 - 轉為灰色 + 慢速消散
-            const missTime = (currentTime - note.time);
-            const fadeDuration = 2.0; // 2秒慢速消散
-            ctx.globalAlpha = Math.max(0, 1 - (missTime / fadeDuration));
-            
-            // 灰色音符
-            ctx.beginPath();
-            ctx.arc(noteX, noteY, 24 * (1 - missTime / fadeDuration * 0.5), 0, Math.PI * 2);
-            ctx.fillStyle = '#666666';
-            ctx.shadowColor = '#666666';
-            ctx.shadowBlur = 12;
-            ctx.fill();
-            
-            // 灰色光暈
-            ctx.globalAlpha = Math.max(0, 0.3 - (missTime / fadeDuration * 0.3));
-            ctx.beginPath();
-            ctx.arc(noteX, noteY, 40 * (1 - missTime / fadeDuration * 0.3), 0, Math.PI * 2);
-            ctx.fillStyle = '#666666';
-            ctx.fill();
-            
-            ctx.restore();
-            if (missTime > fadeDuration) note.animating = null;
+            // 註解：不繪製 Miss 動畫
+            // const noteX = (note.lane + 0.5) * laneWidth;
+            // const noteY = (currentTime - note.time) * noteSpeed;
+            // ctx.save();
+            // // Miss狀態 - 轉為灰色 + 慢速消散
+            // const missTime = (currentTime - note.time);
+            // const fadeDuration = 2.0; // 2秒慢速消散
+            // ctx.globalAlpha = Math.max(0, 1 - (missTime / fadeDuration));
+            // // 灰色音符
+            // ctx.beginPath();
+            // ctx.arc(noteX, noteY, 24 * (1 - missTime / fadeDuration * 0.5), 0, Math.PI * 2);
+            // ctx.fillStyle = '#666666';
+            // ctx.shadowColor = '#666666';
+            // ctx.shadowBlur = 12;
+            // ctx.fill();
+            // // 灰色光暈
+            // ctx.globalAlpha = Math.max(0, 0.3 - (missTime / fadeDuration * 0.3));
+            // ctx.beginPath();
+            // ctx.arc(noteX, noteY, 40 * (1 - missTime / fadeDuration * 0.3), 0, Math.PI * 2);
+            // ctx.fillStyle = '#666666';
+            // ctx.fill();
+            // ctx.restore();
+            // if (missTime > fadeDuration) note.animating = null;
         }
     });
     
@@ -2279,38 +2313,36 @@ function drawNotes(now) {
     // 判定線 - 太空能量屏障
     const judgeLineY = canvas.height - 100;
     ctx.save();
-    
-    // 主判定線
-    ctx.strokeStyle = '#0ff';
-    ctx.lineWidth = 4;
+    // 主判定線（加粗加亮）
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 8;
     ctx.shadowColor = '#0ff';
-    ctx.shadowBlur = 15;
-    ctx.setLineDash([10, 5]);
+    ctx.shadowBlur = 32;
+    ctx.setLineDash([]);
     ctx.beginPath();
     ctx.moveTo(0, judgeLineY);
     ctx.lineTo(canvas.width, judgeLineY);
     ctx.stroke();
-    
-    // 能量屏障效果
-    const barrierGradient = ctx.createLinearGradient(0, judgeLineY - 20, 0, judgeLineY + 20);
-    barrierGradient.addColorStop(0, 'rgba(0, 255, 255, 0.1)');
-    barrierGradient.addColorStop(0.5, 'rgba(0, 255, 255, 0.3)');
-    barrierGradient.addColorStop(1, 'rgba(0, 255, 255, 0.1)');
+    // 能量屏障效果（光暈區域顏色變淡）
+    const barrierGradient = ctx.createLinearGradient(0, judgeLineY - 40, 0, judgeLineY + 40);
+    barrierGradient.addColorStop(0, 'rgba(0,255,255,0.05)');
+    barrierGradient.addColorStop(0.5, 'rgba(0,255,255,0.15)');
+    barrierGradient.addColorStop(1, 'rgba(0,255,255,0.05)');
     ctx.fillStyle = barrierGradient;
-    ctx.fillRect(0, judgeLineY - 20, canvas.width, 40);
-    
+    ctx.fillRect(0, judgeLineY - 40, canvas.width, 80);
     // 邊緣發光
-    ctx.strokeStyle = 'rgba(0, 255, 255, 0.6)';
+    ctx.strokeStyle = 'rgba(0, 255, 255, 0.3)';
     ctx.lineWidth = 2;
     ctx.setLineDash([]);
     ctx.beginPath();
-    ctx.moveTo(0, judgeLineY - 15);
-    ctx.lineTo(canvas.width, judgeLineY - 15);
+    ctx.moveTo(0, judgeLineY - 20);
+    ctx.lineTo(canvas.width, judgeLineY - 20);
     ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(0, judgeLineY + 15);
-    ctx.lineTo(canvas.width, judgeLineY + 15);
+    ctx.moveTo(0, judgeLineY + 20);
+    ctx.lineTo(canvas.width, judgeLineY + 20);
     ctx.stroke();
+    ctx.restore();
     
     ctx.restore();
     if (drawn > 0) console.log(`[drawNotes] 畫出 ${drawn} 個音符 (currentTime=${currentTime.toFixed(2)})`);
@@ -2320,44 +2352,35 @@ function drawNotes(now) {
 // 判定系統 (Judgment System)
 // ===============================
 // 判定線配置
-// const JUDGE_LINE = {
-//     POSITION: 100,  // 判定線距離底部的距離
-//     PERFECT_RANGE: 50,  // Perfect判定範圍（上下各50像素）
-//     GREAT_RANGE: 80,   // Great判定範圍（上下各80像素）
-//     GOOD_RANGE: 100,   // Good判定範圍（上下各100像素）
-//     MISS_RANGE: 150    // Miss判定範圍（超過判定線150像素）
-// };
+const JUDGE_LINE = {
+    POSITION: 100,  // 判定線距離底部的距離
+    PERFECT_RANGE: 6,  // Perfect判定範圍（±6px）
+    GREAT_RANGE: 20,   // Great判定範圍（±20px）
+    GOOD_RANGE: 40,    // Good判定範圍（±40px）
+    MISS_RANGE: 60     // 超過±60px算Miss
+};
 
 // 音符判定函數
 function judgeNote(lane) {
     if (!activeNotes || activeNotes.length === 0) return;
-    
     const now = (Date.now() - gameStartTime) / 1000;
     let hitIndex = -1;
     let hitTiming = Infinity;
     let hitNote = null;
-    
     // 獲取判定線位置
     const judgeLine = canvas.height - JUDGE_LINE.POSITION;
-    
     // 查找最近的音符
     for (let i = 0; i < activeNotes.length; i++) {
         const note = activeNotes[i];
         if (note.lane === lane && !note.hit && !note.missed) {
-            // 計算音符的當前 Y 位置
             const noteY = (currentTime - note.time) * LEVEL_CONFIGS[selectedDifficulty].speed;
             const distanceToJudgeLine = Math.abs(noteY - judgeLine);
-            // 只判定通過終止線的音符
-            if (noteY >= judgeLine) {
-                const distanceToJudgeLine = Math.abs(noteY - judgeLine);
-                // 判定範圍檢查
-                if (distanceToJudgeLine <= JUDGE_LINE.PERFECT_RANGE) {
+            if (noteY >= judgeLine - JUDGE_LINE.GOOD_RANGE) { // 只判定進入Good區域的音符
                     const timing = Math.abs(note.time - now);
                     if (timing < hitTiming) {
                         hitTiming = timing;
                         hitIndex = i;
                         hitNote = note;
-                    }
                 }
             }
         }
@@ -2366,40 +2389,62 @@ function judgeNote(lane) {
     if (hitIndex !== -1 && hitNote) {
         const noteY = (currentTime - hitNote.time) * LEVEL_CONFIGS[selectedDifficulty].speed;
         const distanceToJudgeLine = Math.abs(noteY - judgeLine);
-        // 命中時整個軌道高亮
-        dynamicInteractionManager.triggerPerfectEffect(lane);
         if (distanceToJudgeLine <= JUDGE_LINE.PERFECT_RANGE) {
+            dynamicInteractionManager.triggerPerfectEffect(lane);
             hitNoteSuccess(hitIndex, 'perfect');
             score += 1000;
             showScoreGain(1000);
             combo++;
             maxCombo = Math.max(maxCombo, combo);
+        } else if (distanceToJudgeLine <= JUDGE_LINE.GREAT_RANGE) {
+            hitNoteSuccess(hitIndex, 'great');
+            score += 500;
+            showScoreGain(500);
+            combo++;
+            maxCombo = Math.max(maxCombo, combo);
+        } else if (distanceToJudgeLine <= JUDGE_LINE.GOOD_RANGE) {
+            hitNoteSuccess(hitIndex, 'good');
+            score += 200;
+            showScoreGain(200);
+            combo = 0;
         } else {
             missNote();
             return;
         }
-        // 更新顯示
         updateScoreDisplay();
         updateComboDisplay();
-        // 檢查是否進入 Fever 模式
-        effectManager.checkFeverMode();
     } else {
-        // 沒有可以擊中的音符，判定為 Miss
         missNote(true);
     }
 }
 
 function hitNoteSuccess(index, type) {
     if (index >= 0 && index < activeNotes.length) {
-        const note = activeNotes[index];
-        note.hit = true;
-        note.hitType = type;
-        
-        // 立即從活動音符列表中移除
-        activeNotes.splice(index, 1);
-        
-        // 顯示判定結果
-        showJudgement(type);
+        activeNotes[index].hit = true;
+        activeNotes[index].animating = 'fade';
+        activeNotes[index].fadeY = canvas.height - JUDGE_LINE.POSITION;
+        hitCount++;
+        let gain = 0;
+        if (type === 'perfect') {
+            gain = 1000;
+            score += gain;
+            perfectCount++;
+        } else if (type === 'great') {
+            gain = 500;
+            score += gain;
+            greatCount++;
+        } else if (type === 'good') {
+            gain = 200;
+            score += gain;
+            goodCount++;
+        }
+        // Combo加成：每5Combo給5000分
+        if (combo > 0 && combo % 5 === 0) {
+            score += 5000;
+            showScoreGain(5000);
+        }
+        updateScoreDisplay();
+        updateComboDisplay();
     }
 }
 
@@ -2487,13 +2532,14 @@ function showComboEffect(combo) {
 }
 
 function showMissEffect() {
-    if (comboContainer) {
-        const effect = document.createElement('div');
-        effect.className = 'miss-effect';
-        effect.textContent = 'Miss!';
-        comboContainer.appendChild(effect);
-        setTimeout(() => effect.remove(), 600);
-    }
+    // 註解：不顯示 Miss 字樣與動畫
+    // if (comboContainer) {
+    //     const effect = document.createElement('div');
+    //     effect.className = 'miss-effect';
+    //     effect.textContent = 'Miss!';
+    //     comboContainer.appendChild(effect);
+    //     setTimeout(() => effect.remove(), 600);
+    // }
 }
 
 function missNote(isWrongKey = false) {
@@ -2543,9 +2589,8 @@ function startAutoMissCheck() {
         // 檢查是否所有音符都處理完畢，但移除自動結束遊戲的邏輯
         const remainingNotes = activeNotes.filter(n => !n.hit && !n.missed);
         if (remainingNotes.length === 0 && currentTime > 5) {
-            console.log('[AutoMiss] 所有音符處理完畢，但遊戲繼續運行');
-            // 移除自動結束遊戲，讓玩家可以繼續遊玩
-            // setTimeout(() => endGame(), 1000);
+            console.log('[AutoMiss] 所有音符處理完畢，遊戲即將結束');
+            setTimeout(() => endGame(), 1000);
         }
     }, 100);
 }
@@ -2593,9 +2638,8 @@ function renderDifficultyStars() {
 function checkFinalUnlock() {
     const hiddenBtn = document.querySelector('.hidden-difficulty');
     if (!hiddenBtn) return;
-    // 假設 localStorage 記錄 Lv.3+ 通關次數
-    let cleared = parseInt(localStorage.getItem('normalCleared') || '0', 10);
-    if (cleared >= 3) {
+    let playCount = parseInt(localStorage.getItem('fatekeys_playcount') || '0', 10);
+    if (playCount >= 3) {
         hiddenBtn.disabled = false;
         hiddenBtn.classList.add('unlocked-final');
         LEVEL_CONFIGS.fate.locked = false;
@@ -2681,109 +2725,256 @@ function endGame() {
         window.gameEndTimeout = null;
     }
     if (gameEnded) return;
-    
+    // 結算畫面自動播放Drive音樂
+    audioManager.stopAll(() => {
+        audioManager.playBackground();
+    });
+    // ====== 根據評級切換背景色 ======
+    document.body.classList.remove('result-bg-ss', 'result-bg-ab', 'result-bg-d');
+    let gradeClass = '';
+    // 新的宣告
+    const totalNotes = activeNotes.length;
+    const accuracy = totalNotes > 0 ? (hitCount / totalNotes * 100).toFixed(1) : 0;
+    const grade = calculateGrade(score, maxCombo);
+    if (grade === 'SSS' || grade === 'SS' || grade === 'S') gradeClass = 'result-bg-ss';
+    else if (grade === 'A' || grade === 'B' || grade === 'C') gradeClass = 'result-bg-ab';
+    else gradeClass = 'result-bg-d';
+    document.body.classList.add(gradeClass);
+    // ... existing code ...
     gameEnded = true;
-    gameStarted = false;
-    
     stopAutoMissCheck();
     if (animationId) {
         cancelAnimationFrame(animationId);
         animationId = null;
     }
-    
-    // 清理音符特效
     noteEffectManager.particles = [];
-    
     audioVisualizer.stop();
     audioManager.stopAll();
     
-    // 計算成績
-    const totalNotes = activeNotes.length;
-    const accuracy = totalNotes > 0 ? (hitCount / totalNotes * 100).toFixed(1) : 0;
-    const grade = calculateGrade(accuracy, maxCombo);
+    // 計算成績（舊的宣告，已註解）
+    // const totalNotes = activeNotes.length;
+    // const accuracy = totalNotes > 0 ? (hitCount / totalNotes * 100).toFixed(1) : 0;
+    // const grade = calculateGrade(accuracy, maxCombo);
     
-    // 更新結算畫面
-    finalScore.textContent = `分數: ${score.toLocaleString()}`;
-    finalGrade.textContent = `最大Combo: ${maxCombo}`;
-    
-    // 增加遊戲次數
-    gamePlayCount++;
-    checkFinalUnlock();
-    
+    // 顯示結算畫面
     showScreen('result');
-    console.log(`遊戲結束 - 分數: ${score}, 最大Combo: ${maxCombo}, 準確率: ${accuracy}%`);
+    // 強制顯示結算畫面，避免被其他CSS覆蓋
+    resultScreen.style.display = 'flex';
+    resultScreen.style.opacity = '1';
+    resultScreen.style.zIndex = '1000';
 
-    // ====== 新增排行榜與暱稱輸入 ======
-    let leaderboardDiv = document.getElementById('leaderboard');
-    if (!leaderboardDiv) {
-        leaderboardDiv = document.createElement('div');
-        leaderboardDiv.id = 'leaderboard';
-        leaderboardDiv.style = 'margin:32px auto;max-width:420px;background:rgba(0,0,0,0.7);border-radius:16px;padding:24px 16px 16px 16px;box-shadow:0 0 24px #0ff3;';
-        resultScreen.appendChild(leaderboardDiv);
-    }
-    leaderboardDiv.innerHTML = '';
+    // 清空舊內容
+    resultScreen.innerHTML = '';
+
+    // ====== 新結算畫面結構 ======
+    // 主內容容器
+    const content = document.createElement('div');
+    content.className = 'result-content';
+    content.style = 'display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;padding:32px 0;';
+    
+    // 標題
+    const title = document.createElement('div');
+    title.className = 'result-title';
+    title.innerHTML = '✨ <b>你的成績</b> ✨';
+    content.appendChild(title);
+
+    // 分數動畫區
+    const scoreDiv = document.createElement('div');
+    scoreDiv.className = 'final-score';
+    scoreDiv.style = 'font-size:2.8rem;font-weight:bold;color:#ffe066;text-shadow:0 0 24px #ffe066,0 0 8px #fff;letter-spacing:2px;margin:18px 0 8px 0;';
+    scoreDiv.textContent = '分數: 0';
+    content.appendChild(scoreDiv);
+
+    // 評級動畫區
+    const gradeDiv = document.createElement('div');
+    gradeDiv.className = 'final-grade';
+    gradeDiv.style = 'font-size:2.2rem;font-weight:bold;margin-bottom:8px;color:#fff700;text-shadow:0 0 24px #fff700,0 0 8px #fff;letter-spacing:2px;';
+    gradeDiv.textContent = grade;
+    content.appendChild(gradeDiv);
+
+    // 新增詳細資訊區（插在評級下方、最大Combo上方）
+    const detailDiv = document.createElement('div');
+    detailDiv.className = 'result-detail';
+    detailDiv.style = 'font-size:1.1rem;color:#fff;margin-bottom:10px;line-height:1.6;';
+    detailDiv.innerHTML = `
+        <span style=\"color:#ffe066;\">Perfect</span>：${perfectCount}<br>
+        <span style=\"color:#4ecdc4;\">Great</span>：${greatCount}<br>
+        <span style=\"color:#ffe066;\">Good</span>：${goodCount}<br>
+        <span style=\"color:#ff6f91;\">Miss</span>：${missCount}<br>
+        <span style=\"color:#fff700;\">準確率</span>：${accuracy}%
+    `;
+    content.appendChild(detailDiv);
+
+    // 最大Combo
+    const comboDiv = document.createElement('div');
+    comboDiv.className = 'final-combo';
+    comboDiv.style = 'font-size:1.3rem;color:#0ff;margin-bottom:8px;';
+    comboDiv.textContent = `最大Combo：${maxCombo}`;
+    content.appendChild(comboDiv);
+
+    // 成就徽章/稱號
+    const badgeDiv = document.createElement('div');
+    badgeDiv.className = 'final-badge';
+    badgeDiv.style = 'margin-bottom:12px;';
+    let badge = '';
+    if (grade === 'SSS') badge = '🏆 <span style="color:#ffe066">節奏之神</span>';
+    else if (grade === 'SS') badge = '🥇 <span style="color:#ffd700">節奏大師</span>';
+    else if (grade === 'S') badge = '🥈 <span style="color:#fff">節奏高手</span>';
+    else if (grade === 'A') badge = '🥉 <span style="color:#0ff">節奏新星</span>';
+    else if (grade === 'B') badge = '🎵 <span style="color:#4ecdc4">節奏入門</span>';
+    else badge = '💡 <span style="color:#aaa">繼續加油！</span>';
+    badgeDiv.innerHTML = badge;
+    content.appendChild(badgeDiv);
 
     // 暱稱輸入
-    let nicknameRow = document.createElement('div');
+    const nicknameRow = document.createElement('div');
     nicknameRow.style = 'display:flex;flex-direction:row;align-items:center;justify-content:center;width:100%;margin-bottom:8px;';
-    let nicknameInput = document.createElement('input');
+    const nicknameInput = document.createElement('input');
     nicknameInput.type = 'text';
     nicknameInput.maxLength = 15;
     nicknameInput.placeholder = '請輸入暱稱 (最多15字)';
     nicknameInput.style = 'width:60%;padding:8px 12px;border-radius:8px;border:1px solid #0ff;font-size:1.1em;';
-    let confirmBtn = document.createElement('button');
+    const confirmBtn = document.createElement('button');
     confirmBtn.textContent = '確認上榜';
     confirmBtn.style = 'margin-left:8px;padding:8px 18px;border-radius:8px;background:#0ff;color:#222;font-weight:bold;border:none;cursor:pointer;font-size:1.1em;white-space:nowrap;';
     nicknameRow.appendChild(nicknameInput);
     nicknameRow.appendChild(confirmBtn);
-    leaderboardDiv.appendChild(nicknameRow);
+    content.appendChild(nicknameRow);
 
     // 排行榜區塊
-    let table = document.createElement('table');
-    table.style = 'width:100%;margin-top:18px;border-collapse:collapse;background:rgba(0,0,0,0.5);';
-    table.innerHTML = `<thead><tr style="color:#0ff;font-size:1.1em;"><th style="text-align:left">名次</th><th style="text-align:left">暱稱</th><th style="text-align:center">難度</th><th style="text-align:right">分數</th><th style="text-align:center">最大Combo</th></tr></thead><tbody id="leaderboard-body"></tbody>`;
-    leaderboardDiv.appendChild(table);
+    const leaderboardDiv = document.createElement('div');
+    leaderboardDiv.className = 'result-leaderboard';
+    leaderboardDiv.style = 'width:100%;max-width:420px;margin:18px auto 0 auto;background:rgba(0,0,0,0.7);border-radius:16px;padding:16px 8px 8px 8px;box-shadow:0 0 24px #0ff3;';
+    content.appendChild(leaderboardDiv);
 
-    // 讀取排行榜資料
+    // 再玩一次/回主選單按鈕
+    const btnRow = document.createElement('div');
+    btnRow.className = 'result-buttons';
+    btnRow.style = 'display:flex;flex-direction:row;gap:18px;margin-top:24px;justify-content:center;';
+    const retryBtn = document.createElement('button');
+    retryBtn.className = 'action-btn';
+    retryBtn.innerHTML = '再玩一次';
+    retryBtn.style = 'padding:10px 32px;font-size:1.2em;border-radius:12px;background:#ffe066;color:#222;font-weight:bold;border:none;cursor:pointer;box-shadow:0 0 12px #ffe06688;transition:transform 0.2s;';
+    const menuBtn = document.createElement('button');
+    menuBtn.className = 'action-btn';
+    menuBtn.innerHTML = '回主選單';
+    menuBtn.style = 'padding:10px 32px;font-size:1.2em;border-radius:12px;background:#4ecdc4;color:#222;font-weight:bold;border:none;cursor:pointer;box-shadow:0 0 12px #4ecdc488;transition:transform 0.2s;';
+    btnRow.appendChild(retryBtn);
+    btnRow.appendChild(menuBtn);
+    content.appendChild(btnRow);
+
+    // 分享成績按鈕獨立一排
+    const shareRow = document.createElement('div');
+    shareRow.className = 'result-share-row';
+    shareRow.style = 'display:flex;flex-direction:row;gap:18px;margin-top:12px;justify-content:center;';
+    const shareBtn = document.createElement('button');
+    shareBtn.className = 'action-btn';
+    shareBtn.innerHTML = '分享成績';
+    shareBtn.style = 'padding:10px 32px;font-size:1.2em;border-radius:12px;background:#0ff;color:#222;font-weight:bold;border:none;cursor:pointer;box-shadow:0 0 12px #0ff8;transition:transform 0.2s;';
+    shareRow.appendChild(shareBtn);
+    content.appendChild(shareRow);
+
+    resultScreen.appendChild(content);
+
+    // ====== 分數跳動動畫 ======
+    let displayScore = 0;
+    const animateScore = () => {
+        if (displayScore < score) {
+            displayScore += Math.ceil((score - displayScore) / 12);
+            if (displayScore > score) displayScore = score;
+            scoreDiv.textContent = `分數: ${displayScore.toLocaleString()}`;
+            requestAnimationFrame(animateScore);
+        } else {
+            scoreDiv.textContent = `分數: ${score.toLocaleString()}`;
+        }
+    };
+    animateScore();
+
+    // ====== 評級動畫 ======
+    gradeDiv.classList.add('grade-animate');
+    setTimeout(()=>{
+        gradeDiv.classList.add('grade-glow');
+    }, 400);
+
+    // ====== 排行榜資料處理 ======
     let leaderboard = [];
     try {
         leaderboard = JSON.parse(localStorage.getItem('fatekeys_leaderboard')||'[]');
     } catch(e) { leaderboard = []; }
-
-    // 新增紀錄
-    confirmBtn.onclick = function() {
-        let nickname = nicknameInput.value.trim() || '無名玩家';
-        if (nickname.length > 15) nickname = nickname.slice(0, 15);
-        leaderboard.push({ nickname, score, maxCombo, difficulty: DIFFICULTY_LEVEL_MAP[selectedDifficulty] || '' });
-        leaderboard.sort((a, b) => b.score - a.score);
-        leaderboard = leaderboard.slice(0, 20); // 只保留前20名
-        localStorage.setItem('fatekeys_leaderboard', JSON.stringify(leaderboard));
-        renderLeaderboard();
-        confirmBtn.disabled = true;
-        nicknameInput.disabled = true;
-    };
-
-    // 排行榜渲染
-    function renderLeaderboard() {
-        let body = leaderboardDiv.querySelector('#leaderboard-body');
-        body.innerHTML = '';
+    // 新增本次紀錄（暫不存檔，等確認）
+    let thisRank = -1;
+    function renderLeaderboard(highlight) {
+        leaderboardDiv.innerHTML = '';
+        const table = document.createElement('table');
+        table.style = 'width:100%;margin-top:0;border-collapse:collapse;background:rgba(0,0,0,0.5);';
+        table.innerHTML = `<thead><tr style="color:#0ff;font-size:1.1em;"><th style="text-align:left">名次</th><th style="text-align:left">暱稱</th><th style="text-align:center">難度</th><th style="text-align:right">分數</th><th style="text-align:center">最大Combo</th></tr></thead><tbody id="leaderboard-body"></tbody>`;
+        leaderboardDiv.appendChild(table);
+        const body = table.querySelector('#leaderboard-body');
         leaderboard.forEach((item, idx) => {
-            let tr = document.createElement('tr');
+            const tr = document.createElement('tr');
             tr.innerHTML = `<td style="color:#ffe066;font-weight:bold;">${idx+1}</td><td>${item.nickname}</td><td style="text-align:center;">${item.difficulty||''}</td><td style="text-align:right;">${item.score.toLocaleString()}</td><td style="text-align:center;">${item.maxCombo}</td>`;
+            if (highlight && highlight.nickname === item.nickname && highlight.score === item.score && highlight.maxCombo === item.maxCombo) {
+                tr.style.background = 'rgba(255,255,0,0.18)';
+                tr.style.boxShadow = '0 0 16px #ffe06688';
+                tr.style.fontWeight = 'bold';
+                tr.classList.add('slide-in-left');
+            } else {
+                tr.classList.add('slide-in-right');
+            }
             body.appendChild(tr);
         });
     }
     renderLeaderboard();
-}
 
-function calculateGrade(accuracy, maxCombo) {
-    if (accuracy >= 95 && maxCombo >= 50) return 'SSS';
-    if (accuracy >= 90 && maxCombo >= 30) return 'SS';
-    if (accuracy >= 85 && maxCombo >= 20) return 'S';
-    if (accuracy >= 80 && maxCombo >= 15) return 'A';
-    if (accuracy >= 70 && maxCombo >= 10) return 'B';
-    if (accuracy >= 60 && maxCombo >= 5) return 'C';
-    return 'D';
+    // ====== 上榜按鈕事件 ======
+    confirmBtn.onclick = function() {
+        let nickname = nicknameInput.value.trim() || '無名玩家';
+        if (nickname.length > 15) nickname = nickname.slice(0, 15);
+        const record = { nickname, score, maxCombo, difficulty: DIFFICULTY_LEVEL_MAP[selectedDifficulty] || '' };
+        leaderboard.push(record);
+        leaderboard.sort((a, b) => b.score - a.score);
+        leaderboard = leaderboard.slice(0, 20);
+        localStorage.setItem('fatekeys_leaderboard', JSON.stringify(leaderboard));
+        thisRank = leaderboard.findIndex(item => item.nickname === record.nickname && item.score === record.score && item.maxCombo === record.maxCombo);
+        renderLeaderboard(record);
+        confirmBtn.disabled = true;
+        nicknameInput.disabled = true;
+    };
+
+    // ====== 再玩一次/回主選單/分享成績按鈕事件 ======
+    retryBtn.onclick = function() {
+        document.body.classList.remove('result-bg-ss', 'result-bg-ab', 'result-bg-d');
+        showScreen('game');
+        realStartGame();
+    };
+    menuBtn.onclick = function() {
+        document.body.classList.remove('result-bg-ss', 'result-bg-ab', 'result-bg-d');
+        showScreen('select');
+        audioManager.resumeBackground();
+    };
+    shareBtn.onclick = function() {
+        const shareText = `我在 Fate Keys 命運節奏 得到分數${score}，評級${grade}，最大Combo${maxCombo}！快來挑戰吧！`;
+        if (navigator.share) {
+            navigator.share({ title: 'Fate Keys 命運節奏', text: shareText });
+        } else {
+            navigator.clipboard.writeText(shareText);
+            alert('成績已複製到剪貼簿！');
+        }
+    };
+
+    // 全連獎勵
+    if (maxCombo === activeNotes.length && activeNotes.length > 0) {
+        score += 20000;
+        // 可在畫面顯示全連Bonus
+        setTimeout(() => {
+            showToast('全連Bonus +20000!');
+        }, 500);
+    }
+
+    // 在 endGame() 最後加上遊玩次數累加
+    let playCount = parseInt(localStorage.getItem('fatekeys_playcount') || '0', 10);
+    playCount++;
+    localStorage.setItem('fatekeys_playcount', playCount);
 }
 
 // ===============================
@@ -2800,18 +2991,12 @@ function updateScoreDisplay() {
 }
 
 function updateComboDisplay() {
-    if (comboDisplay) {
+    if (!comboDisplay) return;
+    if (combo > 0) {
+        comboDisplay.style.display = 'block';
         comboDisplay.textContent = combo;
-        comboDisplay.classList.remove('combo-pulse', 'glow');
-        if (combo > 0) {
-            // scale 放大動畫
-            comboDisplay.classList.add('combo-pulse');
-            setTimeout(() => comboDisplay.classList.remove('combo-pulse'), 300);
-        }
-        if (combo >= 10) {
-            // 高連擊發光顫抖
-            comboDisplay.classList.add('glow');
-        }
+    } else {
+        comboDisplay.style.display = 'none';
     }
 }
 
@@ -3592,20 +3777,18 @@ const effectManager = {
     },
     
     createMissEffect(x, y) {
-        const ctx = this.ctx;
-        ctx.save();
-        
-        // 繪製紅色X
-        ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(x - 20, y - 20);
-        ctx.lineTo(x + 20, y + 20);
-        ctx.moveTo(x + 20, y - 20);
-        ctx.lineTo(x - 20, y + 20);
-        ctx.stroke();
-        
-        ctx.restore();
+        // 註解：不繪製Miss紅色X
+        // const ctx = this.ctx;
+        // ctx.save();
+        // ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
+        // ctx.lineWidth = 3;
+        // ctx.beginPath();
+        // ctx.moveTo(x - 20, y - 20);
+        // ctx.lineTo(x + 20, y + 20);
+        // ctx.moveTo(x + 20, y - 20);
+        // ctx.lineTo(x - 20, y + 20);
+        // ctx.stroke();
+        // ctx.restore();
     },
     
     playPerfectSound() {
@@ -3723,3 +3906,19 @@ function showScoreGain(gain) {
         setTimeout(() => gainEl.remove(), 400);
     }, 700);
 }
+
+// ===============================
+// 評級計算 (Grade Calculation)
+// ===============================
+function calculateGrade(score, maxCombo) {
+    const config = LEVEL_CONFIGS[selectedDifficulty] || {};
+    const thresholds = config.scoreGradeThresholds || { SSS: 100000, SS: 90000, S: 80000, A: 60000, B: 40000, C: 20000, D: 0 };
+    if (score >= thresholds.SSS) return 'SSS';
+    if (score >= thresholds.SS)  return 'SS';
+    if (score >= thresholds.S)   return 'S';
+    if (score >= thresholds.A)   return 'A';
+    if (score >= thresholds.B)   return 'B';
+    if (score >= thresholds.C)   return 'C';
+    return 'D';
+}
+
