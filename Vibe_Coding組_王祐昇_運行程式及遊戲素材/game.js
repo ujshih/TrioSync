@@ -226,9 +226,17 @@ const audioManager = {
         }
     },
     
+    // 取得全域音量
+    getCurrentVolume() {
+        const slider = document.getElementById('volume-slider');
+        if (slider) return parseFloat(slider.value);
+        return 1;
+    },
+    
     fadeIn(audio, target = 1, step = 0.1, interval = 40) {
         clearInterval(this.fadeTimer);
-        audio.volume = 0;
+        // audio.volume = 0; // 移除強制歸零
+        audio.volume = this.getCurrentVolume();
         
         console.log('[fadeIn] 開始淡入播放，目標音量:', target);
         
@@ -271,10 +279,12 @@ const audioManager = {
         }
         
         this.fadeTimer = setInterval(() => {
-            if (audio.volume < target) {
-                audio.volume = Math.min(audio.volume + step, target);
+            const targetVol = this.getCurrentVolume();
+            if (audio.volume < targetVol) {
+                audio.volume = Math.min(audio.volume + step, targetVol);
             } else {
                 clearInterval(this.fadeTimer);
+                audio.volume = targetVol;
                 console.log('[fadeIn] 淡入完成，當前音量:', audio.volume);
             }
         }, interval);
@@ -316,7 +326,7 @@ const audioManager = {
             const audio = new Audio(path);
             Object.assign(audio, {
                 loop: true,
-                volume: 0,
+                volume: this.getCurrentVolume(),
                 onended: null,
                 onerror: () => showToast('背景音樂播放失敗，請檢查音訊檔案或瀏覽器權限！')
             });
@@ -324,7 +334,7 @@ const audioManager = {
             this.currentType = 'bgm';
             this.currentTrack = 'Drive';
             this.showNowPlaying('Drive');
-            this.fadeIn(audio, 0.7);
+            this.fadeIn(audio, this.getCurrentVolume());
         });
     },
     
@@ -336,7 +346,7 @@ const audioManager = {
             const audio = new Audio(path);
             Object.assign(audio, {
                 loop: false,
-                volume: 0.8,
+                volume: this.getCurrentVolume(),
                 currentTime: offsetSec ?? (trackName === 'Canon' ? 100 : 15),
                 onended: null,
                 onerror: () => showAudioError('音樂檔案載入失敗，請確認伺服器已啟動、檔案存在且名稱正確（大小寫）！')
@@ -345,7 +355,7 @@ const audioManager = {
             this.currentType = 'preview';
             this.currentTrack = trackName;
             this.showNowPlaying(trackName);
-            this.fadeIn(audio, 0.8);
+            this.fadeIn(audio, this.getCurrentVolume());
             audio.onplay = hideAudioError;
         });
     },
@@ -372,7 +382,7 @@ const audioManager = {
         
         // 創建新的音頻實例
         this.audio = new Audio(path);
-        this.audio.volume = 1.0; // 確保音量最大
+        this.audio.volume = this.getCurrentVolume(); // 嚴格跟隨音量條
         
         // 設置音頻參數
         if (offsetSec !== null) {
@@ -383,6 +393,7 @@ const audioManager = {
         const playPromise = this.audio.play();
         if (playPromise !== undefined) {
             playPromise.then(() => {
+                this.audio.volume = this.getCurrentVolume();
                 console.log('音樂開始播放');
                 if (callback) callback();
             }).catch(error => {
@@ -3440,6 +3451,13 @@ volumeSlider.addEventListener('input', function() {
     volume = parseFloat(this.value);
     if (audioManager.audio) audioManager.audio.volume = volume;
 });
+// 保持音量即時同步
+setInterval(() => {
+    if (audioManager.audio) {
+        const slider = document.getElementById('volume-slider');
+        if (slider) audioManager.audio.volume = parseFloat(slider.value);
+    }
+}, 300);
 
 // 遊戲說明 modal
 const helpBtn = document.getElementById('help-btn');
