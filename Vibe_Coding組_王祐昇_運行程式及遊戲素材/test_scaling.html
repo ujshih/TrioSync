@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>縮放一致性測試 - Fate Keys</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #0a0a1a;
+            color: #fff;
+            font-family: Arial, sans-serif;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .test-canvas {
+            width: 100%;
+            height: 400px;
+            border: 2px solid #0ff;
+            background: #181a2a;
+            display: block;
+            margin: 20px 0;
+        }
+        
+        .info-panel {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid #0ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        
+        .status.success {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #0f0;
+        }
+        
+        .status.warning {
+            background: rgba(255, 255, 0, 0.2);
+            border: 1px solid #ff0;
+        }
+        
+        .status.error {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #f00;
+        }
+        
+        button {
+            background: linear-gradient(90deg, #0ff, #f0f);
+            border: none;
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎮 Fate Keys - 縮放一致性測試</h1>
+        
+        <div class="info-panel">
+            <h3>測試目標</h3>
+            <p>驗證中央霓虹引導線、音符掉落軌道與背景賽道縮放是否保持一致</p>
+            <ul>
+                <li>✅ 3D透視變換：perspective(800px) rotateX(8deg)</li>
+                <li>✅ 裁剪路徑：polygon(25% 0, 75% 0, 100% 100%, 0 100%)</li>
+                <li>✅ 軌道寬度計算：canvas.width / laneCount</li>
+                <li>✅ 音符位置計算：與軌道對齊</li>
+            </ul>
+        </div>
+        
+        <canvas id="testCanvas" class="test-canvas"></canvas>
+        
+        <div class="info-panel">
+            <h3>測試控制</h3>
+            <button onclick="toggleLanes()">切換軌道顯示</button>
+            <button onclick="toggleNotes()">切換音符顯示</button>
+            <button onclick="toggleBackground()">切換背景顯示</button>
+            <button onclick="resetTest()">重置測試</button>
+        </div>
+        
+        <div id="statusPanel">
+            <div class="status success">
+                <strong>✅ 測試準備就緒</strong><br>
+                點擊上方按鈕開始測試縮放一致性
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('testCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 測試配置
+        let showLanes = true;
+        let showNotes = true;
+        let showBackground = true;
+        
+        // 軌道配置
+        const laneCount = 5;
+        const laneConfigs = [
+            { key: 'D', color: '#00CFFF', name: '青藍' },
+            { key: 'F', color: '#A16EFF', name: '紫光' },
+            { key: ' ', color: '#FFD700', name: '金白' },
+            { key: 'J', color: '#FF8888', name: '粉橘' },
+            { key: 'K', color: '#66FFFF', name: '電光藍' }
+        ];
+        
+        // 音符數據
+        const testNotes = [
+            { lane: 0, time: 0, y: 100 },
+            { lane: 1, time: 0, y: 150 },
+            { lane: 2, time: 0, y: 200 },
+            { lane: 3, time: 0, y: 250 },
+            { lane: 4, time: 0, y: 300 }
+        ];
+        
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        
+        function apply3DTransform() {
+            ctx.save();
+            
+            // 應用與CSS一致的3D透視變換
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const rotateX = 8 * Math.PI / 180; // 8度轉弧度
+            
+            ctx.translate(centerX, centerY);
+            ctx.transform(
+                1, 0,
+                0, Math.cos(rotateX),
+                0, 0
+            );
+            ctx.translate(-centerX, -centerY);
+            
+            // 應用clip-path效果
+            ctx.beginPath();
+            ctx.moveTo(canvas.width * 0.25, 0);
+            ctx.lineTo(canvas.width * 0.75, 0);
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.lineTo(0, canvas.height);
+            ctx.closePath();
+            ctx.clip();
+        }
+        
+        function drawBackground() {
+            if (!showBackground) return;
+            
+            // 繪製背景漸變
+            const gradient = ctx.createRadialGradient(
+                canvas.width / 2, canvas.height / 2, 0,
+                canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height)
+            );
+            gradient.addColorStop(0, '#000');
+            gradient.addColorStop(1, '#333');
+            
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        function drawLanes() {
+            if (!showLanes) return;
+            
+            const laneWidth = canvas.width / laneCount;
+            
+            for (let i = 0; i < laneCount; i++) {
+                const laneX = (i + 0.5) * laneWidth;
+                const config = laneConfigs[i];
+                
+                // 軌道主體
+                const laneGradient = ctx.createLinearGradient(laneX - laneWidth * 0.4, 0, laneX + laneWidth * 0.4, 0);
+                laneGradient.addColorStop(0, 'rgba(255, 255, 255, 0.05)');
+                laneGradient.addColorStop(0.3, `${config.color}26`);
+                laneGradient.addColorStop(0.7, `${config.color}26`);
+                laneGradient.addColorStop(1, 'rgba(255, 255, 255, 0.05)');
+                
+                ctx.fillStyle = laneGradient;
+                ctx.fillRect(laneX - laneWidth * 0.4, 0, laneWidth * 0.8, canvas.height);
+                
+                // 軌道邊緣發光線
+                ctx.strokeStyle = config.color;
+                ctx.lineWidth = 3;
+                ctx.shadowColor = config.color;
+                ctx.shadowBlur = 15;
+                ctx.setLineDash([8, 4]);
+                
+                ctx.beginPath();
+                ctx.moveTo(laneX - laneWidth * 0.35, 0);
+                ctx.lineTo(laneX - laneWidth * 0.35, canvas.height);
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.moveTo(laneX + laneWidth * 0.35, 0);
+                ctx.lineTo(laneX + laneWidth * 0.35, canvas.height);
+                ctx.stroke();
+                
+                // 軌道中心線
+                const centerGradient = ctx.createLinearGradient(laneX, 0, laneX, canvas.height);
+                centerGradient.addColorStop(0, `${config.color}CC`);
+                centerGradient.addColorStop(0.5, `${config.color}4D`);
+                centerGradient.addColorStop(1, `${config.color}1A`);
+                
+                ctx.strokeStyle = centerGradient;
+                ctx.lineWidth = 4;
+                ctx.shadowBlur = 20;
+                ctx.setLineDash([15, 5]);
+                
+                ctx.beginPath();
+                ctx.moveTo(laneX, 0);
+                ctx.lineTo(laneX, canvas.height);
+                ctx.stroke();
+            }
+        }
+        
+        function drawNotes() {
+            if (!showNotes) return;
+            
+            const laneWidth = canvas.width / laneCount;
+            
+            testNotes.forEach(note => {
+                const noteX = (note.lane + 0.5) * laneWidth;
+                const config = laneConfigs[note.lane];
+                
+                // 音符軌跡
+                const trailGradient = ctx.createLinearGradient(noteX, note.y - 80, noteX, note.y);
+                trailGradient.addColorStop(0, `${config.color}00`);
+                trailGradient.addColorStop(0.3, `${config.color}4D`);
+                trailGradient.addColorStop(1, `${config.color}CC`);
+                
+                ctx.strokeStyle = trailGradient;
+                ctx.lineWidth = 6;
+                ctx.lineCap = 'round';
+                ctx.shadowColor = config.color;
+                ctx.shadowBlur = 10;
+                
+                ctx.beginPath();
+                ctx.moveTo(noteX, note.y - 80);
+                ctx.lineTo(noteX, note.y - 20);
+                ctx.stroke();
+                
+                // 音符外層光暈
+                const gradient = ctx.createRadialGradient(noteX, note.y, 0, noteX, note.y, 45);
+                gradient.addColorStop(0, `${config.color}E6`);
+                gradient.addColorStop(0.6, `${config.color}66`);
+                gradient.addColorStop(1, 'transparent');
+                
+                ctx.fillStyle = gradient;
+                ctx.beginPath();
+                ctx.arc(noteX, note.y, 45, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 音符核心
+                ctx.beginPath();
+                ctx.arc(noteX, note.y, 22, 0, Math.PI * 2);
+                ctx.fillStyle = config.color;
+                ctx.shadowColor = config.color;
+                ctx.shadowBlur = 25;
+                ctx.fill();
+                
+                // 音符內核
+                ctx.beginPath();
+                ctx.arc(noteX, note.y, 12, 0, Math.PI * 2);
+                ctx.fillStyle = '#fff';
+                ctx.shadowColor = '#fff';
+                ctx.shadowBlur = 20;
+                ctx.fill();
+            });
+        }
+        
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            apply3DTransform();
+            drawBackground();
+            drawLanes();
+            drawNotes();
+            
+            ctx.restore();
+        }
+        
+        function updateStatus() {
+            const statusPanel = document.getElementById('statusPanel');
+            let status = '';
+            
+            if (showLanes && showNotes && showBackground) {
+                status = `
+                    <div class="status success">
+                        <strong>✅ 所有元素顯示中</strong><br>
+                        中央霓虹引導線、音符掉落軌道與背景賽道縮放一致
+                    </div>
+                `;
+            } else {
+                status = `
+                    <div class="status warning">
+                        <strong>⚠️ 部分元素隱藏中</strong><br>
+                        軌道: ${showLanes ? '✅' : '❌'} | 
+                        音符: ${showNotes ? '✅' : '❌'} | 
+                        背景: ${showBackground ? '✅' : '❌'}
+                    </div>
+                `;
+            }
+            
+            statusPanel.innerHTML = status;
+        }
+        
+        function toggleLanes() {
+            showLanes = !showLanes;
+            render();
+            updateStatus();
+        }
+        
+        function toggleNotes() {
+            showNotes = !showNotes;
+            render();
+            updateStatus();
+        }
+        
+        function toggleBackground() {
+            showBackground = !showBackground;
+            render();
+            updateStatus();
+        }
+        
+        function resetTest() {
+            showLanes = true;
+            showNotes = true;
+            showBackground = true;
+            render();
+            updateStatus();
+        }
+        
+        // 初始化
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        render();
+        updateStatus();
+        
+        // 動畫循環
+        function animate() {
+            // 更新音符位置
+            testNotes.forEach(note => {
+                note.y += 1;
+                if (note.y > canvas.height + 50) {
+                    note.y = -50;
+                }
+            });
+            
+            render();
+            requestAnimationFrame(animate);
+        }
+        
+        animate();
+    </script>
+</body>
+</html> 

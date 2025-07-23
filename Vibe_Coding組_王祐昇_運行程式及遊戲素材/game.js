@@ -1151,6 +1151,9 @@ function gameLoop(now) {
     
     drawBackground(ctx);
     
+    // 繪製賽道（中央霓虹引導線）
+    laneManager.drawLanes(ctx, canvas);
+    
     // 添加音符調試信息
     if (now % 1000 < 20) {
         console.log('[gameLoop] 音符狀態:', {
@@ -1167,6 +1170,10 @@ function gameLoop(now) {
     // 更新和繪製音符特效
     noteEffectManager.update();
     noteEffectManager.draw(ctx);
+    
+    // 更新和繪製判定線閃光效果
+    judgeLineFlashManager.update();
+    judgeLineFlashManager.draw(ctx, canvas);
     
     // 恢復畫面震動
     if (screenShake > 0) {
@@ -1290,127 +1297,286 @@ const laneManager = {
     
     drawLanes(ctx, canvas) {
         const laneWidth = canvas.width / this.laneCount;
-        
-        // 繪製每個賽道
+        ctx.save();
+        // 透視參數
+        const perspective = 800;
+        const rotateX = 8 * Math.PI / 180;
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        ctx.translate(centerX, centerY);
+        ctx.transform(1, 0, 0, Math.cos(rotateX), 0, 0);
+        ctx.translate(-centerX, -centerY);
+        // clip-path 與 drawLanes 一致
+        ctx.beginPath();
+        ctx.moveTo(canvas.width * 0.01, 0);
+        ctx.lineTo(canvas.width * 0.99, 0);
+        ctx.lineTo(canvas.width * 0.99, canvas.height);
+        ctx.lineTo(canvas.width * 0.01, canvas.height);
+        ctx.closePath();
+        ctx.clip();
+
+        // === 1. 賽道主體（梯形） ===
+        const bottomLeft = canvas.width * 0.01;
+        const bottomRight = canvas.width * 0.99;
+        const vanishX = canvas.width / 2;
+        const vanishY = 0;
         for (let i = 0; i < this.laneCount; i++) {
-            const laneX = (i + 0.5) * laneWidth;
+            // 下方左右分隔點
+            const tL = i / this.laneCount;
+            const tR = (i + 1) / this.laneCount;
+            const xL = bottomLeft + tL * (bottomRight - bottomLeft);
+            const xR = bottomLeft + tR * (bottomRight - bottomLeft);
+            const yB = canvas.height;
+            // 上方都聚焦到消失點
+            const xVanish = vanishX;
+            const yVanish = vanishY;
+
+            // 動態配色處理
             const config = this.getLaneConfig(i);
             let laneColor = config.color;
             let glowIntensity = 1.0;
-            
-            // 動態配色處理
             if (laneGlowStates[i] === 1) {
-                // Perfect狀態 - 閃光效果
                 laneColor = '#FFFFFF';
-                glowIntensity = 2.0;
+                glowIntensity = 2.5;
             } else if (laneGlowStates[i] === 2) {
-                // Fever狀態 - 強烈發光
                 laneColor = '#FFD700';
                 glowIntensity = 3.0;
+            } else if (laneGlowStates[i] === 3) {
+                laneColor = '#FFFFFF';
+                glowIntensity = 2.0;
+            } else if (laneGlowStates[i] === 4) {
+                laneColor = '#FFFFFF';
+                glowIntensity = 1.8;
             }
-            
-            ctx.save();
-            
-            // 賽道主體 - 透視光橋
+
+            // 賽道主體 - 梯形區塊
             let laneGradient;
-            if (laneGlowStates[i] === 1 || laneGlowStates[i] === 2) {
-                // 高亮時：底部稍亮、頂部較暗，亮度變化細微
-                laneGradient = ctx.createLinearGradient(laneX, 0, laneX, canvas.height);
-                laneGradient.addColorStop(0, `${laneColor}22`); // 頂部較暗
-                laneGradient.addColorStop(0.7, `${laneColor}33`); // 中段
-                laneGradient.addColorStop(1, `${laneColor}55`); // 底部稍亮
+            if (laneGlowStates[i] === 1) {
+                laneGradient = ctx.createLinearGradient((xL + xR) / 2, yVanish, (xL + xR) / 2, yB);
+                laneGradient.addColorStop(0, `${laneColor}44`);
+                laneGradient.addColorStop(0.5, `${laneColor}66`);
+                laneGradient.addColorStop(1, `${laneColor}88`);
+            } else if (laneGlowStates[i] === 2) {
+                laneGradient = ctx.createLinearGradient((xL + xR) / 2, yVanish, (xL + xR) / 2, yB);
+                laneGradient.addColorStop(0, `${laneColor}33`);
+                laneGradient.addColorStop(0.7, `${laneColor}55`);
+                laneGradient.addColorStop(1, `${laneColor}77`);
+            } else if (laneGlowStates[i] === 3) {
+                laneGradient = ctx.createLinearGradient((xL + xR) / 2, yVanish, (xL + xR) / 2, yB);
+                laneGradient.addColorStop(0, `${laneColor}22`);
+                laneGradient.addColorStop(0.6, `${laneColor}44`);
+                laneGradient.addColorStop(1, `${laneColor}66`);
+            } else if (laneGlowStates[i] === 4) {
+                laneGradient = ctx.createLinearGradient((xL + xR) / 2, yVanish, (xL + xR) / 2, yB);
+                laneGradient.addColorStop(0, `${laneColor}11`);
+                laneGradient.addColorStop(0.5, `${laneColor}33`);
+                laneGradient.addColorStop(1, `${laneColor}55`);
             } else {
-                // 一般狀態
-                laneGradient = ctx.createLinearGradient(laneX - laneWidth * 0.4, 0, laneX + laneWidth * 0.4, 0);
-                laneGradient.addColorStop(0, 'rgba(255, 255, 255, 0.05)');
+                laneGradient = ctx.createLinearGradient((xL + xR) / 2, yVanish, (xL + xR) / 2, yB);
+                laneGradient.addColorStop(0, 'rgba(255,255,255,0.05)');
                 laneGradient.addColorStop(0.3, `${laneColor}26`);
                 laneGradient.addColorStop(0.7, `${laneColor}26`);
-                laneGradient.addColorStop(1, 'rgba(255, 255, 255, 0.05)');
+                laneGradient.addColorStop(1, 'rgba(255,255,255,0.05)');
             }
+            ctx.save();
             ctx.fillStyle = laneGradient;
-            ctx.fillRect(laneX - laneWidth * 0.4, 0, laneWidth * 0.8, canvas.height);
-            
-            // 賽道邊緣發光線
-            ctx.strokeStyle = laneColor;
-            ctx.lineWidth = 2 * glowIntensity;
+            ctx.globalAlpha = 1.0;
             ctx.shadowColor = laneColor;
-            ctx.shadowBlur = 10 * glowIntensity;
-            ctx.setLineDash([8, 4]);
+            ctx.shadowBlur = 20 * glowIntensity;
             ctx.beginPath();
-            ctx.moveTo(laneX - laneWidth * 0.35, 0);
-            ctx.lineTo(laneX - laneWidth * 0.35, canvas.height);
+            ctx.moveTo(xL, yB);
+            ctx.lineTo(xR, yB);
+            ctx.lineTo(xVanish, yVanish);
+            ctx.lineTo(xVanish, yVanish);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+
+            // 賽道邊緣發光線
+            ctx.save();
+            ctx.strokeStyle = laneColor;
+            ctx.lineWidth = 3 * glowIntensity;
+            ctx.shadowColor = laneColor;
+            ctx.shadowBlur = 15 * glowIntensity;
+            ctx.beginPath();
+            ctx.moveTo(xL, yB);
+            ctx.lineTo(xVanish, yVanish);
             ctx.stroke();
             ctx.beginPath();
-            ctx.moveTo(laneX + laneWidth * 0.35, 0);
-            ctx.lineTo(laneX + laneWidth * 0.35, canvas.height);
+            ctx.moveTo(xR, yB);
+            ctx.lineTo(xVanish, yVanish);
             ctx.stroke();
-            
-            // 賽道中心線 - 透視效果
-            const centerGradient = ctx.createLinearGradient(laneX, 0, laneX, canvas.height);
+            ctx.restore();
+
+            // 賽道中心線 - 透視收斂
+            ctx.save();
+            const xC = (xL + xR) / 2;
+            const centerGradient = ctx.createLinearGradient(xC, yB, vanishX, vanishY);
             centerGradient.addColorStop(0, `${laneColor}CC`);
             centerGradient.addColorStop(0.5, `${laneColor}4D`);
             centerGradient.addColorStop(1, `${laneColor}1A`);
-            
             ctx.strokeStyle = centerGradient;
-            ctx.lineWidth = 3 * glowIntensity;
-            ctx.setLineDash([15, 5]);
-            ctx.shadowBlur = 15 * glowIntensity;
-            ctx.beginPath();
-            ctx.moveTo(laneX, 0);
-            ctx.lineTo(laneX, canvas.height);
-            ctx.stroke();
-            
-            // 賽道脈動效果
-            let pulse = Math.sin(Date.now() * 0.002 + i * Math.PI / 3) * 0.3 + 0.7;
-            if (feverMode) {
-                // Fever模式下的脈動
-                pulse = Math.sin(Date.now() * 0.005 + i * Math.PI / 3) * 0.5 + 0.5;
+            ctx.lineWidth = 4 * glowIntensity;
+            ctx.shadowBlur = 20 * glowIntensity;
+            // 虛線樣式
+            if (laneGlowStates[i] === 1) {
+                ctx.setLineDash([]);
+            } else if (laneGlowStates[i] === 2) {
+                ctx.setLineDash([8, 3]);
+            } else if (laneGlowStates[i] === 3) {
+                ctx.setLineDash([12, 4]);
+            } else if (laneGlowStates[i] === 4) {
+                ctx.setLineDash([15, 5]);
+            } else {
+                ctx.setLineDash([15, 5]);
             }
-            ctx.globalAlpha = pulse * 0.3 * glowIntensity;
-            ctx.fillStyle = `${laneColor}1A`;
-            ctx.fillRect(laneX - laneWidth * 0.4, 0, laneWidth * 0.8, canvas.height);
-            
+            ctx.beginPath();
+            ctx.moveTo(xC, yB);
+            ctx.lineTo(vanishX, vanishY);
+            ctx.stroke();
             ctx.restore();
         }
-        
-        // 賽道分隔線 - 未來感設計
-        for (let i = 1; i < this.laneCount; i++) {
-            const x = i * laneWidth;
+
+        // === 2. 畫有透視的分隔虛線 ===
+        for (let i = 0; i <= this.laneCount; i++) {
+            const t = i / this.laneCount;
+            const startX = bottomLeft + t * (bottomRight - bottomLeft);
+            const startY = canvas.height;
+            const endX = vanishX;
+            const endY = vanishY;
+            let laneColor = '#00CFFF';
+            let glowIntensity = 1.0;
+            if (i > 0 && i < this.laneCount) {
+                const config = this.getLaneConfig(i - 1);
+                laneColor = config.color;
+                if (laneGlowStates[i - 1] === 1) {
+                    laneColor = '#FFFFFF';
+                    glowIntensity = 2.5;
+                } else if (laneGlowStates[i - 1] === 2) {
+                    laneColor = '#FFD700';
+                    glowIntensity = 3.0;
+                } else if (laneGlowStates[i - 1] === 3) {
+                    laneColor = '#FFFFFF';
+                    glowIntensity = 2.0;
+                } else if (laneGlowStates[i - 1] === 4) {
+                    laneColor = '#FFFFFF';
+                    glowIntensity = 1.8;
+                }
+            }
             ctx.save();
-            
-            // 主分隔線
-            ctx.strokeStyle = '#0ff';
-            ctx.lineWidth = 3;
-            ctx.shadowColor = '#0ff';
-            ctx.shadowBlur = 12;
-            ctx.setLineDash([10, 6]);
-            ctx.beginPath();
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, canvas.height);
-            ctx.stroke();
-            
-            // 分隔線發光效果
-            ctx.strokeStyle = 'rgba(0, 255, 255, 0.4)';
-            ctx.lineWidth = 8;
-            ctx.shadowBlur = 20;
-            ctx.setLineDash([]);
-            ctx.beginPath();
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, canvas.height);
-            ctx.stroke();
-            
-            // 分隔線節點效果
-            for (let y = 50; y < canvas.height; y += 100) {
-                ctx.beginPath();
-                ctx.arc(x, y, 4, 0, Math.PI * 2);
-                ctx.fillStyle = '#0ff';
-                ctx.shadowColor = '#0ff';
-                ctx.shadowBlur = 8;
-                ctx.fill();
+            ctx.strokeStyle = laneColor;
+            ctx.lineWidth = 2.5 * glowIntensity;
+            ctx.shadowColor = laneColor;
+            ctx.shadowBlur = 10 * glowIntensity;
+            if (i > 0 && i < this.laneCount) {
+                if (laneGlowStates[i - 1] === 1) {
+                    ctx.setLineDash([]);
+                } else if (laneGlowStates[i - 1] === 2) {
+                    ctx.setLineDash([4, 2]);
+                } else if (laneGlowStates[i - 1] === 3) {
+                    ctx.setLineDash([6, 3]);
+                } else if (laneGlowStates[i - 1] === 4) {
+                    ctx.setLineDash([8, 4]);
+                } else {
+                    ctx.setLineDash([8, 4]);
+                }
+            } else {
+                ctx.setLineDash([8, 4]);
             }
-            
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
             ctx.restore();
         }
+        ctx.restore();
+    }
+};
+
+// 按鍵高亮效果管理器
+const keyHighlightManager = {
+    triggerHighlight(lane, type) {
+        const keyElement = document.querySelector(`[data-key="${KEY_LIST[lane]}"]`);
+        if (!keyElement) return;
+        
+        // 移除之前的動畫類別
+        keyElement.classList.remove('perfect-hit', 'great-hit', 'good-hit');
+        
+        // 添加新的動畫類別
+        keyElement.classList.add(`${type}-hit`);
+        
+        // 動畫結束後移除類別，統一為短持續時間
+        const duration = 300; // 統一為300ms
+        setTimeout(() => {
+            keyElement.classList.remove(`${type}-hit`);
+        }, duration);
+    }
+};
+
+// 判定線閃光效果管理器
+const judgeLineFlashManager = {
+    flashes: [],
+    
+    createFlash(lane, type) {
+        const flash = {
+            lane: lane,
+            type: type,
+            startTime: Date.now(),
+            duration: 300, // 統一為短持續時間
+            alpha: 1.0,
+            scale: 0.5,
+            maxScale: 1.3 // 統一縮放效果
+        };
+        this.flashes.push(flash);
+    },
+    
+    update() {
+        const now = Date.now();
+        this.flashes = this.flashes.filter(flash => {
+            const elapsed = now - flash.startTime;
+            if (elapsed >= flash.duration) {
+                return false;
+            }
+            const progress = elapsed / flash.duration;
+            flash.alpha = 1.0 - progress;
+            flash.scale = 0.5 + (flash.maxScale - 0.5) * Math.sin(progress * Math.PI);
+            return true;
+        });
+    },
+    
+    draw(ctx, canvas) {
+        if (this.flashes.length === 0) return;
+        
+        const laneWidth = canvas.width / laneManager.laneCount;
+        const judgeLineY = canvas.height - JUDGE_LINE.POSITION;
+        
+        this.flashes.forEach(flash => {
+            const laneX = (flash.lane + 0.5) * laneWidth;
+            const color = '#FFFFFF'; // 統一使用白色
+            
+            ctx.save();
+            ctx.globalAlpha = flash.alpha;
+            ctx.fillStyle = color;
+            ctx.shadowColor = color;
+            ctx.shadowBlur = 20;
+            
+            // 繪製閃光矩形
+            const baseFlashWidth = laneWidth * 0.6;
+            const baseFlashHeight = 8;
+            const flashWidth = baseFlashWidth * flash.scale;
+            const flashHeight = baseFlashHeight * flash.scale;
+            
+            ctx.fillRect(laneX - flashWidth / 2, judgeLineY - flashHeight / 2, flashWidth, flashHeight);
+            
+            // 添加外層光暈
+            ctx.save();
+            ctx.globalAlpha = flash.alpha * 0.3;
+            ctx.shadowBlur = 30;
+            ctx.fillRect(laneX - flashWidth / 2, judgeLineY - flashHeight / 2, flashWidth, flashHeight);
+            ctx.restore();
+            
+            ctx.restore();
+        });
     }
 };
 
@@ -1431,13 +1597,33 @@ const dynamicInteractionManager = {
     triggerPerfectEffect(lane) {
         laneGlowStates[lane] = 1; // 正值表示Perfect狀態
         
-        // 0.5秒後恢復
+        // 0.3秒後恢復，統一為短持續時間
         setTimeout(() => {
             laneGlowStates[lane] = 0;
-        }, 500);
+        }, 300);
         
         // 播放Perfect音效（如果有）
         this.playPerfectSound();
+    },
+    
+    // Great特效 - 白色高亮
+    triggerGreatEffect(lane) {
+        laneGlowStates[lane] = 3; // 3表示Great狀態
+        
+        // 0.3秒後恢復，統一為短持續時間
+        setTimeout(() => {
+            laneGlowStates[lane] = 0;
+        }, 300);
+    },
+    
+    // Good特效 - 白色高亮
+    triggerGoodEffect(lane) {
+        laneGlowStates[lane] = 4; // 4表示Good狀態
+        
+        // 0.3秒後恢復，統一為短持續時間
+        setTimeout(() => {
+            laneGlowStates[lane] = 0;
+        }, 300);
     },
     
     // 長按斷開特效 - 拖尾漸暗 + 畫面震動
@@ -2091,10 +2277,62 @@ function drawNotes(now) {
     const laneCount = laneManager.laneCount;
     const laneWidth = canvas.width / laneCount;
     let drawn = 0;
+    
+    // 透視梯形參數
+    const bottomLeft = canvas.width * 0.01;
+    const bottomRight = canvas.width * 0.99;
+    const vanishX = canvas.width / 2;
+    const vanishY = 0;
+    
+    // 應用與CSS一致的3D透視變換
+    ctx.save();
+    
+    // 設置透視變換，與CSS中的 perspective(800px) rotateX(8deg) 保持一致
+    const perspective = 800;
+    const rotateX = 8 * Math.PI / 180; // 8度轉弧度
+    
+    // 計算透視變換矩陣
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    
+    // 應用透視變換
+    ctx.translate(centerX, centerY);
+    ctx.transform(
+        1, 0,
+        0, Math.cos(rotateX),
+        0, 0
+    );
+    ctx.translate(-centerX, -centerY);
+    
+    // 應用clip-path效果，模擬CSS中的polygon(25% 0, 75% 0, 100% 100%, 0 100%)
+    ctx.beginPath();
+    ctx.moveTo(canvas.width * 0.25, 0);
+    ctx.lineTo(canvas.width * 0.75, 0);
+    ctx.lineTo(canvas.width, canvas.height);
+    ctx.lineTo(0, canvas.height);
+    ctx.closePath();
+    ctx.clip();
     activeNotes.forEach((note, index) => {
         if (!note) return;
         const noteY = (currentTime - note.time) * noteSpeed;
-        const noteX = (note.lane + 0.5) * laneWidth;
+        // === 梯形插值計算 X ===
+        const tL = note.lane / laneCount;
+        const tR = (note.lane + 1) / laneCount;
+        // 下方左右
+        const xL0 = bottomLeft + tL * (bottomRight - bottomLeft);
+        const xR0 = bottomLeft + tR * (bottomRight - bottomLeft);
+        // 插值比例
+        const yRatio = 1 - (noteY / canvas.height);
+        // 當前高度的左右邊界
+        const xL = xL0 + (vanishX - xL0) * yRatio;
+        const xR = xR0 + (vanishX - xR0) * yRatio;
+        // 音符中心
+        const noteX = xL + (xR - xL) * 0.5;
+        // === 音符縮放 ===
+        const minScale = 0.4;
+        const maxScale = 1.0;
+        let scale = minScale + (maxScale - minScale) * (noteY / canvas.height);
+        scale = Math.max(minScale, Math.min(maxScale, scale));
         
         // 添加詳細的調試信息
         if (index < 3) { // 只顯示前3個音符的詳細信息
@@ -2123,77 +2361,77 @@ function drawNotes(now) {
                 
                 // 光束主體
                 ctx.save();
-                const beamGradient = ctx.createLinearGradient(noteX - 20, noteY, noteX + 20, noteY);
+                const beamGradient = ctx.createLinearGradient(noteX - 20 * scale, noteY, noteX + 20 * scale, noteY);
                 beamGradient.addColorStop(0, `${laneColor}1A`);
                 beamGradient.addColorStop(0.5, note.holdActive ? 'rgba(255, 247, 0, 0.8)' : `${laneColor}CC`);
                 beamGradient.addColorStop(1, `${laneColor}1A`);
                 ctx.fillStyle = beamGradient;
                 ctx.shadowColor = note.holdActive ? '#fff700' : laneColor;
-                ctx.shadowBlur = note.holdActive ? 30 : 20;
-                ctx.fillRect(noteX - 20, tailY, 40, noteY - tailY);
+                ctx.shadowBlur = (note.holdActive ? 30 : 20) * scale;
+                ctx.fillRect(noteX - 20 * scale, tailY, 40 * scale, noteY - tailY);
                 ctx.restore();
                 
                 // 光束邊緣發光
                 ctx.save();
                 ctx.strokeStyle = note.holdActive ? '#fff700' : laneColor;
-                ctx.lineWidth = 4;
+                ctx.lineWidth = 4 * scale;
                 ctx.shadowColor = note.holdActive ? '#fff700' : laneColor;
-                ctx.shadowBlur = note.holdActive ? 25 : 15;
+                ctx.shadowBlur = (note.holdActive ? 25 : 15) * scale;
                 ctx.beginPath();
-                ctx.moveTo(noteX - 18, noteY);
-                ctx.lineTo(noteX - 18, tailY);
+                ctx.moveTo(noteX - 18 * scale, noteY);
+                ctx.lineTo(noteX - 18 * scale, tailY);
                 ctx.stroke();
                 ctx.beginPath();
-                ctx.moveTo(noteX + 18, noteY);
-                ctx.lineTo(noteX + 18, tailY);
+                ctx.moveTo(noteX + 18 * scale, noteY);
+                ctx.lineTo(noteX + 18 * scale, tailY);
                 ctx.stroke();
                 ctx.restore();
                 
                 // 頭部能量球
                 ctx.save();
                 // 外層光暈
-                const headGradient = ctx.createRadialGradient(noteX, noteY, 0, noteX, noteY, 40);
+                const headGradient = ctx.createRadialGradient(noteX, noteY, 0, noteX, noteY, 40 * scale);
                 headGradient.addColorStop(0, note.holdActive ? 'rgba(255, 247, 0, 0.8)' : `${laneColor}CC`);
                 headGradient.addColorStop(0.7, note.holdActive ? 'rgba(255, 247, 0, 0.3)' : `${laneColor}4D`);
                 headGradient.addColorStop(1, 'transparent');
                 ctx.fillStyle = headGradient;
                 ctx.beginPath();
-                if (40 > 0) ctx.arc(noteX, noteY, 40, 0, Math.PI * 2);
+                if (40 * scale > 0) ctx.arc(noteX, noteY, 40 * scale, 0, Math.PI * 2);
                 ctx.fill();
                 
                 // 核心
                 ctx.beginPath();
-                if (24 > 0) ctx.arc(noteX, noteY, 24, 0, Math.PI * 2);
+                if (24 * scale > 0) ctx.arc(noteX, noteY, 24 * scale, 0, Math.PI * 2);
                 ctx.fillStyle = note.holdActive ? '#fff700' : laneColor;
                 ctx.shadowColor = note.holdActive ? '#fff700' : laneColor;
-                ctx.shadowBlur = 25;
+                ctx.shadowBlur = 25 * scale;
                 ctx.fill();
                 
                 // 內核
                 ctx.beginPath();
-                if (12 > 0) ctx.arc(noteX, noteY, 12, 0, Math.PI * 2);
+                if (12 * scale > 0) ctx.arc(noteX, noteY, 12 * scale, 0, Math.PI * 2);
                 ctx.fillStyle = '#fff';
                 ctx.shadowColor = '#fff';
-                ctx.shadowBlur = 15;
+                ctx.shadowBlur = 15 * scale;
                 ctx.fill();
                 ctx.restore();
                 
                 // 尾部能量球
                 ctx.save();
-                const tailGradient = ctx.createRadialGradient(noteX, tailY, 0, noteX, tailY, 25);
+                const tailGradient = ctx.createRadialGradient(noteX, tailY, 0, noteX, tailY, 25 * scale);
                 tailGradient.addColorStop(0, 'rgba(255, 255, 255, 0.8)');
                 tailGradient.addColorStop(0.7, 'rgba(255, 255, 255, 0.3)');
                 tailGradient.addColorStop(1, 'transparent');
                 ctx.fillStyle = tailGradient;
                 ctx.beginPath();
-                if (25 > 0) ctx.arc(noteX, tailY, 25, 0, Math.PI * 2);
+                if (25 * scale > 0) ctx.arc(noteX, tailY, 25 * scale, 0, Math.PI * 2);
                 ctx.fill();
                 
                 ctx.beginPath();
-                if (18 > 0) ctx.arc(noteX, tailY, 18, 0, Math.PI * 2);
+                if (18 * scale > 0) ctx.arc(noteX, tailY, 18 * scale, 0, Math.PI * 2);
                 ctx.fillStyle = '#fff';
                 ctx.shadowColor = '#fff';
-                ctx.shadowBlur = 12;
+                ctx.shadowBlur = 12 * scale;
                 ctx.fill();
                 ctx.restore();
             } else {
@@ -2205,54 +2443,54 @@ function drawNotes(now) {
                 const laneColor = laneConfig.color;
                 
                 // 軌跡效果 - 從銀河深處飛來
-                const trailLength = 80;
+                const trailLength = 80 * scale;
                 const trailGradient = ctx.createLinearGradient(noteX, noteY - trailLength, noteX, noteY);
                 trailGradient.addColorStop(0, `${laneColor}00`);
                 trailGradient.addColorStop(0.3, `${laneColor}4D`);
                 trailGradient.addColorStop(1, `${laneColor}CC`);
                 ctx.strokeStyle = trailGradient;
-                ctx.lineWidth = 6;
+                ctx.lineWidth = 6 * scale;
                 ctx.lineCap = 'round';
                 ctx.shadowColor = laneColor;
-                ctx.shadowBlur = 10;
+                ctx.shadowBlur = 10 * scale;
                 ctx.beginPath();
                 ctx.moveTo(noteX, noteY - trailLength);
-                ctx.lineTo(noteX, noteY - 20);
+                ctx.lineTo(noteX, noteY - 20 * scale);
                 ctx.stroke();
                 
                 // 外層光暈
-                const gradient = ctx.createRadialGradient(noteX, noteY, 0, noteX, noteY, 45);
+                const gradient = ctx.createRadialGradient(noteX, noteY, 0, noteX, noteY, 45 * scale);
                 gradient.addColorStop(0, `${laneColor}E6`);
                 gradient.addColorStop(0.6, `${laneColor}66`);
                 gradient.addColorStop(1, 'transparent');
                 ctx.fillStyle = gradient;
                 ctx.beginPath();
-                ctx.arc(noteX, noteY, 45, 0, Math.PI * 2);
+                ctx.arc(noteX, noteY, 45 * scale, 0, Math.PI * 2);
                 ctx.fill();
                 
                 // 核心
                 ctx.beginPath();
-                if (22 > 0) ctx.arc(noteX, noteY, 22, 0, Math.PI * 2);
+                if (22 * scale > 0) ctx.arc(noteX, noteY, 22 * scale, 0, Math.PI * 2);
                 ctx.fillStyle = laneColor;
                 ctx.shadowColor = laneColor;
-                ctx.shadowBlur = 25;
+                ctx.shadowBlur = 25 * scale;
                 ctx.fill();
                 
                 // 內核
                 ctx.beginPath();
-                if (12 > 0) ctx.arc(noteX, noteY, 12, 0, Math.PI * 2);
+                if (12 * scale > 0) ctx.arc(noteX, noteY, 12 * scale, 0, Math.PI * 2);
                 ctx.fillStyle = '#fff';
                 ctx.shadowColor = '#fff';
-                ctx.shadowBlur = 20;
+                ctx.shadowBlur = 20 * scale;
                 ctx.fill();
                 
                 // 星塵粒子效果
                 for (let i = 0; i < 3; i++) {
                     const angle = (Date.now() * 0.001 + i * Math.PI * 2 / 3) % (Math.PI * 2);
-                    const particleX = noteX + Math.cos(angle) * 35;
-                    const particleY = noteY + Math.sin(angle) * 35;
+                    const particleX = noteX + Math.cos(angle) * 35 * scale;
+                    const particleY = noteY + Math.sin(angle) * 35 * scale;
                     ctx.beginPath();
-                    if (2 > 0)  ctx.arc(particleX, particleY, 2, 0, Math.PI * 2);
+                    if (2 * scale > 0)  ctx.arc(particleX, particleY, 2 * scale, 0, Math.PI * 2);
                     ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
                     ctx.fill();
                 }
@@ -2269,12 +2507,12 @@ function drawNotes(now) {
             ctx.save();
             ctx.globalAlpha = 1 - ((currentTime - note.time) / 0.5);
             ctx.beginPath();
-            const fadeRadius = 22 * (1 - (currentTime - note.time) / 0.5);
+            const fadeRadius = 22 * scale * (1 - (currentTime - note.time) / 0.5);
             if (fadeRadius > 0) {
                 ctx.arc(noteX, noteY, fadeRadius, 0, Math.PI * 2);
                 ctx.fillStyle = '#fff700';
                 ctx.shadowColor = '#fff700';
-                ctx.shadowBlur = 16;
+                ctx.shadowBlur = 16 * scale;
                 ctx.fill();
             }
             ctx.restore();
@@ -2397,12 +2635,14 @@ function judgeNote(lane) {
             combo++;
             maxCombo = Math.max(maxCombo, combo);
         } else if (distanceToJudgeLine <= JUDGE_LINE.GREAT_RANGE) {
+            dynamicInteractionManager.triggerGreatEffect(lane);
             hitNoteSuccess(hitIndex, 'great');
             score += 500;
             showScoreGain(500);
             combo++;
             maxCombo = Math.max(maxCombo, combo);
         } else if (distanceToJudgeLine <= JUDGE_LINE.GOOD_RANGE) {
+            dynamicInteractionManager.triggerGoodEffect(lane);
             hitNoteSuccess(hitIndex, 'good');
             score += 200;
             showScoreGain(200);
@@ -2420,9 +2660,17 @@ function judgeNote(lane) {
 
 function hitNoteSuccess(index, type) {
     if (index >= 0 && index < activeNotes.length) {
-        activeNotes[index].hit = true;
-        activeNotes[index].animating = 'fade';
-        activeNotes[index].fadeY = canvas.height - JUDGE_LINE.POSITION;
+        const note = activeNotes[index];
+        note.hit = true;
+        note.animating = 'fade';
+        note.fadeY = canvas.height - JUDGE_LINE.POSITION;
+        
+        // 添加判定線閃光效果
+        judgeLineFlashManager.createFlash(note.lane, type);
+        
+        // 添加按鍵高亮效果
+        keyHighlightManager.triggerHighlight(note.lane, type);
+        
         hitCount++;
         let gain = 0;
         if (type === 'perfect') {
