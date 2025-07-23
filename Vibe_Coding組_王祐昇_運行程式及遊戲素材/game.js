@@ -3107,7 +3107,7 @@ function endGame() {
     let displayScore = 0;
     const animateScore = () => {
         if (displayScore < score) {
-            displayScore += Math.ceil((score - displayScore) / 12);
+            displayScore += Math.ceil((score - displayScore) / 4);
             if (displayScore > score) displayScore = score;
             scoreDiv.textContent = `分數: ${displayScore.toLocaleString()}`;
             requestAnimationFrame(animateScore);
