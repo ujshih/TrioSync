@@ -3430,13 +3430,13 @@ if (difficultyBtns) {
 }
 
 // 音量控制 UI
-let volume = 1;
+let volume = 0.5;
 const volumeSlider = document.createElement('input');
 volumeSlider.type = 'range';
 volumeSlider.min = 0;
 volumeSlider.max = 1;
 volumeSlider.step = 0.01;
-volumeSlider.value = 1;
+volumeSlider.value = 0.5; // 預設值改為 0.5 (50%)
 volumeSlider.className = 'left-top-btn';
 volumeSlider.id = 'volume-slider';
 volumeSlider.title = '音量';
