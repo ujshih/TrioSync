@@ -1298,22 +1298,18 @@ header {
     justify-content: center;
     width: 100%;
     max-width: 600px;
-    padding: 0.5rem 0.2rem; /* 原本 1rem 0.5rem，調小 */
-    margin-top: 0.5rem; /* 若有 margin-top，調小 */
+    padding: 0.5rem 0.2rem;
+    margin: 2rem auto 0 auto;
     background: linear-gradient(135deg, rgba(24,24,40,0.9) 0%, rgba(34,34,68,0.95) 100%);
-    border-radius: 20px;
-    box-shadow: 0 0 40px rgba(0,255,255,0.5);
-    border: 2px solid #0ff;
-    background: rgba(255,255,255,0.25);
     border-radius: 24px;
     box-shadow: 0 4px 32px 0 rgba(0,0,0,0.10);
     backdrop-filter: blur(8px);
     border: 1.5px solid rgba(255,255,255,0.18);
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1000;
+    position: relative;
+    top: unset;
+    left: unset;
+    transform: none;
+    z-index: 10;
 }
 
 .result-title {
