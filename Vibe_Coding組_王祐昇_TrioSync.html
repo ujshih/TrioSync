@@ -48,30 +48,15 @@
                         <div class="song-card-title">Bliss</div>
                         <div class="song-card-bpm">BPM: 140</div>
                     </div>
-                    <div class="song-card" data-song="Canon.mp3">
-                        <div class="song-card-icon">🎻</div>
-                        <div class="song-card-title">Canon in D Major</div>
-                        <div class="song-card-bpm">BPM: 120</div>
-                    </div>
-                    <div class="song-card" data-song="HappyBirthday.mp3">
-                        <div class="song-card-icon">🎂</div>
-                        <div class="song-card-title">Happy Birthday</div>
-                        <div class="song-card-bpm">BPM: 100</div>
-                    </div>
-                    <div class="song-card" data-song="MainTheme.mp3">
-                        <div class="song-card-icon">🌟</div>
-                        <div class="song-card-title">Main Theme</div>
-                        <div class="song-card-bpm">BPM: 135</div>
-                    </div>
-                    <div class="song-card" data-song="MagicalMoments.mp3">
-                        <div class="song-card-icon">✨</div>
-                        <div class="song-card-title">Magical Moments</div>
-                        <div class="song-card-bpm">BPM: 145</div>
-                    </div>
                     <div class="song-card" data-song="Noise.mp3">
                         <div class="song-card-icon">🔊</div>
                         <div class="song-card-title">Noise</div>
                         <div class="song-card-bpm">BPM: 150</div>
+                    </div>
+                    <div class="song-card" data-song="Canon.mp3">
+                        <div class="song-card-icon">🎻</div>
+                        <div class="song-card-title">Canon in D Major</div>
+                        <div class="song-card-bpm">BPM: 120</div>
                     </div>
                     <div class="song-card" data-song="HammerMASTER.mp3">
                         <div class="song-card-icon">🥁</div>
@@ -83,10 +68,25 @@
                         <div class="song-card-title">Inspiring Dreams</div>
                         <div class="song-card-bpm">BPM: 130</div>
                     </div>
+                    <div class="song-card" data-song="MagicalMoments.mp3">
+                        <div class="song-card-icon">✨</div>
+                        <div class="song-card-title">Magical Moments</div>
+                        <div class="song-card-bpm">BPM: 145</div>
+                    </div>
+                    <div class="song-card" data-song="MainTheme.mp3">
+                        <div class="song-card-icon">🌟</div>
+                        <div class="song-card-title">Main Theme</div>
+                        <div class="song-card-bpm">BPM: 135</div>
+                    </div>
                     <div class="song-card" data-song="inspiringguitar.mp3">
                         <div class="song-card-icon">🎸</div>
                         <div class="song-card-title">Guitar Rhythm</div>
                         <div class="song-card-bpm">BPM: 125</div>
+                    </div>
+                    <div class="song-card" data-song="HappyBirthday.mp3">
+                        <div class="song-card-icon">🎂</div>
+                        <div class="song-card-title">Happy Birthday</div>
+                        <div class="song-card-bpm">BPM: 100</div>
                     </div>
                 </div>
             </div>
@@ -98,27 +98,27 @@
                     <button class="difficulty-btn beginner" data-difficulty="beginner" tabindex="0" aria-label="選擇難度 Lv.1">
                         <div class="difficulty-level">Lv.1</div>
                         <div class="difficulty-name">初學者 Beginner</div>
-                        <div class="difficulty-stars">★</div>
+                        <div class="difficulty-stars">⭐</div>
                     </button>
                     <button class="difficulty-btn casual" data-difficulty="casual" tabindex="0" aria-label="選擇難度 Lv.2">
                         <div class="difficulty-level">Lv.2</div>
                         <div class="difficulty-name">休閒玩家 Casual</div>
-                        <div class="difficulty-stars">★★</div>
+                        <div class="difficulty-stars">⭐⭐</div>
                     </button>
                     <button class="difficulty-btn hard" data-difficulty="hard" tabindex="0" aria-label="選擇難度 Lv.3">
                         <div class="difficulty-level">Lv.3</div>
                         <div class="difficulty-name">困難模式 Hard</div>
-                        <div class="difficulty-stars">★★★</div>
+                        <div class="difficulty-stars">⭐⭐⭐</div>
                     </button>
                     <button class="difficulty-btn extreme" data-difficulty="extreme" tabindex="0" aria-label="選擇難度 Lv.4">
                         <div class="difficulty-level">Lv.4</div>
                         <div class="difficulty-name">極限挑戰 Extreme</div>
-                        <div class="difficulty-stars">★★★★</div>
+                        <div class="difficulty-stars">⭐⭐⭐⭐</div>
                     </button>
                     <button class="difficulty-btn master" data-difficulty="master" tabindex="0" aria-label="選擇難度 Lv.5">
                         <div class="difficulty-level">Lv.5</div>
                         <div class="difficulty-name">大師級 Master</div>
-                        <div class="difficulty-stars">★★★★★</div>
+                        <div class="difficulty-stars">⭐⭐⭐⭐⭐</div>
                     </button>
                     <button class="difficulty-btn fate hidden-difficulty" data-difficulty="fate" tabindex="0" aria-label="選擇難度 Lv.6" disabled>
                         <div class="difficulty-level">Lv.6</div>
@@ -184,10 +184,11 @@
     
     <!-- 高對比模式切換按鈕 -->
     <button id="contrast-btn" class="action-btn left-top-btn" tabindex="0" aria-label="高對比模式">🌓 高對比</button>
-    <!-- 遊戲說明按鈕（移到高對比下方） -->
     <button id="help-btn" class="action-btn left-top-btn" tabindex="0" aria-label="遊戲說明">📖 玩法說明</button>
-    <!-- 新增排行榜按鈕 -->
     <button id="leaderboard-btn" class="action-btn left-top-btn" tabindex="0" aria-label="排行榜">🏆 排行榜</button>
+    <button id="achievement-btn" class="action-btn left-top-btn" tabindex="0" aria-label="成就">🏅 成就</button>
+    <button id="clear-storage-btn" class="action-btn left-top-btn main-only-btn" tabindex="0" aria-label="清除紀錄">🗑️ 清除紀錄</button>
+    <button id="team-btn" class="action-btn left-top-btn main-only-btn" tabindex="0" aria-label="製作團隊">👥 製作團隊</button>
     <!-- 遊戲規則顯示區（由JS控制顯示） -->
     <div id="help-modal" style="display:none;"></div>
     
@@ -199,7 +200,114 @@
     <!-- 新增獨立排行榜View -->
     <div id="leaderboard-view" style="display:none;position:fixed;z-index:10001;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.92);align-items:center;justify-content:center;flex-direction:column;">
         <div id="leaderboard-content" style="max-width:480px;width:90vw;background:rgba(0,0,0,0.85);border-radius:18px;padding:32px 16px 24px 16px;box-shadow:0 0 32px #0ff6;margin:0 auto;"></div>
-        <button id="close-leaderboard-btn" class="action-btn" style="margin-top:24px;font-size:1.2em;">返回首頁</button>
+        <button id="close-leaderboard-btn" class="action-btn" style="margin-top:24px;font-size:1.2em;">關閉</button>
+    </div>
+    
+    <!-- 新增團隊介紹浮層 -->
+    <div id="team-view" style="display:none;position:fixed;z-index:10001;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.92);align-items:center;justify-content:center;flex-direction:column;">
+        <div id="team-content" style="max-width:720px;width:200vw;max-height:90vh;overflow-y:auto;background:rgba(0,0,0,0.85);border-radius:18px;padding:32px 16px 24px 16px;box-shadow:0 0 32px #0ff6;margin:0 auto;display:flex;flex-direction:column;align-items:center;position:relative;">
+            <h2 class="modal-title team-title">製作團隊 Trio Sync</h2>
+            <img src="./Vibe_Coding組_王祐昇_運行程式及遊戲素材/TrioSync.jpg" alt="Trio Sync 團隊" style="max-width:320px;width:90%;border-radius:18px;box-shadow:0 0 24px #0ff8;margin-bottom:1.2em;" />
+            <div style="color:#fff;font-size:1.08em;line-height:1.7;text-align:left;margin-bottom:1.5em;white-space:pre-line;">
+                🎵 製作團隊｜Trio Sync
+                
+                我們是來自 <strong>台灣大哥大</strong> 的三位夥伴，橫跨不同領域，卻擁有共同的熱情與信念。<br>
+                我們相信，音樂與創造，能將彼此的專業節奏完美同步。<br>
+                
+
+                <div class="team-member">
+                    <div class="member-header">
+                        <span class="member-emoji">👨‍💼</span>
+                        <span class="member-name"><strong>Peter Wang</strong></span>
+                        <span class="member-title">產品設計 & 專案統籌（隊長）</span>
+                    </div>
+                    <div class="member-description">
+                        主導專案規劃與任務分配，統整團隊節奏與進度節點，掌握目標與時程。<br>
+                        負責核心程式開發、架構整合、Cursor撰寫，同時積極與AI協作進行快速試錯，<br>
+                        並負責debug與邏輯校調，確保系統實作穩定執行。<br>
+                        推動團隊高效協作，作為Trio Sync的「主引擎」。
+                    </div>
+                </div>
+                
+                <div class="team-member">
+                    <div class="member-header">
+                        <span class="member-emoji">👨‍💻</span>
+                        <span class="member-name"><strong>Jimmy Shih</strong></span>
+                        <span class="member-title">iOS 工程開發 & UIUX 設計師</span>
+                    </div>
+                    <div class="member-description">
+                        兼具前端技術與使用者體驗視角，針對UI操作與介面邏輯提出實用的設計建議，<br>
+                        協助調整互動節奏與排版細節，確保畫面表現與操作感受一致。<br>
+                        在開發流程中參與架構規劃與程式撰寫，投入Cursor編修與多次除錯，<br>
+                        同時積極參與功能討論與投票決策，是技術執行與體驗平衡的重要支柱。
+                    </div>
+                </div>
+                
+                <div class="team-member">
+                    <div class="member-header">
+                        <span class="member-emoji">👩‍🎨</span>
+                        <span class="member-name"><strong>Kathy Tsai</strong></span>
+                        <span class="member-title">行銷策略 & 視覺創意 & 使用者體驗設計師</span>
+                    </div>
+                    <div class="member-description">
+                        從行銷策略切入，提煉遊戲核心定位與品牌語言形象，<br>
+                        參與主視覺風格設計，營造整體敘事氛圍與畫面風格，<br>
+                        聚焦UIUX細節，優化玩家操作體驗與互動節奏，<br>
+                        投入Cursor編修與除錯，統整故事邏輯與使用感受。
+                    </div>
+                </div>
+                
+                
+                <div class="project-story">
+                    <div class="story-intro">
+                        <span class="story-icon">🎮</span>
+                        <div class="story-title-group">
+                            <div class="story-title-main">Fate Keys</div>
+                            <div class="story-title-sub">命運節奏 的誕生</div>
+                            <span class="story-desc">
+                                不只是音樂與節奏的交織，<br>
+                                更是一場跨領域協作、技術挑戰與創意實驗的旅程。
+                            </span>
+                        </div>
+                    </div>
+                    <div class="story-section">
+                        <div class="story-section-title">🛠️ 構想與技術挑戰</div>
+                        Canvas 畫布邏輯與 CSS 視覺結構重構<br>
+                        解決「畫面變形」、「梯形錯覺」、「元素無法對齊」等UI問題<br>
+                        實作 <code>clip-path</code> 與 <code>transform</code> 效果，打造仿3D賽道視覺<br>
+                        多次修改 <code>game-area</code> 與 <code>#main-wrapper</code> 的layout結構，調整固定與絕對定位，避免出現元素錯位<br>
+                    </div>
+                    <div class="story-section">
+                        <div class="story-section-title">⭐ 關卡難度與賽道系統設計</div>
+                        重構難度選擇動畫與星數判定系統，優化 <code>LEVEL_CONFIGS</code> 設計邏輯<br>
+                        建立 fate 模式特殊解鎖條件，搭配 <code>localStorage</code> 儲存邏輯<br>
+                        自訂每個難度對應的 <code>keyCount</code> 與 <code>noteDensity</code>，實作 <code>laneManager.setLaneCount()</code> 自動調整<br>
+                    </div>
+                    <div class="story-section">
+                        <div class="story-section-title">🐞 Debug 修復歷程</div>
+                        解決「同一鍵位擊中兩音符」、「combo 錯誤計算」、「音符無法被正確移除」等問題<br>
+                        開發 <code>showToast()</code> 功能提示與 <code>console.warn</code> 除錯機制，追蹤canvas設定失敗與ctx重繪錯誤<br>
+                        撰寫 <code>updateKeyHints()</code> 並動態生成提示按鍵，補強UI響應性<br>
+                    </div>
+                    <div class="story-section">
+                        <div class="story-section-title">🤖 與 AI 的協作試錯流程</div>
+                        運用AI協助設計音符渲染邏輯、CSS動畫調整、結構布局建議<br>
+                        多次針對CSS position、z-index、flex layout、polygon、vw/vh、動畫等問題進行來回調整與實驗<br>
+                        將原始版本的錯誤與限制，逐步導入可維護的元件化設計<br>
+                    </div>
+                </div>
+            </div>
+            <button id="close-team-btn" class="action-btn" style="margin-top:24px;font-size:1.2em;align-self:center;">關閉</button>
+        </div>
+    </div>
+    
+    <!-- 成就彈窗 -->
+    <div id="achievement-modal" style="display:none;position:fixed;z-index:10002;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.85);align-items:center;justify-content:center;">
+      <div id="achievement-content" style="max-width:400px;width:90vw;background:rgba(0,0,0,0.95);border-radius:18px;padding:32px 16px 24px 16px;box-shadow:0 0 32px #ffe066;margin:0 auto;position:relative;">
+        <h2 style="color:#ffe066;text-align:center;margin-bottom:1.2em;">🏅 成就紀錄</h2>
+        <div id="achievement-list"></div>
+        <button id="close-achievement-btn" class="action-btn" style="margin-top:24px;font-size:1.2em;align-self:center;">關閉</button>
+      </div>
     </div>
     
     <script src="./Vibe_Coding組_王祐昇_運行程式及遊戲素材/game.js"></script>

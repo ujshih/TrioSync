@@ -1322,7 +1322,6 @@ header {
 
 .result-content {
     max-width: 500px;
-    width: 100%;
     margin: 0 auto;
     padding: 32px 24px;
     box-sizing: border-box;
@@ -2829,11 +2828,245 @@ body.result-bg-d::before {
     top: 1rem;
 }
 #contrast-btn.left-top-btn {
-    top: calc(1rem + 48px + 4px);
+    top: 1rem;
 }
 #help-btn.left-top-btn {
-    top: calc(1rem + 2 * (48px + 4px));
+    top: calc(1rem + 48px + 4px);
 }
 #leaderboard-btn.left-top-btn {
+    top: calc(1rem + 2 * (48px + 4px));
+}
+#achievement-btn.left-top-btn {
     top: calc(1rem + 3 * (48px + 4px));
+}
+#clear-storage-btn.left-top-btn,
+#team-btn.left-top-btn {
+    position: relative;
+    display: block;
+    width: 180px;
+    margin: 0.5rem auto 0.2rem auto;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
+    z-index: 20;
+    box-shadow: 0 0 16px #0ff4, 0 0 2px #fff;
+    text-align: center;
+    outline: none;
+    cursor: pointer;
+    user-select: none;
+    transition: box-shadow 0.2s, background 0.2s;
+}
+
+/* 移除個別 top 定位，統一用 block/margin 垂直排列 */
+#clear-storage-btn.left-top-btn,
+#team-btn.left-top-btn {
+    top: unset !important;
+}
+
+/* ====== 團隊成員介紹樣式 ====== */
+.team-member {
+    background: linear-gradient(135deg, rgba(24,26,42,0.8) 0%, rgba(35,35,90,0.9) 100%);
+    border: 2px solid rgba(0,255,255,0.3);
+    border-radius: 16px;
+    padding: 20px;
+    margin: 16px 0;
+    box-shadow: 0 4px 20px rgba(0,255,255,0.2);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
+}
+
+.team-member:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,255,255,0.4);
+    border-color: rgba(0,255,255,0.6);
+}
+
+.member-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0,255,255,0.2);
+}
+
+.member-emoji {
+    font-size: 1.8rem;
+    filter: drop-shadow(0 0 8px rgba(0,255,255,0.6));
+}
+
+.member-name {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #0ff;
+    text-shadow: 0 0 10px rgba(0,255,255,0.5);
+}
+
+.member-title {
+    font-size: 1.3rem;
+    color: #fff;
+    opacity: 1;
+    font-style: normal;
+}
+
+.member-description {
+    color: #fff;
+    font-size: 1rem;
+    line-height: 1.6;
+    text-align: left;
+    opacity: 0.9;
+}
+
+/* 響應式設計 */
+@media (max-width: 768px) {
+    .team-member {
+        padding: 16px;
+        margin: 12px 0;
+    }
+    
+    .member-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .member-name {
+        font-size: 1.1rem;
+    }
+    
+    .member-title {
+        font-size: 0.9rem;
+    }
+    
+    .member-description {
+        font-size: 0.95rem;
+    }
+}
+
+.team-title {
+    font-size: 2.3rem;
+    font-family: 'Orbitron', 'Audiowide', '微軟正黑體', Arial, sans-serif;
+    font-weight: bold;
+    letter-spacing: 0.12em;
+    background: linear-gradient(90deg, #0ff 10%, #f0f 40%, #fff700 70%, #ff6f91 100%);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    /* text-fill-color: transparent; 這行已移除 */
+    text-shadow:
+        0 0 18px #fff700,
+        0 0 32px #0ff,
+        0 0 48px #f0f,
+        0 0 64px #ff6f91;
+    animation: team-title-glow 3s linear infinite, team-title-rainbow 5s linear infinite;
+    margin-bottom: 1.2em;
+    text-align: center;
+}
+
+@keyframes team-title-glow {
+    0%, 100% {
+        text-shadow:
+            0 0 18px #fff700,
+            0 0 32px #0ff,
+            0 0 48px #f0f,
+            0 0 64px #ff6f91;
+    }
+    50% {
+        text-shadow:
+            0 0 32px #f0f,
+            0 0 48px #0ff,
+            0 0 64px #fff700,
+            0 0 80px #ff6f91;
+    }
+}
+@keyframes team-title-rainbow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+.project-story {
+    margin: 1.5em 0;
+    padding: 1.2em 1em;
+    background: linear-gradient(135deg, rgba(24,26,42,0.7) 0%, rgba(35,35,90,0.8) 100%);
+    border-radius: 18px;
+    box-shadow: 0 0 24px #0ff4, 0 0 8px #ffe06688;
+    color: #fff;
+    font-size: 1.08em;
+    line-height: 1.8;
+}
+.story-intro {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.2em;
+    margin-bottom: 1em;
+    font-size: 1.2em;
+    flex-wrap: wrap;
+}
+.story-icon {
+    font-size: 2.5em;
+    filter: drop-shadow(0 0 8px #0ff8);
+    margin-top: 0.1em;
+}
+.story-title-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 180px;
+}
+.story-title-main {
+    font-size: 2.1em;
+    font-family: 'Orbitron', 'Audiowide', '微軟正黑體', Arial, sans-serif;
+    font-weight: bold;
+    color: #0ff;
+    text-shadow: 0 0 18px #0ff, 0 0 32px #0ff8;
+    line-height: 1.1;
+    letter-spacing: 0.05em;
+}
+.story-title-sub {
+    font-size: 1.4em;
+    color: #0ff;
+    font-weight: bold;
+    text-shadow: 0 0 10px #0ff8;
+    margin-top: 0.2em;
+    line-height: 1.1;
+    letter-spacing: 0.05em;
+}
+.story-desc {
+    flex: 1;
+    color: #ffe066;
+    font-style: italic;
+    font-size: 1.1em;
+    margin-left: 1.5em;
+    margin-top: 0.2em;
+    align-self: flex-start;
+    line-height: 1.7;
+    max-width: 60%;
+}
+@media (max-width: 700px) {
+    .story-intro {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5em;
+    }
+    .story-desc {
+        margin-left: 0;
+        max-width: 100%;
+    }
+}
+
+.story-list ul {
+    margin: 0.3em 0 0.7em 1.2em;
+    padding-left: 1.2em;
+    list-style: disc;
+    line-height: 1.6;
+}
+
+.story-list ul, .story-section ul {
+    line-height: 1.35;
+}
+.story-section-title {
+    margin-bottom: 0.5em;
+}
+.story-section ul {
+    margin-top: 0;
 }

@@ -189,14 +189,14 @@ const audioManager = {
         tracks: {
             'Champion': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/Champion.mp3',
             'Bliss': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/Bliss.mp3',
-            'Canon': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/Canon.mp3',
-            'HappyBirthday': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/HappyBirthday.mp3',
-            'MainTheme': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/MainTheme.mp3',
-            'MagicalMoments': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/MagicalMoments.mp3',
             'Noise': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/Noise.mp3',
+            'Canon': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/Canon.mp3',
             'HammerMASTER': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/HammerMASTER.mp3',
             'InspiringDreams': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/InspiringDreams.mp3',
-            'inspiringguitar': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/inspiringguitar.mp3'
+            'MagicalMoments': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/MagicalMoments.mp3',
+            'MainTheme': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/MainTheme.mp3',
+            'inspiringguitar': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/inspiringguitar.mp3',
+            'HappyBirthday': './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/HappyBirthday.mp3'
         }
     },
     
@@ -394,7 +394,13 @@ const audioManager = {
         if (playPromise !== undefined) {
             playPromise.then(() => {
                 this.audio.volume = this.getCurrentVolume();
-                console.log('音樂開始播放');
+                // 新增：自動重播機制
+                this.audio.onended = () => {
+                    if (window.gameStarted && !window.gameEnded) {
+                        // 遊戲還在進行，重播
+                        this.playGameTrack(trackName, 0, callback);
+                    }
+                };
                 if (callback) callback();
             }).catch(error => {
                 console.error('音樂播放失敗:', error);
@@ -666,6 +672,11 @@ function showScreen(screen) {
             break;
     }
     console.log('[showScreen] 畫面切換完成:', screen);
+    // 控制 main-only-btn 顯示：主畫面與結算畫面顯示，其餘隱藏
+    var mainOnlyBtns = document.querySelectorAll('.main-only-btn');
+    mainOnlyBtns.forEach(function(btn) {
+        btn.style.display = (screen === 'select' || screen === 'result') ? '' : 'none';
+    });
 }
 
 // ===============================
@@ -1122,13 +1133,15 @@ function gameLoop(now) {
         }
     }
     
-    // 畫面震動效果
+    // 畫面震動效果（已停用）
+    /*
     if (screenShake > 0) {
         ctx.save();
         const shakeX = (Math.random() - 0.5) * screenShake;
         const shakeY = (Math.random() - 0.5) * screenShake;
         ctx.translate(shakeX, shakeY);
     }
+    */
     
     drawBackground(ctx);
     
@@ -1156,10 +1169,12 @@ function gameLoop(now) {
     judgeLineFlashManager.update();
     judgeLineFlashManager.draw(ctx, canvas);
     
-    // 恢復畫面震動
+    // 恢復畫面震動（已停用）
+    /*
     if (screenShake > 0) {
         ctx.restore();
     }
+    */
     
     animationId = requestAnimationFrame(gameLoop);
 }
@@ -2156,56 +2171,61 @@ const noteEffectManager = {
     }
 };
 
+// ==== 靜態星空資料（只初始化一次）====
+let staticStars = null;
+function getStaticStars(canvas) {
+    if (staticStars && staticStars.width === canvas.width && staticStars.height === canvas.height) return staticStars.stars;
+    // 重新生成
+    const stars = [];
+    const count = Math.floor((canvas.width * canvas.height) / 1800); // 根據畫面大小調整星星數量
+    for (let i = 0; i < count; i++) {
+        stars.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 1.2 + 0.3,
+            color: Math.random() > 0.97 ? '#ffe066' : (Math.random() > 0.7 ? '#fff' : '#b5d9ff'),
+            alpha: Math.random() * 0.7 + 0.3
+        });
+    }
+    staticStars = { width: canvas.width, height: canvas.height, stars };
+    return stars;
+}
+
 function drawBackground(ctx) {
     // 檢查 ctx 和 canvas 是否可用
     if (!ctx) {
         console.warn('[drawBackground] ctx 不存在');
         return;
     }
-    
     if (!ctx.canvas) {
         console.warn('[drawBackground] ctx.canvas 不存在');
         return;
     }
-    
     const canvas = ctx.canvas;
-    
-    // 檢查 canvas 尺寸是否有效
     if (!isFinite(canvas.width) || !isFinite(canvas.height) || canvas.width <= 0 || canvas.height <= 0) {
         console.warn('[drawBackground] canvas 尺寸異常', { width: canvas.width, height: canvas.height });
         return;
     }
-    
+    // 1. 畫漸層底色
     const cx = canvas.width / 2;
     const cy = canvas.height / 2;
-    const radius = Math.min(cx, cy);
-    
-    // 檢查計算結果是否有效
-    if (!isFinite(cx) || !isFinite(cy) || !isFinite(radius) || radius <= 0) {
-        console.warn('[drawBackground] 座標/半徑異常', { cx, cy, radius });
-        return;
-    }
-    
-    try {
-        // 創建徑向漸層背景
-        const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
-        gradient.addColorStop(0, '#000');
-        gradient.addColorStop(1, '#333');
-        
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // 如果繪製成功，重置警告標記
-        if (window._drawBgWarned) {
-            window._drawBgWarned = false;
-            console.log('[drawBackground] 背景繪製恢復正常');
-        }
-    } catch (error) {
-        console.error('[drawBackground] 繪製背景時發生錯誤:', error);
-        if (!window._drawBgWarned) {
-            window._drawBgWarned = true;
-            console.warn('[drawBackground] 背景繪製失敗，已設置警告標記');
-        }
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.max(canvas.width, canvas.height) * 0.6);
+    grad.addColorStop(0, '#0D0E52');
+    grad.addColorStop(0.3, '#1C1C80');
+    grad.addColorStop(0.7, '#2A1B3D');
+    grad.addColorStop(1, '#000');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // 2. 畫靜態星空
+    const stars = getStaticStars(canvas);
+    for (const s of stars) {
+        ctx.save();
+        ctx.globalAlpha = s.alpha;
+        ctx.fillStyle = s.color;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
     }
 }
 
@@ -2679,6 +2699,21 @@ function hitNoteSuccess(index, type) {
             gain = 1000;
             score += gain;
             perfectCount++;
+            soundManager.play('perfect'); // 播放 perfect 音效
+            // ====== 只保留 Perfect 小爆炸動畫 ======
+            const laneCount = laneManager.laneCount;
+            const laneWidth = canvas.width / laneCount;
+            const noteX = (note.lane + 0.5) * laneWidth;
+            const noteY = canvas.height - JUDGE_LINE.POSITION;
+            if (typeof noteEffectManager.createGoldenFlashEffect === 'function') {
+                noteEffectManager.createGoldenFlashEffect(noteX, noteY, 0.5); // 小爆炸
+            }
+            // .key 元素動畫（縮短為 200ms）
+            const keyEl = document.querySelector(`[data-key="${KEY_LIST[note.lane]}"]`);
+            if (keyEl) {
+                keyEl.classList.add('perfect-hit');
+                setTimeout(() => keyEl.classList.remove('perfect-hit'), 200);
+            }
         } else if (type === 'great') {
             gain = 500;
             score += gain;
@@ -2688,10 +2723,11 @@ function hitNoteSuccess(index, type) {
             score += gain;
             goodCount++;
         }
-        // Combo加成：每5Combo給5000分
+        // Combo 不做動畫
         if (combo > 0 && combo % 5 === 0) {
             score += 5000;
             showScoreGain(5000);
+            soundManager.play('combo'); // 只播音效，不做動畫
         }
         updateScoreDisplay();
         updateComboDisplay();
@@ -3019,31 +3055,26 @@ function endGame() {
     // 清空舊內容
     resultScreen.innerHTML = '';
 
-    // ====== 新結算畫面結構 ======
-    // 主內容容器
-    const content = document.createElement('div');
-    content.className = 'result-content';
-    content.style = 'display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;padding:32px 0;';
-    
+    // ====== 新結算畫面結構（直接加在 resultScreen 上） ======
     // 標題
     const title = document.createElement('div');
     title.className = 'result-title';
     title.innerHTML = '✨ <b>你的成績</b> ✨';
-    content.appendChild(title);
+    resultScreen.appendChild(title);
 
     // 分數動畫區
     const scoreDiv = document.createElement('div');
     scoreDiv.className = 'final-score';
     scoreDiv.style = 'font-size:2.8rem;font-weight:bold;color:#ffe066;text-shadow:0 0 24px #ffe066,0 0 8px #fff;letter-spacing:2px;margin:18px 0 8px 0;';
     scoreDiv.textContent = '分數: 0';
-    content.appendChild(scoreDiv);
+    resultScreen.appendChild(scoreDiv);
 
     // 評級動畫區
     const gradeDiv = document.createElement('div');
     gradeDiv.className = 'final-grade';
     gradeDiv.style = 'font-size:2.2rem;font-weight:bold;margin-bottom:8px;color:#fff700;text-shadow:0 0 24px #fff700,0 0 8px #fff;letter-spacing:2px;';
     gradeDiv.textContent = grade;
-    content.appendChild(gradeDiv);
+    resultScreen.appendChild(gradeDiv);
 
     // 新增詳細資訊區（插在評級下方、最大Combo上方）
     const detailDiv = document.createElement('div');
@@ -3056,14 +3087,14 @@ function endGame() {
         <span style=\"color:#ff6f91;\">Miss</span>：${missCount}<br>
         <span style=\"color:#fff700;\">準確率</span>：${accuracy}%
     `;
-    content.appendChild(detailDiv);
+    resultScreen.appendChild(detailDiv);
 
     // 最大Combo
     const comboDiv = document.createElement('div');
     comboDiv.className = 'final-combo';
     comboDiv.style = 'font-size:1.3rem;color:#0ff;margin-bottom:8px;';
     comboDiv.textContent = `最大Combo：${maxCombo}`;
-    content.appendChild(comboDiv);
+    resultScreen.appendChild(comboDiv);
 
     // 成就徽章/稱號
     const badgeDiv = document.createElement('div');
@@ -3077,7 +3108,7 @@ function endGame() {
     else if (grade === 'B') badge = '🎵 <span style="color:#4ecdc4">節奏入門</span>';
     else badge = '💡 <span style="color:#aaa">繼續加油！</span>';
     badgeDiv.innerHTML = badge;
-    content.appendChild(badgeDiv);
+    resultScreen.appendChild(badgeDiv);
 
     // 暱稱輸入
     const nicknameRow = document.createElement('div');
@@ -3092,13 +3123,13 @@ function endGame() {
     confirmBtn.style = 'margin-left:8px;padding:8px 18px;border-radius:8px;background:#0ff;color:#222;font-weight:bold;border:none;cursor:pointer;font-size:1.1em;white-space:nowrap;';
     nicknameRow.appendChild(nicknameInput);
     nicknameRow.appendChild(confirmBtn);
-    content.appendChild(nicknameRow);
+    resultScreen.appendChild(nicknameRow);
 
     // 排行榜區塊
     const leaderboardDiv = document.createElement('div');
     leaderboardDiv.className = 'result-leaderboard';
     leaderboardDiv.style = 'width:100%;max-width:420px;margin:18px auto 0 auto;background:rgba(0,0,0,0.7);border-radius:16px;padding:16px 8px 8px 8px;box-shadow:0 0 24px #0ff3;';
-    content.appendChild(leaderboardDiv);
+    resultScreen.appendChild(leaderboardDiv);
 
     // 再玩一次/回主選單按鈕
     const btnRow = document.createElement('div');
@@ -3114,7 +3145,7 @@ function endGame() {
     menuBtn.style = 'padding:10px 32px;font-size:1.2em;border-radius:12px;background:#4ecdc4;color:#222;font-weight:bold;border:none;cursor:pointer;box-shadow:0 0 12px #4ecdc488;transition:transform 0.2s;';
     btnRow.appendChild(retryBtn);
     btnRow.appendChild(menuBtn);
-    content.appendChild(btnRow);
+    resultScreen.appendChild(btnRow);
 
     // 分享成績按鈕獨立一排
     const shareRow = document.createElement('div');
@@ -3125,9 +3156,7 @@ function endGame() {
     shareBtn.innerHTML = '分享成績';
     shareBtn.style = 'padding:10px 32px;font-size:1.2em;border-radius:12px;background:#0ff;color:#222;font-weight:bold;border:none;cursor:pointer;box-shadow:0 0 12px #0ff8;transition:transform 0.2s;';
     shareRow.appendChild(shareBtn);
-    content.appendChild(shareRow);
-
-    resultScreen.appendChild(content);
+    resultScreen.appendChild(shareRow);
 
     // ====== 分數跳動動畫 ======
     let displayScore = 0;
@@ -3228,6 +3257,18 @@ function endGame() {
     let playCount = parseInt(localStorage.getItem('fatekeys_playcount') || '0', 10);
     playCount++;
     localStorage.setItem('fatekeys_playcount', playCount);
+
+    // 在 endGame() 最後加上：
+    checkAchievements({
+        maxCombo,
+        score,
+        perfect: perfectCount,
+        miss: missCount,
+        totalNotes: activeNotes.length,
+        playCount: parseInt(localStorage.getItem('fatekeys_playcount') || '0', 10),
+        fateUnlocked: !LEVEL_CONFIGS.fate.locked,
+        clearedExtreme: selectedDifficulty === 'extreme'
+    });
 }
 
 // ===============================
@@ -3437,9 +3478,24 @@ volumeSlider.min = 0;
 volumeSlider.max = 1;
 volumeSlider.step = 0.01;
 volumeSlider.value = 0.5; // 預設值改為 0.5 (50%)
-volumeSlider.className = 'left-top-btn';
 volumeSlider.id = 'volume-slider';
 volumeSlider.title = '音量';
+// 調整樣式：靠右上角，寬度120px，與#now-playing對齊
+Object.assign(volumeSlider.style, {
+    position: 'fixed',
+    top: '56px', // #now-playing 預設 top:16px + 高度約32px + 8px間距
+    right: '24px',
+    width: '120px',
+    zIndex: 9999,
+    background: 'rgba(0,0,0,0.7)',
+    borderRadius: '12px',
+    border: '1px solid #0ff',
+    boxShadow: '0 0 12px #0ff3',
+    padding: '2px 0',
+    margin: '0',
+    outline: 'none',
+    accentColor: '#0ff'
+});
 document.body.appendChild(volumeSlider);
 volumeSlider.addEventListener('input', function() {
     volume = parseFloat(this.value);
@@ -3457,34 +3513,43 @@ setInterval(() => {
 const helpBtn = document.getElementById('help-btn');
 const helpModal = document.getElementById('help-modal');
 helpModal.innerHTML = `
-  <div id="help-modal-content" style="background:#222;color:#fff;padding:2rem 1.5rem;border-radius:1rem;max-width:400px;margin:5vh auto;position:relative;box-shadow:0 4px 32px #000b;">
-    <button id="help-modal-close" style="position:absolute;top:0.5rem;right:0.5rem;font-size:2rem;background:none;border:none;color:#fff;cursor:pointer;">&times;</button>
-    <h2 style="margin-top:0;">遊戲玩法與勝負規則</h2>
+  <div id="help-modal-content" style="background:#222;color:#fff;padding:2rem 1.5rem 1.5rem 1.5rem;border-radius:1rem;max-width:420px;width:90vw;max-height:80vh;margin:5vh auto;position:relative;box-shadow:0 4px 32px #000b;display:flex;flex-direction:column;align-items:center;overflow-y:auto;">
+    <h2 style="margin-top:0;">Fate Keys 命運節奏｜玩法說明</h2>
+    <div style="margin-bottom:1.2em;font-weight:bold;color:#ffe066;">【遊戲流程】</div>
     <ul style="padding-left:1.2em;">
-      <li>1. 選擇你喜歡的歌曲與難度，點擊「開始遊戲」或按 Enter 鍵進入遊戲。</li>
-      <li>2. 遊戲時，請根據畫面下落的音符，準確按下 <b>D F 空白 J K</b> 鍵。</li>
+      <li>1. 選擇你喜歡的歌曲與難度，點擊「開始遊戲」或按 Enter 鍵進入節奏世界。</li>
+      <li>2. 根據畫面下落的音符，準確按下對應鍵位：
+        <b style="color:#0ff;">D</b> <b style="color:#0ff;">F</b> <b style="color:#ffe066;">空白</b> <b style="color:#ff6f91;">J</b> <b style="color:#4ecdc4;">K</b>。
+      </li>
       <li>3. 每次正確擊中音符可獲得分數，連續擊中會累積 Combo，失誤則 Combo 歸零。</li>
       <li>4. 分數依照擊中準確度與連擊數計算，越準確、連擊越高分數越多。</li>
-      <li>5. 遊戲結束時會顯示本局總分，分數越高代表表現越好，快來挑戰自己的極限！</li>
-      <li>6. 「命運之路」(Fate Mode) 需完成三場遊戲才會解鎖。</li>
-      <li>7. 可於左上角調整音量，並切換高對比模式以提升可視性。</li>
-      <li>8. 遊戲支援鍵盤操作，建議使用電腦體驗最佳。</li>
+      <li>5. 遊戲結束時會顯示本局總分與評級，快來挑戰自己的極限！</li>
     </ul>
-    <div style="margin-top:1em;font-size:0.95em;color:#ffd700;">小提示：保持節奏感，盡量連擊，挑戰更高分數吧！</div>
+    <div style="margin:1.2em 0 0.5em 0;font-weight:bold;color:#ffe066;">【進階挑戰】</div>
+    <ul style="padding-left:1.2em;">
+      <li>達成特定條件可解鎖「命運之路」(Fate Mode) 與多項成就。</li>
+      <li>點擊左上角「🏅成就」可查看已解鎖成就，並挑戰排行榜。</li>
+      <li>可於左上角調整音量，並切換高對比模式提升可視性。</li>
+      <li>遊戲支援鍵盤操作，建議使用電腦體驗最佳。</li>
+    </ul>
+    <div style="margin-top:1.2em;font-size:1em;color:#ffd700;font-weight:bold;">小提示：保持節奏感，盡量連擊，挑戰更高分數與全成就！<br>每一次擊鍵，都是與音樂的共舞——享受節奏，享受挑戰！</div>
+    <button id="help-modal-close" class="action-btn" style="margin-top:24px;font-size:1.2em;align-self:center;background:#ffe066;color:#222;border-radius:8px;border:none;padding:10px 32px;font-weight:bold;cursor:pointer;box-shadow:0 0 12px #ffe06688;">關閉</button>
   </div>
 `;
-helpModal.style.display = 'none';
-helpModal.style.position = 'fixed';
-helpModal.style.top = '0';
-helpModal.style.left = '0';
-helpModal.style.width = '100vw';
-helpModal.style.height = '100vh';
-helpModal.style.background = 'rgba(0,0,0,0.6)';
-helpModal.style.zIndex = '10001';
-helpModal.style.justifyContent = 'center';
-helpModal.style.alignItems = 'center';
-helpModal.style.display = 'none';
-helpModal.style.transition = 'opacity 0.2s';
+// 彈窗永遠置中，內容不會超出畫面
+Object.assign(helpModal.style, {
+  display: 'none',
+  position: 'fixed',
+  zIndex: 10001,
+  top: 0,
+  left: 0,
+  width: '100vw',
+  height: '100vh',
+  background: 'rgba(0,0,0,0.6)',
+  alignItems: 'center',
+  justifyContent: 'center',
+  transition: 'opacity 0.2s',
+});
 
 helpBtn.addEventListener('click', () => {
   helpModal.style.display = 'flex';
@@ -3572,6 +3637,7 @@ window.addEventListener('DOMContentLoaded', function() {
     if (songCards) {
         songCards.forEach(card => {
             card.addEventListener('click', function() {
+                soundManager.play('ui');
                 songCards.forEach(c => c.classList.remove('active'));
                 this.classList.add('active');
                 selectedSong = this.dataset.song;
@@ -3887,6 +3953,22 @@ window.addEventListener('DOMContentLoaded', function() {
             showScreen('select');
         });
     }
+
+    const achievementBtn = document.getElementById('achievement-btn');
+    const achievementModal = document.getElementById('achievement-modal');
+    const closeAchievementBtn = document.getElementById('close-achievement-btn');
+    if (achievementBtn && achievementModal && closeAchievementBtn) {
+        achievementBtn.onclick = function() {
+            renderAchievementList();
+            achievementModal.style.display = 'flex';
+        };
+        closeAchievementBtn.onclick = function() {
+            achievementModal.style.display = 'none';
+        };
+        achievementModal.onclick = function(e) {
+            if (e.target === achievementModal) achievementModal.style.display = 'none';
+        };
+    }
 });
 
 // 通關 normal 以上難度時 localStorage.normalCleared++
@@ -4179,4 +4261,183 @@ function calculateGrade(score, maxCombo) {
     if (score >= thresholds.C)   return 'C';
     return 'D';
 }
+
+// 每次重開網頁自動清空 localStorage
+//window.addEventListener('load', function() {
+//    localStorage.clear();
+//});
+//window.addEventListener('beforeunload', function() {
+//    localStorage.clear();
+//});
+
+// 製作團隊浮層開關
+window.addEventListener('DOMContentLoaded', function() {
+    var teamBtn = document.getElementById('team-btn');
+    var teamView = document.getElementById('team-view');
+    var closeTeamBtn = document.getElementById('close-team-btn');
+    if (teamBtn && teamView) {
+        teamBtn.addEventListener('click', function() {
+            teamView.style.display = 'flex';
+        });
+    }
+    if (closeTeamBtn && teamView) {
+        closeTeamBtn.addEventListener('click', function() {
+            teamView.style.display = 'none';
+        });
+    }
+});
+
+// 清除紀錄按鈕功能
+window.addEventListener('DOMContentLoaded', function() {
+    var clearBtn = document.getElementById('clear-storage-btn');
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+            if (confirm('確定要清除所有遊戲紀錄嗎？此操作無法復原。')) {
+                localStorage.clear();
+                location.reload();
+            }
+        });
+    }
+    // 製作團隊浮層開關
+    var teamBtn = document.getElementById('team-btn');
+    var teamView = document.getElementById('team-view');
+    var closeTeamBtn = document.getElementById('close-team-btn');
+    if (teamBtn && teamView) {
+        teamBtn.addEventListener('click', function() {
+            teamView.style.display = 'flex';
+        });
+    }
+    if (closeTeamBtn && teamView) {
+        closeTeamBtn.addEventListener('click', function() {
+            teamView.style.display = 'none';
+        });
+    }
+});
+
+// ====== 音效管理器 (Sound Manager) ======
+const soundManager = {
+    sounds: {
+        perfect: './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/perfect.wav',
+        combo: './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/combo.wav',
+        ui: './Vibe_Coding組_王祐昇_運行程式及遊戲素材/audio/ui.wav'
+    },
+    play(type) {
+        const src = this.sounds[type];
+        if (!src) return;
+        const audio = new Audio(src);
+        audio.volume = 0.5;
+        audio.play().catch(()=>{});
+    }
+};
+
+// ... existing code ...
+// ====== 成就系統 ======
+const achievements = [
+    { id: 'combo10', name: '連擊達10', desc: '單局達成10連擊', check: (stats) => stats.maxCombo >= 10 },
+    { id: 'combo50', name: '連擊達50', desc: '單局達成50連擊', check: (stats) => stats.maxCombo >= 50 },
+    { id: 'combo100', name: '連擊達100', desc: '單局達成100連擊', check: (stats) => stats.maxCombo >= 100 },
+    { id: 'score50k', name: '分數破5萬', desc: '單局分數達到50,000', check: (stats) => stats.score >= 50000 },
+    { id: 'score100k', name: '分數破10萬', desc: '單局分數達到100,000', check: (stats) => stats.score >= 100000 },
+    { id: 'allPerfect', name: '全Perfect', desc: '單局全Perfect', check: (stats) => stats.perfect === stats.totalNotes && stats.totalNotes > 0 },
+    { id: 'noMiss', name: '無Miss', desc: '單局0失誤', check: (stats) => stats.miss === 0 && stats.totalNotes > 0 },
+    { id: 'clearExtreme', name: '挑戰極限', desc: '首次通關Lv.4（Extreme）', check: (stats) => stats.clearedExtreme },
+    { id: 'clearFate', name: '命運解鎖', desc: '首次解鎖 Fate Mode', check: (stats) => stats.fateUnlocked },
+    { id: 'play10', name: '音樂愛好者', desc: '累積遊玩10次', check: (stats) => stats.playCount >= 10 }
+];
+
+function checkAchievements(stats) {
+    achievements.forEach(a => {
+        if (!localStorage.getItem('achv_' + a.id) && a.check(stats)) {
+            localStorage.setItem('achv_' + a.id, '1');
+            showAchievementPopup(a.name, a.desc);
+            // 可加音效 soundManager.play('combo');
+        }
+    });
+}
+
+function showAchievementPopup(name, desc) {
+    let popup = document.createElement('div');
+    popup.className = 'achievement-popup';
+    popup.innerHTML = `<b>🏆 成就解鎖！</b><br>${name}<br><span style="font-size:0.95em;">${desc}</span>`;
+    Object.assign(popup.style, {
+        position: 'fixed', top: '20%', left: '50%', transform: 'translateX(-50%)',
+        background: 'rgba(0,0,0,0.92)', color: '#ffe066', padding: '18px 32px',
+        borderRadius: '16px', fontSize: '1.2em', zIndex: 99999, textAlign: 'center',
+        boxShadow: '0 0 24px #ffe06688', opacity: '0', transition: 'opacity 0.3s'
+    });
+    document.body.appendChild(popup);
+    setTimeout(() => { popup.style.opacity = '1'; }, 50);
+    setTimeout(() => { popup.style.opacity = '0'; setTimeout(() => popup.remove(), 500); }, 2500);
+}
+// ... existing code ...
+
+function renderAchievementList() {
+    const listDiv = document.getElementById('achievement-list');
+    if (!listDiv) return;
+    let html = '<ul style="list-style:none;padding:0;">';
+    achievements.forEach(a => {
+        const unlocked = localStorage.getItem('achv_' + a.id);
+        html += `<li style="margin-bottom:1em;">
+            <span style="font-size:1.2em;${unlocked ? 'color:#ffe066;' : 'color:#888;'}">${unlocked ? '✔️' : '⬜'} ${a.name}</span>
+            <div style="font-size:0.95em;color:#ccc;">${a.desc}</div>
+        </li>`;
+    });
+    html += '</ul>';
+    listDiv.innerHTML = html;
+}
+
+// ... existing code ...
+// 直接調整成就視窗的樣式（加強滾軸與視覺）
+window.addEventListener('DOMContentLoaded', function() {
+    const achievementModal = document.getElementById('achievement-modal');
+    const achievementContent = document.getElementById('achievement-content');
+    if (achievementModal && achievementContent) {
+        // 視窗永遠置中，內容不超出畫面
+        Object.assign(achievementModal.style, {
+            display: 'none',
+            position: 'fixed',
+            zIndex: 10002,
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
+            background: 'rgba(0,0,0,0.85)',
+            alignItems: 'center',
+            justifyContent: 'center',
+        });
+        Object.assign(achievementContent.style, {
+            maxWidth: '400px',
+            width: '90vw',
+            maxHeight: '80vh',
+            overflowY: 'auto',
+            background: 'rgba(0,0,0,0.95)',
+            borderRadius: '18px',
+            padding: '32px 16px 24px 16px',
+            boxShadow: '0 0 32px #ffe066',
+            margin: '0 auto',
+            position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+        });
+    }
+    // 強化關閉按鈕樣式
+    const closeBtn = document.getElementById('close-achievement-btn');
+    if (closeBtn) {
+        Object.assign(closeBtn.style, {
+            marginTop: '24px',
+            fontSize: '1.2em',
+            alignSelf: 'center',
+            background: '#ffe066',
+            color: '#222',
+            borderRadius: '8px',
+            border: 'none',
+            padding: '10px 32px',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            boxShadow: '0 0 12px #ffe06688',
+        });
+    }
+});
+// ... existing code ...
 
