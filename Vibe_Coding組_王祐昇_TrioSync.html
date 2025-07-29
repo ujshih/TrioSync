@@ -58,9 +58,9 @@
                         <div class="song-card-title">Canon in D Major</div>
                         <div class="song-card-bpm">BPM: 120</div>
                     </div>
-                    <div class="song-card" data-song="HammerMASTER.mp3">
+                    <div class="song-card" data-song="HammerMASTER.mp3" >
                         <div class="song-card-icon">🥁</div>
-                        <div class="song-card-title">HammerMASTER</div>
+                        <div class="song-card-title">Hammer<br>Master</div>
                         <div class="song-card-bpm">BPM: 160</div>
                     </div>
                     <div class="song-card" data-song="InspiringDreams.mp3">
@@ -94,45 +94,57 @@
             <!-- 難度選擇區 -->
             <div class="difficulty-select">
                 <h2 class="section-title">選擇難度</h2>
-                <div class="difficulty-btn-row">
-                    <button class="difficulty-btn beginner" data-difficulty="beginner" tabindex="0" aria-label="選擇難度 Lv.1">
-                        <div class="difficulty-level">Lv.1</div>
-                        <div class="difficulty-name">初學者 Beginner</div>
-                        <div class="difficulty-stars">⭐</div>
-                    </button>
-                    <button class="difficulty-btn casual" data-difficulty="casual" tabindex="0" aria-label="選擇難度 Lv.2">
-                        <div class="difficulty-level">Lv.2</div>
-                        <div class="difficulty-name">休閒玩家 Casual</div>
-                        <div class="difficulty-stars">⭐⭐</div>
-                    </button>
-                    <button class="difficulty-btn hard" data-difficulty="hard" tabindex="0" aria-label="選擇難度 Lv.3">
-                        <div class="difficulty-level">Lv.3</div>
-                        <div class="difficulty-name">困難模式 Hard</div>
-                        <div class="difficulty-stars">⭐⭐⭐</div>
-                    </button>
-                    <button class="difficulty-btn extreme" data-difficulty="extreme" tabindex="0" aria-label="選擇難度 Lv.4">
-                        <div class="difficulty-level">Lv.4</div>
-                        <div class="difficulty-name">極限挑戰 Extreme</div>
-                        <div class="difficulty-stars">⭐⭐⭐⭐</div>
-                    </button>
-                    <button class="difficulty-btn master" data-difficulty="master" tabindex="0" aria-label="選擇難度 Lv.5">
-                        <div class="difficulty-level">Lv.5</div>
-                        <div class="difficulty-name">大師級 Master</div>
-                        <div class="difficulty-stars">⭐⭐⭐⭐⭐</div>
-                    </button>
-                    <button class="difficulty-btn fate hidden-difficulty" data-difficulty="fate" tabindex="0" aria-label="選擇難度 Lv.6" disabled>
-                        <div class="difficulty-level">Lv.6</div>
-                        <div class="difficulty-name">命運之路 Fate Mode</div>
-                        <div class="difficulty-stars">⭐⭐⭐⭐⭐✨</div>
-                    </button>
+                <div class="difficulty-row">
+                    <div class="difficulty-card easy" data-difficulty="beginner">
+                        <div class="level">LV.1</div>
+                        <div class="name-cn">初學者</div>
+                        <div class="name-en">Beginner</div>
+                        <div class="stars">⭐</div>
+                        <div class="difficulty-desc">✨ 基礎節奏入門！單鍵點擊、節奏緩和，讓你無壓力進入命運世界。</div>
+                        </div>
+                    <div class="difficulty-card casual" data-difficulty="casual">
+                        <div class="level">LV.2</div>
+                        <div class="name-cn">休閒玩家</div>
+                        <div class="name-en">Casual</div>
+                        <div class="stars">⭐⭐</div>
+                        <div class="difficulty-desc">🎵 旋律稍起波瀾，簡短長音與雙鍵節奏交織，輕鬆享受流動的音樂律動。</div>
+                        </div>
+                    <div class="difficulty-card hard" data-difficulty="hard">
+                        <div class="level">LV.3</div>
+                        <div class="name-cn">困難模式</div>
+                        <div class="name-en">Hard</div>
+                        <div class="stars">⭐⭐⭐</div>
+                        <div class="difficulty-desc">🔥 節奏加速進化！中長音與雙鍵組合考驗反應與穩定度，是實力的試煉場。</div>
+                        </div>
+                    <div class="difficulty-card extreme" data-difficulty="extreme">
+                        <div class="level">LV.4</div>
+                        <div class="name-cn">極限挑戰</div>
+                        <div class="name-en">Extreme</div>
+                        <div class="stars">⭐⭐⭐⭐</div>
+                        <div class="difficulty-desc">⚡ 音流如電！高速節奏、多段長音、空白鍵加入，全面挑戰你的極限操作。</div>
+                        </div>
+                    <div class="difficulty-card master" data-difficulty="master">
+                        <div class="level">LV.5</div>
+                        <div class="name-cn">大師級</div>
+                        <div class="name-en">Master</div>
+                        <div class="stars">⭐⭐⭐⭐⭐</div>
+                        <div class="difficulty-desc">👑 節奏王者之道！節拍密集如雨、判定超嚴苛，特效爆閃，唯高手能穩步前行。</div>
+                        </div>
+                    <div class="difficulty-card fate" data-difficulty="fate">
+                        <div class="level">LV.6</div>
+                        <div class="name-cn">命運之路</div>
+                        <div class="name-en">Fate Mode</div>
+                        <div class="stars">⭐⭐⭐⭐⭐✨</div>
+                        <div class="difficulty-desc">💀 命運最終試煉！極速連打、複雜節奏、全鍵齊發，只有真正的強者能通關！</div>
+                        </div>
                 </div>
                 <div id="miss-buffer-ui" class="miss-buffer-ui" style="display:none;"></div>
             </div>
             
             <div class="start-btn-container">
                 <button id="start-btn" class="pulse-btn" tabindex="0" aria-label="開始遊戲">
-                    <div class="start-btn-icon">🚀</div>
-                    <div class="start-btn-text">開始遊戲</div>
+                    <span>🚀</span>
+                    <span>開始遊戲</span>
                 </button>
             </div>
         </section>

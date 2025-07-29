@@ -38,9 +38,6 @@ class JudgmentSystem {
             holdHit: false,
             animating: null
         }));
-        console.log('[JudgmentSystem] 設置音符', {
-            noteCount: this.activeNotes.length
-        });
     }
 
     // 判定按鍵
