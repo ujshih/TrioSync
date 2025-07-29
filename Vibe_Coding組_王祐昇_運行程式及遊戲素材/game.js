@@ -3209,7 +3209,11 @@ function setDifficulty(diff) {
     });
     const activeBtn = document.querySelector(`[data-difficulty="${diff}"]`);
     if (activeBtn) {
+        // 無論是否已經active，每次都重新觸發動畫
         activeBtn.classList.add('active');
+        activeBtn.style.animation = 'none'; // 先重置
+        // 強制reflow
+        void activeBtn.offsetWidth;
         activeBtn.style.animation = 'scale-in-glow 0.4s';
         setTimeout(()=>{activeBtn.style.animation='';},400);
     }
@@ -4088,9 +4092,27 @@ window.addEventListener('DOMContentLoaded', function() {
                 if (tooltip.style.display === 'block') {
                     tooltip.style.display = 'none';
                 }
+                // 新增：點擊難度時播放音效
+                soundManager.play('ui');
+                // 新增：彈窗顯示難度名稱
+                const diff = this.dataset.difficulty;
+                const levelMap = {
+                    'beginner': '初學者',
+                    'casual': '休閒玩家',
+                    'hard': '困難模式',
+                    'extreme': '極限挑戰',
+                    'master': '大師級',
+                    'fate': '命運之路'
+                };
+                const levelCode = DIFFICULTY_LEVEL_MAP[diff] || '';
+                const levelName = levelMap[diff] || diff;
+                if(levelCode && levelName) {
+                    showToast(`已選取${levelCode} ${levelName}`);
+                } else {
+                    showToast('已選取難度');
+                }
                 // 原本的setDifficulty邏輯
-                const difficulty = this.dataset.difficulty;
-                setDifficulty(difficulty);
+                setDifficulty(diff);
             });
         });
     }
@@ -4601,12 +4623,12 @@ const effectManager = {
 
 // 新增難度等級對應表
 const DIFFICULTY_LEVEL_MAP = {
-    'beginner': 'L1',
-    'casual': 'L2',
-    'hard': 'L3',
-    'extreme': 'L4',
-    'master': 'L5',
-    'fate': 'L6'
+    'beginner': 'LV.1',
+    'casual': 'LV.2',
+    'hard': 'LV.3',
+    'extreme': 'LV.4',
+    'master': 'LV.5',
+    'fate': 'LV.6'
 };
 
 // 抽出排行榜渲染函數，供首頁按鈕呼叫
