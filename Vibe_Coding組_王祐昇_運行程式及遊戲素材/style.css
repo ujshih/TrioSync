@@ -3451,3 +3451,16 @@ body.result-bg-d::before {
     height: 44px;
   }
 }
+
+#menu-toggle-btn:hover,
+#menu-btns-wrapper button:hover {
+  color: #111 !important;
+  text-shadow: 0 1px 8px #fff, 0 0 2px #0ff, 0 0 2px #fff700;
+}
+#menu-toggle-btn:focus,
+#menu-btns-wrapper button:focus {
+  color: #111 !important;
+  text-shadow: 0 1px 8px #fff, 0 0 2px #0ff, 0 0 2px #fff700;
+  outline: 2px solid #0ff;
+  outline-offset: 2px;
+}
