@@ -194,11 +194,16 @@
         </section>
     </div>
     
-    <!-- 高對比模式切換按鈕 -->
-    <button id="contrast-btn" class="action-btn left-top-btn" tabindex="0" aria-label="高對比模式">🌓 高對比</button>
-    <button id="help-btn" class="action-btn left-top-btn" tabindex="0" aria-label="遊戲說明">📖 玩法說明</button>
-    <button id="leaderboard-btn" class="action-btn left-top-btn" tabindex="0" aria-label="排行榜">🏆 排行榜</button>
-    <button id="achievement-btn" class="action-btn left-top-btn" tabindex="0" aria-label="成就">🏅 成就</button>
+    <!-- 左上角功能按鈕群組（收合展開） -->
+    <div id="left-top-menu-group">
+      <button id="menu-toggle-btn" class="action-btn left-top-btn" tabindex="0" aria-label="功能選單">☰ 功能選單</button>
+      <div id="menu-btns-wrapper" class="menu-btns-collapsed">
+        <button id="contrast-btn" class="action-btn left-top-btn" tabindex="0" aria-label="高對比模式">🌓 高對比</button>
+        <button id="help-btn" class="action-btn left-top-btn" tabindex="0" aria-label="遊戲說明">📖 玩法說明</button>
+        <button id="leaderboard-btn" class="action-btn left-top-btn" tabindex="0" aria-label="排行榜">🏆 排行榜</button>
+        <button id="achievement-btn" class="action-btn left-top-btn" tabindex="0" aria-label="成就">🏅 成就</button>
+      </div>
+    </div>
     <button id="clear-storage-btn" class="action-btn left-top-btn main-only-btn" tabindex="0" aria-label="清除紀錄">🗑️ 清除紀錄</button>
     <button id="team-btn" class="action-btn left-top-btn main-only-btn" tabindex="0" aria-label="製作團隊">👥 製作團隊</button>
     <!-- 遊戲規則顯示區（由JS控制顯示） -->

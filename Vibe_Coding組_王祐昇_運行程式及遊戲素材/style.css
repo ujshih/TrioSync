@@ -3380,3 +3380,74 @@ body.result-bg-d::before {
 .result-share-row .action-btn:active {
     transform: scale(0.95);
 }
+
+/* 左上角功能選單群組樣式 */
+#left-top-menu-group {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+#menu-toggle-btn {
+  width: 160px;
+  margin-bottom: 8px;
+  box-shadow: 0 0 12px #0ff8, 0 0 2px #fff;
+  background: rgba(0,0,0,0.82);
+  border-radius: 12px;
+  font-size: 1.1rem;
+  letter-spacing: 1px;
+  transition: box-shadow 0.2s, background 0.2s;
+}
+#menu-btns-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+#menu-btns-wrapper button {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.98);
+  transition: opacity 0.35s cubic-bezier(.4,1.4,.6,1), transform 0.35s cubic-bezier(.4,1.4,.6,1);
+  pointer-events: none;
+}
+#menu-btns-wrapper.menu-btns-expanded {
+  pointer-events: auto;
+}
+#menu-btns-wrapper.menu-btns-expanded button {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+#menu-btns-wrapper.menu-btns-expanded button:nth-child(1) { transition-delay: 0.05s; }
+#menu-btns-wrapper.menu-btns-expanded button:nth-child(2) { transition-delay: 0.13s; }
+#menu-btns-wrapper.menu-btns-expanded button:nth-child(3) { transition-delay: 0.21s; }
+#menu-btns-wrapper.menu-btns-expanded button:nth-child(4) { transition-delay: 0.29s; }
+#menu-btns-wrapper.menu-btns-collapsed button {
+  transition-delay: 0s;
+}
+#menu-btns-wrapper.menu-btns-collapsed {
+  pointer-events: none;
+}
+
+/* 讓原本的 left-top-btn 定位失效，統一由群組控制 */
+#left-top-menu-group .left-top-btn {
+  position: static;
+  width: 160px;
+  margin: 0 0 4px 0;
+  z-index: 21;
+}
+
+@media (max-width: 600px) {
+  #left-top-menu-group, #menu-toggle-btn, #menu-btns-wrapper button {
+    width: 98vw;
+    min-width: 0;
+    max-width: 98vw;
+  }
+  #menu-toggle-btn, #menu-btns-wrapper button {
+    font-size: 1rem;
+    height: 44px;
+  }
+}

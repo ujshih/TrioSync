@@ -5021,3 +5021,41 @@ window.addEventListener('DOMContentLoaded', function() {
 });
 // ... existing code ...
 
+// ... existing code ...
+// ===============================
+// 左上角功能選單展開/收合動畫控制
+// ===============================
+document.addEventListener('DOMContentLoaded', function() {
+  const menuToggleBtn = document.getElementById('menu-toggle-btn');
+  const menuBtnsWrapper = document.getElementById('menu-btns-wrapper');
+  let expanded = false;
+
+  function closeMenu() {
+    menuBtnsWrapper.classList.remove('menu-btns-expanded');
+    menuBtnsWrapper.classList.add('menu-btns-collapsed');
+    expanded = false;
+  }
+  function openMenu() {
+    menuBtnsWrapper.classList.remove('menu-btns-collapsed');
+    menuBtnsWrapper.classList.add('menu-btns-expanded');
+    expanded = true;
+  }
+  menuToggleBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (expanded) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  });
+  // 點擊外部自動收合
+  document.addEventListener('click', function(e) {
+    if (expanded && !menuBtnsWrapper.contains(e.target) && e.target !== menuToggleBtn) {
+      closeMenu();
+    }
+  });
+  // 預設收合
+  closeMenu();
+});
+// ... existing code ...
+
