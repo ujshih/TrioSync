@@ -4841,7 +4841,6 @@ let isShowingAchievement = false;
 function showAchievementPopup(name, desc) {
     // 將成就加入隊列
     achievementQueue.push({ name, desc });
-    
     // 如果沒有正在顯示的成就，開始顯示
     if (!isShowingAchievement) {
         showNextAchievement();
@@ -4853,32 +4852,39 @@ function showNextAchievement() {
         isShowingAchievement = false;
         return;
     }
-    
     isShowingAchievement = true;
     const achievement = achievementQueue.shift();
-    
-    let popup = document.createElement('div');
-    popup.className = 'achievement-popup';
-    popup.innerHTML = `<b>🏆 成就解鎖！</b><br>${achievement.name}<br><span style="font-size:0.95em;">${achievement.desc}</span>`;
-    Object.assign(popup.style, {
-        position: 'fixed', top: '20%', left: '50%', transform: 'translateX(-50%)',
-        background: 'rgba(0,0,0,0.92)', color: '#ffe066', padding: '18px 32px',
-        borderRadius: '16px', fontSize: '1.2em', zIndex: 99999, textAlign: 'center',
-        boxShadow: '0 0 24px #ffe06688', opacity: '0', transition: 'opacity 0.3s'
+
+    // 先移除舊的modal（保險）
+    let oldModal = document.getElementById('achievement-unlock-modal');
+    if (oldModal) oldModal.remove();
+
+    // 建立modal結構
+    let modal = document.createElement('div');
+    modal.id = 'achievement-unlock-modal';
+    Object.assign(modal.style, {
+        position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+        background: 'rgba(0,0,0,0.85)', zIndex: 10003, display: 'flex', alignItems: 'center', justifyContent: 'center'
     });
-    document.body.appendChild(popup);
-    
-    // 淡入
-    setTimeout(() => { popup.style.opacity = '1'; }, 50);
-    
-    // 淡出並顯示下一個成就
-    setTimeout(() => { 
-        popup.style.opacity = '0'; 
-        setTimeout(() => {
-            popup.remove();
-            showNextAchievement(); // 顯示下一個成就
-        }, 500); 
-    }, 2500);
+    let content = document.createElement('div');
+    Object.assign(content.style, {
+        background: 'rgba(0,0,0,0.97)', borderRadius: '18px', padding: '32px 32px 24px 32px',
+        boxShadow: '0 0 32px #ffe066', maxWidth: '90vw', minWidth: '280px', textAlign: 'center', color: '#ffe066',
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+    });
+    content.innerHTML = `<div style="font-size:2.2em;margin-bottom:0.5em;">🏆</div><div style="font-size:1.3em;font-weight:bold;margin-bottom:0.5em;">成就解鎖！</div><div style="font-size:1.15em;margin-bottom:0.5em;">${achievement.name}</div><div style="font-size:1em;color:#fff;margin-bottom:1.2em;">${achievement.desc}</div>`;
+    let btn = document.createElement('button');
+    btn.textContent = '確認';
+    Object.assign(btn.style, {
+        marginTop: '18px', fontSize: '1.1em', background: '#ffe066', color: '#222', borderRadius: '8px', border: 'none', padding: '10px 32px', fontWeight: 'bold', cursor: 'pointer', boxShadow: '0 0 12px #ffe06688', alignSelf: 'center'
+    });
+    btn.onclick = function() {
+        modal.remove();
+        showNextAchievement();
+    };
+    content.appendChild(btn);
+    modal.appendChild(content);
+    document.body.appendChild(modal);
 }
 // ... existing code ...
 
