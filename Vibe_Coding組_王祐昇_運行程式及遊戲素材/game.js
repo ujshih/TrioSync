@@ -5199,7 +5199,7 @@ function togglePause() {
 function pauseGame() {
     if (!gameStarted || gameEnded || gamePaused) return;
     
-    console.log('[pauseGame] 遊戲暫停（音樂繼續播放）');
+    console.log('[pauseGame] 遊戲暫停');
     
     // 設置暫停狀態
     gamePaused = true;
@@ -5256,7 +5256,7 @@ function pauseGame() {
 function resumeGame() {
     if (!gameStarted || gameEnded || !gamePaused) return;
     
-    console.log('[resumeGame] 繼續遊戲（音樂繼續播放）');
+    console.log('[resumeGame] 繼續遊戲');
     
     // 計算暫停時間
     const pauseEndTime = performance.now();
