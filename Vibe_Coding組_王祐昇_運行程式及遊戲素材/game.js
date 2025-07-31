@@ -4176,12 +4176,24 @@ helpModal.innerHTML = `
       <li>8. 難度解鎖條件：只要玩過前一個難度即可解鎖下一個難度。</li>
     </ul>
     
-    <div style="margin:1.2em 0 0.5em 0;font-weight:bold;color:#ffe066;">【進階挑戰】</div>
+    <div style="margin:1.2em 0 0.5em 0;font-weight:bold;color:#ffe066;">【遊戲功能與設定】</div>
     <ul style="padding-left:1.2em;">
-      <li>🏆 <b>成就系統</b>：達成特定條件可解鎖多項成就，點擊左上角「🏅成就」查看</li>
-      <li>📈 <b>排行榜</b>：挑戰排行榜，與其他玩家比較成績</li>
-      <li>🎵 <b>音效設定</b>：可於左上角調整音量，並切換高對比模式提升可視性</li>
-      <li>⌨️ <b>操作支援</b>：遊戲支援鍵盤操作，建議使用電腦體驗最佳</li>
+      <li>🏆 <b>成就系統</b>：達成特定條件可解鎖多項成就，點擊左上角「🏅成就」查看已解鎖成就</li>
+      <li>📈 <b>排行榜</b>：挑戰排行榜，與其他玩家比較成績，記錄各難度的最高分數</li>
+      <li>🎵 <b>音效設定</b>：可於左上角調整音量，支援背景音樂和音效分開控制</li>
+      <li>🌓 <b>高對比模式</b>：切換高對比模式提升可視性，適合不同環境使用</li>
+      <li>⌨️ <b>操作支援</b>：遊戲支援鍵盤操作，建議使用電腦體驗最佳效果</li>
+      <li>💾 <b>進度保存</b>：遊戲進度自動保存，解鎖狀態和最佳成績永久保留</li>
+    </ul>
+    
+    <div style="margin:1.2em 0 0.5em 0;font-weight:bold;color:#ffe066;">【進階技巧與挑戰】</div>
+    <ul style="padding-left:1.2em;">
+      <li>🎯 <b>精準判定</b>：追求Perfect判定，提高分數和連擊加成</li>
+      <li>⚡ <b>連擊挑戰</b>：保持連續擊中，連擊越高分數加成越多</li>
+      <li>🎵 <b>節奏預判</b>：根據音樂節奏預判音符下落，提升反應速度</li>
+      <li>🎮 <b>難度進階</b>：逐步挑戰更高難度，體驗不同的音符密度和速度</li>
+      <li>🏆 <b>評級挑戰</b>：挑戰SSS評級，成為真正的節奏大師</li>
+      <li>🌟 <b>特效享受</b>：欣賞華麗的視覺特效和粒子動畫，享受音樂與視覺的完美結合</li>
     </ul>
     
     <div style="margin:1.2em 0 0.5em 0;font-weight:bold;color:#ffe066;">【評級系統】</div>
@@ -4195,9 +4207,20 @@ helpModal.innerHTML = `
       <li>D：需要改進，多加練習</li>
     </ul>
     
+    <div style="margin:1.2em 0 0.5em 0;font-weight:bold;color:#ffe066;">【學習建議】</div>
+    <ul style="padding-left:1.2em;">
+      <li>🎯 <b>新手入門</b>：從初學者難度開始，熟悉基本操作和節奏感</li>
+      <li>🎵 <b>音樂感受</b>：專注於音樂節奏，讓身體自然跟隨節拍</li>
+      <li>👆 <b>手指位置</b>：保持手指在正確的鍵位上方，提高反應速度</li>
+      <li>👁️ <b>視覺專注</b>：專注於音符的視覺提示，預判下落軌跡</li>
+      <li>🔄 <b>持續練習</b>：多練習同一首歌曲，熟悉節奏模式</li>
+      <li>⏸️ <b>適時休息</b>：利用暫停功能，避免疲勞影響表現</li>
+    </ul>
+    
     <div style="margin-top:1.2em;font-size:1em;color:#ffd700;font-weight:bold;">
       💫 小提示：保持節奏感，盡量連擊，挑戰更高分數與全成就！<br>
-      🎵 每一次擊鍵，都是與音樂的共舞——享受節奏，享受挑戰！
+      🎵 每一次擊鍵，都是與音樂的共舞——享受節奏，享受挑戰！<br>
+      🌟 記住：音樂遊戲最重要的是享受過程，讓音樂帶給你快樂！
     </div>
     <button id="help-modal-close" class="action-btn" style="margin-top:24px;font-size:1.2em;align-self:center;background:#ffe066;color:#222;border-radius:8px;border:none;padding:10px 32px;font-weight:bold;cursor:pointer;box-shadow:0 0 12px #ffe06688;">關閉</button>
   </div>
