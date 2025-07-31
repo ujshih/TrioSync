@@ -4142,8 +4142,9 @@ setInterval(() => {
 const helpBtn = document.getElementById('help-btn');
 const helpModal = document.getElementById('help-modal');
 helpModal.innerHTML = `
-  <div id="help-modal-content" style="background:#222;color:#fff;padding:2rem 1.5rem 1.5rem 1.5rem;border-radius:1rem;max-width:420px;width:90vw;max-height:80vh;margin:5vh auto;position:relative;box-shadow:0 4px 32px #000b;display:flex;flex-direction:column;align-items:center;overflow-y:auto;">
+  <div id="help-modal-content" style="background:#222;color:#fff;padding:2rem 1.5rem 1.5rem 1.5rem;border-radius:1rem;max-width:480px;width:90vw;max-height:85vh;margin:5vh auto;position:relative;box-shadow:0 4px 32px #000b;display:flex;flex-direction:column;align-items:center;overflow-y:auto;">
     <h2 style="margin-top:0;">Fate Keys 命運節奏｜玩法說明</h2>
+    
     <div style="margin-bottom:1.2em;font-weight:bold;color:#ffe066;">【遊戲流程】</div>
     <ul style="padding-left:1.2em;">
       <li>1. 選擇你喜歡的歌曲與難度，點擊「開始遊戲」或按 Enter 鍵進入節奏世界。</li>
@@ -4152,16 +4153,35 @@ helpModal.innerHTML = `
       </li>
       <li>3. 每次正確擊中音符可獲得分數，連續擊中會累積 Combo，失誤則 Combo 歸零。</li>
       <li>4. 分數依照擊中準確度與連擊數計算，越準確、連擊越高分數越多。</li>
-      <li>5. 遊戲結束時會顯示本局總分與評級，快來挑戰自己的極限！</li>
+      <li>5. 遊戲中可按 ESC 鍵暫停，暫停時會顯示當前分數、連擊數和剩餘時間。</li>
+      <li>6. 暫停時可選擇繼續遊戲或返回主選單，繼續遊戲會從暫停點精確繼續。</li>
+      <li>7. 遊戲結束時會顯示本局總分與評級，完成特定評級可解鎖更高難度。</li>
+      <li>8. 難度解鎖條件：休閒玩家需初學者C級以上，困難模式需休閒玩家B級以上，以此類推。</li>
     </ul>
+    
     <div style="margin:1.2em 0 0.5em 0;font-weight:bold;color:#ffe066;">【進階挑戰】</div>
     <ul style="padding-left:1.2em;">
-      <li>達成特定條件可解鎖「命運之路」(Fate Mode) 與多項成就。</li>
-      <li>點擊左上角「🏅成就」可查看已解鎖成就，並挑戰排行榜。</li>
-      <li>可於左上角調整音量，並切換高對比模式提升可視性。</li>
-      <li>遊戲支援鍵盤操作，建議使用電腦體驗最佳。</li>
+      <li>🏆 <b>成就系統</b>：達成特定條件可解鎖多項成就，點擊左上角「🏅成就」查看</li>
+      <li>📈 <b>排行榜</b>：挑戰排行榜，與其他玩家比較成績</li>
+      <li>🎵 <b>音效設定</b>：可於左上角調整音量，並切換高對比模式提升可視性</li>
+      <li>⌨️ <b>操作支援</b>：遊戲支援鍵盤操作，建議使用電腦體驗最佳</li>
     </ul>
-    <div style="margin-top:1.2em;font-size:1em;color:#ffd700;font-weight:bold;">小提示：保持節奏感，盡量連擊，挑戰更高分數與全成就！<br>每一次擊鍵，都是與音樂的共舞——享受節奏，享受挑戰！</div>
+    
+    <div style="margin:1.2em 0 0.5em 0;font-weight:bold;color:#ffe066;">【評級系統】</div>
+    <ul style="padding-left:1.2em;">
+      <li>SSS：完美表現，最高榮譽</li>
+      <li>SS：卓越表現，接近完美</li>
+      <li>S：優秀表現，技能精湛</li>
+      <li>A：良好表現，節奏感佳</li>
+      <li>B：一般表現，需要練習</li>
+      <li>C：基礎表現，繼續努力</li>
+      <li>D：需要改進，多加練習</li>
+    </ul>
+    
+    <div style="margin-top:1.2em;font-size:1em;color:#ffd700;font-weight:bold;">
+      💫 小提示：保持節奏感，盡量連擊，挑戰更高分數與全成就！<br>
+      🎵 每一次擊鍵，都是與音樂的共舞——享受節奏，享受挑戰！
+    </div>
     <button id="help-modal-close" class="action-btn" style="margin-top:24px;font-size:1.2em;align-self:center;background:#ffe066;color:#222;border-radius:8px;border:none;padding:10px 32px;font-weight:bold;cursor:pointer;box-shadow:0 0 12px #ffe06688;">關閉</button>
   </div>
 `;
