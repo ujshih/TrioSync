@@ -3956,6 +3956,11 @@ body.result-bg-d::before {
   pointer-events: auto;
 }
 
+/* 暫停畫面可以接收點擊事件 */
+#game-area.paused .pause-overlay {
+  pointer-events: auto;
+}
+
 /* 確保暫停畫面內容清晰 */
 .pause-overlay {
   /* 強制確保暫停畫面清晰 */
