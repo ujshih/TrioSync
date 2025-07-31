@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>難度解鎖測試</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #0a0a1a;
+            color: #fff;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #333;
+            border-radius: 8px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .locked {
+            position: relative;
+        }
+        .locked::before {
+            content: '🔒';
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+        .unlocked {
+            background: #4CAF50 !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>難度解鎖系統測試</h1>
+    
+    <div class="test-section">
+        <h2>測試解鎖條件</h2>
+        <p>當前解鎖狀態：</p>
+        <div id="unlock-status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>模擬遊戲完成</h2>
+        <button onclick="simulateGame('beginner', 'C')">完成初學者 C級</button>
+        <button onclick="simulateGame('beginner', 'B')">完成初學者 B級</button>
+        <button onclick="simulateGame('beginner', 'A')">完成初學者 A級</button>
+        <button onclick="simulateGame('casual', 'B')">完成休閒 B級</button>
+        <button onclick="simulateGame('hard', 'A')">完成困難 A級</button>
+        <button onclick="simulateGame('extreme', 'S')">完成極限 S級</button>
+        <button onclick="simulateGame('master', 'SS')">完成大師 SS級</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>重置進度</h2>
+        <button onclick="resetProgress()">重置所有進度</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>難度選擇測試</h2>
+        <div id="difficulty-cards">
+            <button class="difficulty-card" data-difficulty="beginner">初學者</button>
+            <button class="difficulty-card" data-difficulty="casual">休閒玩家</button>
+            <button class="difficulty-card" data-difficulty="hard">困難模式</button>
+            <button class="difficulty-card" data-difficulty="extreme">極限挑戰</button>
+            <button class="difficulty-card" data-difficulty="master">大師級</button>
+            <button class="difficulty-card" data-difficulty="fate">命運之路</button>
+        </div>
+    </div>
+
+    <script>
+        // 簡化的難度配置
+        const LEVEL_CONFIGS = {
+            beginner: {
+                name: '初學者',
+                locked: false,
+                unlockRequirement: null
+            },
+            casual: {
+                name: '休閒玩家',
+                locked: true,
+                unlockRequirement: { difficulty: 'beginner', grade: 'C' }
+            },
+            hard: {
+                name: '困難模式',
+                locked: true,
+                unlockRequirement: { difficulty: 'casual', grade: 'B' }
+            },
+            extreme: {
+                name: '極限挑戰',
+                locked: true,
+                unlockRequirement: { difficulty: 'hard', grade: 'A' }
+            },
+            master: {
+                name: '大師級',
+                locked: true,
+                unlockRequirement: { difficulty: 'extreme', grade: 'S' }
+            },
+            fate: {
+                name: '命運之路',
+                locked: true,
+                unlockRequirement: { difficulty: 'master', grade: 'SS' }
+            }
+        };
+
+        // 檢查評級是否滿足要求
+        function isGradeSufficient(achievedGrade, requiredGrade) {
+            const gradeOrder = ['D', 'C', 'B', 'A', 'S', 'SS', 'SSS'];
+            const achievedIndex = gradeOrder.indexOf(achievedGrade);
+            const requiredIndex = gradeOrder.indexOf(requiredGrade);
+            return achievedIndex >= requiredIndex;
+        }
+
+        // 檢查難度解鎖
+        function checkDifficultyUnlocks() {
+            const unlockedDifficulties = JSON.parse(localStorage.getItem('fatekeys_unlocked_difficulties') || '["beginner"]');
+            
+            Object.keys(LEVEL_CONFIGS).forEach(difficulty => {
+                const config = LEVEL_CONFIGS[difficulty];
+                if (config.unlockRequirement) {
+                    const requirement = config.unlockRequirement;
+                    const requiredDifficulty = requirement.difficulty;
+                    const requiredGrade = requirement.grade;
+                    
+                    if (unlockedDifficulties.includes(requiredDifficulty)) {
+                        const bestGrade = localStorage.getItem(`fatekeys_best_grade_${requiredDifficulty}`) || 'D';
+                        if (isGradeSufficient(bestGrade, requiredGrade)) {
+                            if (!unlockedDifficulties.includes(difficulty)) {
+                                unlockedDifficulties.push(difficulty);
+                                config.locked = false;
+                                showUnlockNotification(difficulty);
+                            }
+                        }
+                    }
+                }
+            });
+            
+            localStorage.setItem('fatekeys_unlocked_difficulties', JSON.stringify(unlockedDifficulties));
+            updateDifficultyUI();
+            updateUnlockStatus();
+        }
+
+        // 顯示解鎖通知
+        function showUnlockNotification(difficulty) {
+            const config = LEVEL_CONFIGS[difficulty];
+            alert(`🎉 新難度解鎖！\n${config.name}\n${config.desc || ''}`);
+        }
+
+        // 更新難度UI
+        function updateDifficultyUI() {
+            const difficultyCards = document.querySelectorAll('.difficulty-card');
+            
+            difficultyCards.forEach(card => {
+                const difficulty = card.getAttribute('data-difficulty');
+                const config = LEVEL_CONFIGS[difficulty];
+                
+                if (config) {
+                    if (config.locked) {
+                        card.classList.add('locked');
+                        card.classList.remove('unlocked');
+                        card.style.pointerEvents = 'none';
+                        
+                        if (config.unlockRequirement) {
+                            const requirement = config.unlockRequirement;
+                            const requirementText = `需要完成 ${LEVEL_CONFIGS[requirement.difficulty].name} ${requirement.grade}級以上`;
+                            card.setAttribute('title', requirementText);
+                        }
+                    } else {
+                        card.classList.remove('locked');
+                        card.classList.add('unlocked');
+                        card.style.pointerEvents = 'auto';
+                        card.removeAttribute('title');
+                    }
+                }
+            });
+        }
+
+        // 更新解鎖狀態顯示
+        function updateUnlockStatus() {
+            const statusDiv = document.getElementById('unlock-status');
+            const unlockedDifficulties = JSON.parse(localStorage.getItem('fatekeys_unlocked_difficulties') || '["beginner"]');
+            
+            let statusHTML = '';
+            Object.keys(LEVEL_CONFIGS).forEach(difficulty => {
+                const config = LEVEL_CONFIGS[difficulty];
+                const isUnlocked = unlockedDifficulties.includes(difficulty);
+                const bestGrade = localStorage.getItem(`fatekeys_best_grade_${difficulty}`) || '未完成';
+                
+                statusHTML += `<div>${config.name}: ${isUnlocked ? '✅ 已解鎖' : '🔒 鎖定'} (最佳: ${bestGrade})</div>`;
+            });
+            
+            statusDiv.innerHTML = statusHTML;
+        }
+
+        // 模擬遊戲完成
+        function simulateGame(difficulty, grade) {
+            const currentBest = localStorage.getItem(`fatekeys_best_grade_${difficulty}`) || 'D';
+            
+            if (isGradeSufficient(grade, currentBest)) {
+                localStorage.setItem(`fatekeys_best_grade_${difficulty}`, grade);
+            }
+            
+            checkDifficultyUnlocks();
+            alert(`完成 ${LEVEL_CONFIGS[difficulty].name} ${grade}級！`);
+        }
+
+        // 重置進度
+        function resetProgress() {
+            localStorage.removeItem('fatekeys_unlocked_difficulties');
+            localStorage.removeItem('fatekeys_best_grade_beginner');
+            localStorage.removeItem('fatekeys_best_grade_casual');
+            localStorage.removeItem('fatekeys_best_grade_hard');
+            localStorage.removeItem('fatekeys_best_grade_extreme');
+            localStorage.removeItem('fatekeys_best_grade_master');
+            localStorage.removeItem('fatekeys_best_grade_fate');
+            
+            // 重置配置
+            Object.keys(LEVEL_CONFIGS).forEach(difficulty => {
+                if (difficulty !== 'beginner') {
+                    LEVEL_CONFIGS[difficulty].locked = true;
+                }
+            });
+            
+            checkDifficultyUnlocks();
+            alert('進度已重置！');
+        }
+
+        // 初始化
+        function init() {
+            // 確保初學者難度已解鎖
+            const unlockedDifficulties = JSON.parse(localStorage.getItem('fatekeys_unlocked_difficulties') || '["beginner"]');
+            if (!unlockedDifficulties.includes('beginner')) {
+                unlockedDifficulties.push('beginner');
+                localStorage.setItem('fatekeys_unlocked_difficulties', JSON.stringify(unlockedDifficulties));
+            }
+            
+            checkDifficultyUnlocks();
+            
+            // 添加難度選擇事件
+            document.querySelectorAll('.difficulty-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const difficulty = this.getAttribute('data-difficulty');
+                    const config = LEVEL_CONFIGS[difficulty];
+                    
+                    if (config && config.locked) {
+                        if (config.unlockRequirement) {
+                            const requirement = config.unlockRequirement;
+                            const currentGrade = localStorage.getItem(`fatekeys_best_grade_${requirement.difficulty}`) || '未完成';
+                            const requirementText = `🔒 ${config.name} 尚未解鎖\n\n需要先完成 ${LEVEL_CONFIGS[requirement.difficulty].name} ${requirement.grade}級以上\n\n您目前的成績：${currentGrade}`;
+                            alert(requirementText);
+                        } else {
+                            alert('此難度尚未解鎖！');
+                        }
+                        return;
+                    }
+                    
+                    alert(`選擇難度: ${config.name}`);
+                });
+            });
+        }
+
+        // 頁面載入時初始化
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html> 
