@@ -568,7 +568,7 @@ const LEVEL_CONFIGS = {
         specialRules: "簡單短長音支援",
         scoreGradeThresholds: { SSS: 150000, SS: 130000, S: 90000, A: 50000, B: 30000, C: 2000, D: 0 },
         locked: true, // 需要解鎖
-        unlockRequirement: { difficulty: 'beginner', grade: 'C' } // 需要完成初學者難度C級以上
+        unlockRequirement: { difficulty: 'beginner' } // 需要完成初學者難度
   },
     hard: {
         name: 'Hard',
@@ -591,7 +591,7 @@ const LEVEL_CONFIGS = {
         specialRules: "中長音支援，雙鍵常態",
         scoreGradeThresholds: { SSS: 160000, SS: 140000, S: 120000, A: 80000, B: 30000, C: 2000, D: 0 },
         locked: true, // 需要解鎖
-        unlockRequirement: { difficulty: 'casual', grade: 'B' } // 需要完成休閒難度B級以上
+        unlockRequirement: { difficulty: 'casual' } // 需要完成休閒難度
   },
     extreme: {
         name: 'Extreme',
@@ -614,7 +614,7 @@ const LEVEL_CONFIGS = {
         specialRules: "多段長音，Space鍵加入，判定鬆緊",
         scoreGradeThresholds: { SSS: 170000, SS: 150000, S: 130000, A: 100000, B: 30000, C: 2000, D: 0 },
         locked: true, // 需要解鎖
-        unlockRequirement: { difficulty: 'hard', grade: 'A' } // 需要完成困難難度A級以上
+        unlockRequirement: { difficulty: 'hard' } // 需要完成困難難度
   },
     master: {
         name: 'Master',
@@ -637,7 +637,7 @@ const LEVEL_CONFIGS = {
         specialRules: "長音密集，特效數多，節奏混淆",
         scoreGradeThresholds: { SSS: 180000, SS: 160000, S: 140000, A: 100000, B: 30000, C: 2000, D: 0 },
         locked: true, // 需要解鎖
-        unlockRequirement: { difficulty: 'extreme', grade: 'S' } // 需要完成極限難度S級以上
+        unlockRequirement: { difficulty: 'extreme' } // 需要完成極限難度
   },
     fate: {
         name: 'Fate Mode',
@@ -659,7 +659,7 @@ const LEVEL_CONFIGS = {
         simultaneousNotes: 3,
         specialRules: "特殊長音，高速連打，極限判定",
         locked: true, // 需要解鎖
-        unlockRequirement: { difficulty: 'master', grade: 'SS' } // 需要完成大師難度SS級以上
+        unlockRequirement: { difficulty: 'master' } // 需要完成大師難度
   }
 };
 
@@ -3206,31 +3206,39 @@ function checkDifficultyUnlocks() {
     // 從localStorage讀取已解鎖的難度
     const unlockedDifficulties = JSON.parse(localStorage.getItem('fatekeys_unlocked_difficulties') || '["beginner"]');
     
+    console.log('[checkDifficultyUnlocks] 當前已解鎖難度:', unlockedDifficulties);
+    
     // 檢查每個難度的解鎖條件
     Object.keys(LEVEL_CONFIGS).forEach(difficulty => {
         const config = LEVEL_CONFIGS[difficulty];
         if (config.unlockRequirement) {
             const requirement = config.unlockRequirement;
             const requiredDifficulty = requirement.difficulty;
-            const requiredGrade = requirement.grade;
             
-            // 檢查是否已解鎖前置難度
-            if (unlockedDifficulties.includes(requiredDifficulty)) {
-                // 檢查是否達到要求的評級
-                const bestGrade = localStorage.getItem(`fatekeys_best_grade_${requiredDifficulty}`) || 'D';
-                if (isGradeSufficient(bestGrade, requiredGrade)) {
-                    if (!unlockedDifficulties.includes(difficulty)) {
-                        unlockedDifficulties.push(difficulty);
-                        config.locked = false;
-                        showUnlockNotification(difficulty);
+            // 檢查是否已玩過前置難度
+            const hasPlayed = localStorage.getItem(`fatekeys_has_played_${requiredDifficulty}`) === 'true';
+            console.log(`[checkDifficultyUnlocks] 檢查 ${difficulty}: 需要 ${requiredDifficulty}, 已玩過: ${hasPlayed}`);
+            
+                                if (hasPlayed) {
+                        if (!unlockedDifficulties.includes(difficulty)) {
+                            console.log(`[checkDifficultyUnlocks] 解鎖 ${difficulty}!`);
+                            unlockedDifficulties.push(difficulty);
+                            config.locked = false;
+                            showUnlockNotification(difficulty);
+                        } else {
+                            console.log(`[checkDifficultyUnlocks] ${difficulty} 已經解鎖`);
+                            config.locked = false;
+                        }
+                    } else {
+                        console.log(`[checkDifficultyUnlocks] ${difficulty} 未解鎖，因為 ${requiredDifficulty} 未完成`);
+                        config.locked = true;
                     }
-                }
-            }
         }
     });
     
     // 保存解鎖狀態
     localStorage.setItem('fatekeys_unlocked_difficulties', JSON.stringify(unlockedDifficulties));
+    console.log('[checkDifficultyUnlocks] 更新後已解鎖難度:', unlockedDifficulties);
     
     // 更新UI顯示
     updateDifficultyUI();
@@ -3360,7 +3368,7 @@ function updateDifficultyUI() {
                 // 添加鎖定提示
                 if (config.unlockRequirement) {
                     const requirement = config.unlockRequirement;
-                    const requirementText = `需要完成 ${LEVEL_CONFIGS[requirement.difficulty].name} ${requirement.grade}級以上`;
+                    const requirementText = `需要先完成 ${LEVEL_CONFIGS[requirement.difficulty].name} 難度`;
                     card.setAttribute('title', requirementText);
                 }
             } else {
@@ -3374,6 +3382,12 @@ function updateDifficultyUI() {
 
 // 遊戲完成後記錄成績並檢查解鎖
 function recordGameResult(difficulty, grade, score) {
+    console.log(`[recordGameResult] 記錄遊戲結果: ${difficulty}, 評級: ${grade}, 分數: ${score}`);
+    
+    // 記錄玩家已玩過該難度
+    localStorage.setItem(`fatekeys_has_played_${difficulty}`, 'true');
+    console.log(`[recordGameResult] 已記錄 ${difficulty} 為已玩過`);
+    
     // 記錄最佳成績
     const currentBest = localStorage.getItem(`fatekeys_best_grade_${difficulty}`) || 'D';
     const currentBestScore = parseInt(localStorage.getItem(`fatekeys_best_score_${difficulty}`) || '0');
@@ -3381,14 +3395,17 @@ function recordGameResult(difficulty, grade, score) {
     // 更新最佳評級
     if (isGradeSufficient(grade, currentBest)) {
         localStorage.setItem(`fatekeys_best_grade_${difficulty}`, grade);
+        console.log(`[recordGameResult] 更新最佳評級: ${grade}`);
     }
     
     // 更新最高分數
     if (score > currentBestScore) {
         localStorage.setItem(`fatekeys_best_score_${difficulty}`, score.toString());
+        console.log(`[recordGameResult] 更新最高分數: ${score}`);
     }
     
     // 檢查解鎖
+    console.log('[recordGameResult] 開始檢查解鎖...');
     checkDifficultyUnlocks();
     
     // 延遲更新UI，確保解鎖檢查完成
@@ -3423,7 +3440,7 @@ function setDifficulty(diff) {
             // 顯示解鎖要求
             if (config.unlockRequirement) {
                 const requirement = config.unlockRequirement;
-                const requirementText = `需要完成 ${LEVEL_CONFIGS[requirement.difficulty].name} ${requirement.grade}級以上`;
+                const requirementText = `需要先完成 ${LEVEL_CONFIGS[requirement.difficulty].name} 難度`;
                 showToast(requirementText);
             } else {
                 showToast('此難度尚未解鎖，無法選擇！');
@@ -4155,8 +4172,8 @@ helpModal.innerHTML = `
       <li>4. 分數依照擊中準確度與連擊數計算，越準確、連擊越高分數越多。</li>
       <li>5. 遊戲中可按 ESC 鍵暫停，暫停時會顯示當前分數、連擊數和剩餘時間。</li>
       <li>6. 暫停時可選擇繼續遊戲或返回主選單，繼續遊戲會從暫停點精確繼續。</li>
-      <li>7. 遊戲結束時會顯示本局總分與評級，完成特定評級可解鎖更高難度。</li>
-      <li>8. 難度解鎖條件：休閒玩家需初學者C級以上，困難模式需休閒玩家B級以上，以此類推。</li>
+      <li>7. 遊戲結束時會顯示本局總分與評級，完成前置難度可解鎖更高難度。</li>
+      <li>8. 難度解鎖條件：只要玩過前一個難度即可解鎖下一個難度。</li>
     </ul>
     
     <div style="margin:1.2em 0 0.5em 0;font-weight:bold;color:#ffe066;">【進階挑戰】</div>
@@ -4393,8 +4410,8 @@ window.addEventListener('DOMContentLoaded', function() {
                     // 顯示解鎖要求
                     if (config.unlockRequirement) {
                         const requirement = config.unlockRequirement;
-                        const currentGrade = localStorage.getItem(`fatekeys_best_grade_${requirement.difficulty}`) || '未完成';
-                        const requirementText = `🔒 ${config.name} 尚未解鎖\n\n需要先完成 ${LEVEL_CONFIGS[requirement.difficulty].name}`;
+                        const hasPlayed = localStorage.getItem(`fatekeys_has_played_${requirement.difficulty}`) === 'true';
+                        const requirementText = `🔒 ${config.name} 尚未解鎖\n\n需要先完成 ${LEVEL_CONFIGS[requirement.difficulty].name} 難度\n\n${hasPlayed ? '✅ 已完成前置難度' : '❌ 尚未完成前置難度'}`;
                         showLockedDifficultyModal(requirementText, config.name);
                     } else {
                         showToast('此難度尚未解鎖，請先完成前置條件！');
