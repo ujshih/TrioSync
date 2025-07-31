@@ -99,6 +99,10 @@ const audioVisualizer = {
         this.ctx = this.canvas.getContext('2d');
         this.resizeCanvas();
         
+        // 初始化屬性
+        this.isConnected = false;
+        this.currentAudioElement = null;
+        
         window.addEventListener('resize', () => this.resizeCanvas());
     },
     
@@ -111,6 +115,12 @@ const audioVisualizer = {
         if (!this.canvas || !audioElement) return;
         
         try {
+            // 如果已經連接過且音頻元素相同，不需要重新連接
+            if (this.isConnected && this.currentAudioElement === audioElement) {
+                console.log('[audioVisualizer] 音頻已連接，跳過重新連接');
+                return;
+            }
+            
             // 如果已經連接過，先斷開
             if (this.isConnected) {
                 this.stop();
@@ -132,7 +142,10 @@ const audioVisualizer = {
             this.dataArray = new Uint8Array(bufferLength);
             
             this.isConnected = true;
+            this.currentAudioElement = audioElement;
             this.animate();
+            
+            console.log('[audioVisualizer] 音頻可視化連接成功');
         } catch (error) {
             console.warn('音頻可視化初始化失敗:', error);
         }
@@ -172,6 +185,8 @@ const audioVisualizer = {
             this.animationId = null;
         }
         this.isConnected = false;
+        this.currentAudioElement = null;
+        console.log('[audioVisualizer] 音頻可視化已停止');
     }
 };
 
@@ -5178,23 +5193,21 @@ function togglePause() {
     }
 }
 
-// 暫停遊戲
+// 暫停遊戲（音樂繼續播放）
 function pauseGame() {
     if (!gameStarted || gameEnded || gamePaused) return;
     
-    console.log('[pauseGame] 遊戲暫停');
+    console.log('[pauseGame] 遊戲暫停（音樂繼續播放）');
     
     // 設置暫停狀態
     gamePaused = true;
     pauseStartTime = performance.now();
     
-    // 暫停音頻
-    if (audioManager.audio && !audioManager.audio.paused) {
-        audioManager.audio.pause();
-    }
+    // 音頻繼續播放，不暫停
+    console.log('[pauseGame] 音頻繼續播放，不暫停');
     
-    // 暫停音頻可視化
-    audioVisualizer.stop();
+    // 音頻可視化繼續運行，不暫停
+    console.log('[pauseGame] 音頻可視化繼續運行，不暫停');
     
     // 暫停粒子背景
     particleManager.stop();
@@ -5225,11 +5238,11 @@ function pauseGame() {
     console.log('[pauseGame] 遊戲已暫停');
 }
 
-// 繼續遊戲
+// 繼續遊戲（音樂繼續播放）
 function resumeGame() {
     if (!gameStarted || gameEnded || !gamePaused) return;
     
-    console.log('[resumeGame] 繼續遊戲');
+    console.log('[resumeGame] 繼續遊戲（音樂繼續播放）');
     
     // 計算暫停時間
     const pauseEndTime = performance.now();
@@ -5250,17 +5263,8 @@ function resumeGame() {
     // 移除暫停按鈕動畫
     pauseBtn.classList.remove('pulse');
     
-    // 恢復音頻播放
-    if (audioManager.audio && audioManager.audio.paused) {
-        audioManager.audio.play().catch(err => {
-            console.warn('[resumeGame] 音頻恢復播放失敗:', err);
-        });
-    }
-    
-    // 恢復音頻可視化
-    if (audioManager.audio) {
-        audioVisualizer.start(audioManager.audio);
-    }
+    // 音頻繼續播放，不需要恢復
+    console.log('[resumeGame] 音頻繼續播放，不需要恢復');
     
     // 恢復粒子背景
     particleManager.init();
