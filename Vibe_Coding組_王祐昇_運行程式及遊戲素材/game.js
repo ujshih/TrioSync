@@ -513,6 +513,7 @@ let pauseBtn = null;
 let pauseOverlay = null;
 let resumeBtn = null;
 let pauseBackBtn = null;
+let gameEndTimeoutRemaining = 0; // 剩餘的遊戲結束時間
 
 // 動態互動狀態
 let feverMode = false;
@@ -982,6 +983,7 @@ function realStartGame() {
     // 重置暫停相關變數
     totalPauseTime = 0;
     pauseStartTime = 0;
+    gameEndTimeoutRemaining = 0;
     
     // 先設置遊戲開始時間，確保音符時間計算正確
     gameStartTime = performance.now();
@@ -3142,9 +3144,9 @@ function startAutoMissCheck() {
             }
         });
         
-        // 檢查是否所有音符都處理完畢，但移除自動結束遊戲的邏輯
+        // 檢查是否所有音符都處理完畢，但只在遊戲時間到達時才結束
         const remainingNotes = activeNotes.filter(n => !n.hit && !n.missed);
-        if (remainingNotes.length === 0 && currentTime > 5) {
+        if (remainingNotes.length === 0 && currentTime >= GAME_DURATION) {
             setTimeout(() => endGame(), 1000);
         }
     }, 100);
@@ -5218,6 +5220,18 @@ function pauseGame() {
         animationId = null;
     }
     
+    // 暫停遊戲結束計時器
+    if (window.gameEndTimeout) {
+        // 計算剩餘時間
+        const elapsedTime = (performance.now() - gameStartTime) / 1000;
+        gameEndTimeoutRemaining = Math.max(0, GAME_DURATION - elapsedTime);
+        console.log('[pauseGame] 暫停遊戲結束計時器，剩餘時間:', gameEndTimeoutRemaining, '秒');
+        
+        // 清除當前計時器
+        clearTimeout(window.gameEndTimeout);
+        window.gameEndTimeout = null;
+    }
+    
     // 停止自動Miss檢查
     stopAutoMissCheck();
     
@@ -5272,6 +5286,14 @@ function resumeGame() {
     // 重新開始遊戲迴圈
     gameLoop();
     
+    // 恢復遊戲結束計時器
+    if (gameEndTimeoutRemaining > 0) {
+        console.log('[resumeGame] 恢復遊戲結束計時器，剩餘時間:', gameEndTimeoutRemaining, '秒');
+        window.gameEndTimeout = setTimeout(() => {
+            endGame();
+        }, gameEndTimeoutRemaining * 1000);
+    }
+    
     // 重新開始自動Miss檢查
     startAutoMissCheck();
     
@@ -5297,6 +5319,9 @@ function pauseBackToMenu() {
     
     // 移除暫停按鈕動畫
     pauseBtn.classList.remove('pulse');
+    
+    // 清理暫停相關變數
+    gameEndTimeoutRemaining = 0;
     
     // 切換到選擇畫面
     showScreen('select');
