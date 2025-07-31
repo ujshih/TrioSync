@@ -675,7 +675,7 @@ header {
     flex-shrink: 0;
 }
 .star {
-    font-size: 0.8em;
+    font-size: 0.6em;
     margin: 0 0.01em;
     transition: color 0.3s, filter 0.3s;
     display: inline-block;
@@ -2970,16 +2970,16 @@ body.result-bg-d::before {
     position: absolute;
     left: 1rem;
     width: 160px;
-    text-align: center;
+    text-align: left;
     white-space: nowrap;
     z-index: 10;
     box-sizing: border-box;
     height: 48px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     margin: 0;
-    padding: 0;
+    padding: 0 0 0 1rem;
 }
 .left-top-btn[type="range"] {
     height: 48px;
@@ -3005,18 +3005,21 @@ body.result-bg-d::before {
 #clear-storage-btn.left-top-btn,
 #team-btn.left-top-btn {
     position: relative;
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
     width: 180px;
     margin: 0.5rem auto 0.2rem auto;
     font-size: 1.1rem;
     letter-spacing: 1px;
     z-index: 20;
     box-shadow: 0 0 16px #0ff4, 0 0 2px #fff;
-    text-align: center;
+    text-align: left;
     outline: none;
     cursor: pointer;
     user-select: none;
     transition: box-shadow 0.2s, background 0.2s;
+    padding: 0 0 0 1rem;
 }
 
 /* 移除個別 top 定位，統一用 block/margin 垂直排列 */
@@ -3025,20 +3028,85 @@ body.result-bg-d::before {
     top: unset !important;
 }
 
-/* ====== 團隊成員介紹樣式 ====== */
+/* ====== 重新建構的團隊頁面樣式 ====== */
+
+/* 1. 頁面標題 */
+.team-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* 2. 團隊照片 */
+.team-photo-section {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.team-photo {
+    max-width: 400px;
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(0,255,255,0.3);
+    border: 2px solid rgba(0,255,255,0.2);
+}
+
+/* 3. 簡介文字 */
+.team-intro-section {
+    margin-bottom: 3rem;
+}
+
+.team-intro-card {
+    background: linear-gradient(135deg, rgba(24,26,42,0.8) 0%, rgba(35,35,90,0.9) 100%);
+    border: 2px solid rgba(0,255,255,0.3);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0,255,255,0.2);
+}
+
+.intro-content p {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    color: #fff;
+    line-height: 1.6;
+}
+
+.intro-content strong {
+    color: #fff700;
+    text-shadow: 0 0 8px rgba(255,255,0,0.5);
+}
+
+/* 4. 每個成員介紹 */
+.team-members-section {
+    margin-bottom: 3rem;
+}
+
+.section-title {
+    font-size: 1.8rem;
+    color: #0ff;
+    text-align: center;
+    margin-bottom: 2rem;
+    text-shadow: 0 0 15px rgba(0,255,255,0.5);
+}
+
+.members-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
 .team-member {
     background: linear-gradient(135deg, rgba(24,26,42,0.8) 0%, rgba(35,35,90,0.9) 100%);
     border: 2px solid rgba(0,255,255,0.3);
     border-radius: 16px;
-    padding: 20px;
-    margin: 16px 0;
+    padding: 1.5rem;
     box-shadow: 0 4px 20px rgba(0,255,255,0.2);
     transition: all 0.3s ease;
     backdrop-filter: blur(8px);
 }
 
 .team-member:hover {
-    transform: translateY(-2px);
+    transform: translateY(-5px);
     box-shadow: 0 8px 30px rgba(0,255,255,0.4);
     border-color: rgba(0,255,255,0.6);
 }
@@ -3047,14 +3115,18 @@ body.result-bg-d::before {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 12px;
-    padding-bottom: 8px;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
     border-bottom: 1px solid rgba(0,255,255,0.2);
 }
 
 .member-emoji {
-    font-size: 1.8rem;
+    font-size: 2rem;
     filter: drop-shadow(0 0 8px rgba(0,255,255,0.6));
+}
+
+.member-info {
+    flex: 1;
 }
 
 .member-name {
@@ -3062,28 +3134,102 @@ body.result-bg-d::before {
     font-weight: bold;
     color: #0ff;
     text-shadow: 0 0 10px rgba(0,255,255,0.5);
+    margin-bottom: 0.3rem;
 }
 
 .member-title {
-    font-size: 1.3rem;
+    font-size: 0.9rem;
     color: #fff;
-    opacity: 1;
-    font-style: normal;
+    opacity: 0.9;
 }
 
 .member-description {
     color: #fff;
-    font-size: 1rem;
+    font-size: 0.95rem;
     line-height: 1.6;
-    text-align: left;
     opacity: 0.9;
+}
+
+/* 5. 專案故事介紹 */
+.project-story-section {
+    margin-bottom: 2rem;
+}
+
+.project-story {
+    background: linear-gradient(135deg, rgba(24,26,42,0.8) 0%, rgba(35,35,90,0.9) 100%);
+    border: 2px solid rgba(0,255,255,0.3);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0,255,255,0.2);
+}
+
+.story-intro {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0,255,255,0.2);
+}
+
+.story-icon {
+    font-size: 2.5rem;
+    filter: drop-shadow(0 0 12px rgba(0,255,255,0.6));
+}
+
+.story-title-group {
+    flex: 1;
+}
+
+.story-title-main {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #0ff;
+    margin-bottom: 0.3rem;
+}
+
+.story-title-sub {
+    font-size: 1.2rem;
+    color: #fff700;
+    margin-bottom: 0.5rem;
+}
+
+.story-desc {
+    font-size: 1rem;
+    color: #fff;
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+.story-section {
+    margin-bottom: 1.5rem;
+}
+
+.story-section-title {
+    font-size: 1.2rem;
+    color: #0ff;
+    margin-bottom: 0.8rem;
+    text-shadow: 0 0 8px rgba(0,255,255,0.5);
+}
+
+.story-section p {
+    color: #fff;
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+    line-height: 1.6;
 }
 
 /* 響應式設計 */
 @media (max-width: 768px) {
     .team-member {
-        padding: 16px;
-        margin: 12px 0;
+        padding: 1rem;
+    }
+    
+
+    
+    .story-intro {
+        flex-direction: column;
+        text-align: center;
     }
     
     .member-header {
@@ -3102,6 +3248,18 @@ body.result-bg-d::before {
     
     .member-description {
         font-size: 0.95rem;
+    }
+    
+    .team-photo {
+        max-width: 300px;
+    }
+    
+    .team-intro-card {
+        padding: 1.5rem;
+    }
+    
+    .project-story {
+        padding: 1.5rem;
     }
 }
 
@@ -3293,6 +3451,7 @@ body.result-bg-d::before {
 .difficulty-card.extreme { border-color: #00aaff; color: #00aaff; }
 .difficulty-card.master  { border-color: #b366ff; color: #b366ff; }
 .difficulty-card.fate    { border-color: #ff6fff; color: #ff6fff; }
+.difficulty-card.fate .stars { letter-spacing: 0.02em; }
 .level {
   font-size: var(--font-body-large);
   font-weight: bold;
@@ -3311,16 +3470,16 @@ body.result-bg-d::before {
 .name-en {
   font-size: 1.05rem;
   opacity: 0.92;
-  margin-bottom: 1.2rem;
+  margin-bottom: 0.4rem;
   color: #fff;
   text-shadow: 0 0 4px currentColor;
 }
 .stars {
-  margin-top: auto;
+  margin-top: 0;
   font-size: 1.3rem;
   color: #ffe066;
   text-shadow: 0 0 12px #ffe066, 0 0 24px #fff700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.05em;
 }
 /* 移除舊難度按鈕樣式 */
 .difficulty-btn-row, .difficulty-btn, .difficulty-level, .difficulty-name, .difficulty-name-cn, .difficulty-name-en, .difficulty-stars, .difficulty-btn:hover, .difficulty-btn.active, .difficulty-btn::before, .difficulty-btn[disabled], .difficulty-btn.beginner, .difficulty-btn.casual, .difficulty-btn.hard, .difficulty-btn.extreme, .difficulty-btn.master, .difficulty-btn.fate, .difficulty-btn .star, .difficulty-btn .star-locked, .difficulty-btn.final .tooltip, .difficulty-btn-row, .difficulty-btn-row *, .hidden-difficulty {
@@ -3334,7 +3493,7 @@ body.result-bg-d::before {
   left: 50%;
   top: calc(100% + 0.5rem);
   transform: translateX(-50%);
-  width: 100%;
+  width: 120%;
   background: rgba(24, 28, 48, 0.82);
   color: #fff;
   border: 1.5px solid currentColor;
@@ -3393,7 +3552,7 @@ body.result-bg-d::before {
 }
 #menu-toggle-btn {
   width: 160px;
-  margin-bottom: 8px;
+  margin-bottom: 16px;
   box-shadow: 0 0 12px #0ff8, 0 0 2px #fff;
   background: rgba(0,0,0,0.82);
   border-radius: 12px;
@@ -3404,7 +3563,7 @@ body.result-bg-d::before {
 #menu-btns-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
   pointer-events: none;
 }
 #menu-btns-wrapper button {
@@ -3438,6 +3597,11 @@ body.result-bg-d::before {
   width: 160px;
   margin: 0 0 4px 0;
   z-index: 21;
+}
+
+/* 功能選單按鈕與選單群組之間的間距 */
+#menu-toggle-btn {
+  margin-bottom: 16px !important;
 }
 
 @media (max-width: 600px) {

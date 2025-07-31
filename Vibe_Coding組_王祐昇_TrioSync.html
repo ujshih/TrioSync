@@ -100,42 +100,42 @@
                         <div class="name-cn">初學者</div>
                         <div class="name-en">Beginner</div>
                         <div class="stars">⭐</div>
-                        <div class="difficulty-desc">✨ 基礎節奏入門！單鍵點擊、節奏緩和，讓你無壓力進入命運世界。</div>
+                        <div class="difficulty-desc">✨ <br>命運的啟程之地，單鍵節奏緩慢；<br>放鬆入門無壓力，享受純粹點擊感。</div>
                         </div>
                     <div class="difficulty-card casual" data-difficulty="casual">
                         <div class="level">LV.2</div>
                         <div class="name-cn">休閒玩家</div>
                         <div class="name-en">Casual</div>
                         <div class="stars">⭐⭐</div>
-                        <div class="difficulty-desc">🎵 旋律稍起波瀾，簡短長音與雙鍵節奏交織，輕鬆享受流動的音樂律動。</div>
+                        <div class="difficulty-desc">🎵 <br>芯動節奏微提速，偶有雙鍵出現；<br>練習反應與節拍，為挑戰奠定基礎。</div>
                         </div>
                     <div class="difficulty-card hard" data-difficulty="hard">
                         <div class="level">LV.3</div>
                         <div class="name-cn">困難模式</div>
                         <div class="name-en">Hard</div>
                         <div class="stars">⭐⭐⭐</div>
-                        <div class="difficulty-desc">🔥 節奏加速進化！中長音與雙鍵組合考驗反應與穩定度，是實力的試煉場。</div>
+                        <div class="difficulty-desc">🔥 <br>節鍵位交錯連段來襲，速度快速成長；<br>節奏變化需專注，準備迎戰命運波。</div>
                         </div>
                     <div class="difficulty-card extreme" data-difficulty="extreme">
                         <div class="level">LV.4</div>
                         <div class="name-cn">極限挑戰</div>
                         <div class="name-en">Extreme</div>
-                        <div class="stars">⭐⭐⭐⭐</div>
-                        <div class="difficulty-desc">⚡ 音流如電！高速節奏、多段長音、空白鍵加入，全面挑戰你的極限操作。</div>
+                        <div class="stars">⭐⭐⭐<br>⭐</div>
+                        <div class="difficulty-desc">⚡ <br>密集雙鍵突擊不斷，節奏步步緊逼；<br>瞬間反應成關鍵，進階者的試煉場。</div>
                         </div>
                     <div class="difficulty-card master" data-difficulty="master">
                         <div class="level">LV.5</div>
                         <div class="name-cn">大師級</div>
                         <div class="name-en">Master</div>
-                        <div class="stars">⭐⭐⭐⭐⭐</div>
-                        <div class="difficulty-desc">👑 節奏王者之道！節拍密集如雨、判定超嚴苛，特效爆閃，唯高手能穩步前行。</div>
+                        <div class="stars">⭐⭐⭐<br>⭐⭐</div>
+                        <div class="difficulty-desc">👑 <br>命運強襲毫不留情，連擊速度飛快；<br>進入節奏失控區，唯節奏大師掌控。</div>
                         </div>
                     <div class="difficulty-card fate" data-difficulty="fate">
                         <div class="level">LV.6</div>
                         <div class="name-cn">命運之路</div>
                         <div class="name-en">Fate Mode</div>
-                        <div class="stars">⭐⭐⭐⭐⭐⭐</div>
-                        <div class="difficulty-desc">💀 命運最終試煉！極速連打、複雜節奏、全鍵齊發，只有真正的強者能通關！</div>
+                        <div class="stars">⭐⭐⭐<br>⭐⭐⭐</div>
+                        <div class="difficulty-desc">🌌 <br>命運的終極試煉，唯完成條件者得入；<br>節奏與邏輯交織，挑戰巔峰律動感！</div>
                         </div>
                 </div>
                 <div id="miss-buffer-ui" class="miss-buffer-ui" style="display:none;"></div>
@@ -222,98 +222,127 @@
     
     <!-- 新增團隊介紹浮層 -->
     <div id="team-view" style="display:none;position:fixed;z-index:10001;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.92);align-items:center;justify-content:center;flex-direction:column;">
-        <div id="team-content" style="max-width:720px;width:200vw;max-height:90vh;overflow-y:auto;background:rgba(0,0,0,0.85);border-radius:18px;padding:32px 16px 24px 16px;box-shadow:0 0 32px #0ff6;margin:0 auto;display:flex;flex-direction:column;align-items:center;position:relative;">
-            <h2 class="modal-title team-title">製作團隊 Trio Sync</h2>
-            <img src="./Vibe_Coding組_王祐昇_運行程式及遊戲素材/TrioSync.jpg" alt="Trio Sync 團隊" style="max-width:320px;width:90%;border-radius:18px;box-shadow:0 0 24px #0ff8;margin-bottom:1.2em;" />
-            <div style="color:#fff;font-size:1.08em;line-height:1.7;text-align:left;margin-bottom:1.5em;white-space:pre-line;">
-                🎵 製作團隊｜Trio Sync
-                
-                我們是來自 <strong>台灣大哥大</strong> 的三位夥伴，橫跨不同領域，卻擁有共同的熱情與信念。<br>
-                我們相信，音樂與創造，能將彼此的專業節奏完美同步。<br>
-                
+        <div id="team-content" style="max-width:900px;width:90vw;max-height:90vh;overflow-y:auto;background:rgba(0,0,0,0.85);border-radius:18px;padding:32px 16px 24px 16px;box-shadow:0 0 32px #0ff6;margin:0 auto;display:flex;flex-direction:column;align-items:center;position:relative;">
+            
+            <!-- 1. 頁面標題 -->
+            <div class="team-header">
+                <h2 class="modal-title team-title">製作團隊 Trio Sync</h2>
+            </div>
 
-                <div class="team-member">
-                    <div class="member-header">
-                        <span class="member-emoji">👨‍💼</span>
-                        <span class="member-name"><strong>Peter Wang</strong></span>
-                        <span class="member-title">產品設計 & 專案統籌（隊長）</span>
-                    </div>
-                    <div class="member-description">
-                        主導專案規劃與任務分配，統整團隊節奏與進度節點，掌握目標與時程。<br>
-                        負責核心程式開發、架構整合、Cursor撰寫，同時積極與AI協作進行快速試錯，<br>
-                        並負責debug與邏輯校調，確保系統實作穩定執行。<br>
-                        推動團隊高效協作，作為Trio Sync的「主引擎」。
-                    </div>
-                </div>
-                
-                <div class="team-member">
-                    <div class="member-header">
-                        <span class="member-emoji">👨‍💻</span>
-                        <span class="member-name"><strong>Jimmy Shih</strong></span>
-                        <span class="member-title">iOS 工程開發 & UIUX 設計師</span>
-                    </div>
-                    <div class="member-description">
-                        兼具前端技術與使用者體驗視角，針對UI操作與介面邏輯提出實用的設計建議，<br>
-                        協助調整互動節奏與排版細節，確保畫面表現與操作感受一致。<br>
-                        在開發流程中參與架構規劃與程式撰寫，投入Cursor編修與多次除錯，<br>
-                        同時積極參與功能討論與投票決策，是技術執行與體驗平衡的重要支柱。
+            <!-- 2. 團隊照片 -->
+            <div class="team-photo-section">
+                <img src="./Vibe_Coding組_王祐昇_運行程式及遊戲素材/TrioSync.jpg" 
+                     alt="Trio Sync 團隊" 
+                     class="team-photo" />
+            </div>
+
+            <!-- 3. 簡介文字 -->
+            <div class="team-intro-section">
+                <h3 class="section-title">🎵 製作團隊｜Trio Sync</h3>
+                <div class="team-intro-card">
+                    <div class="intro-content">
+                        <p>我們是來自 <strong>台灣大哥大</strong> 的三位夥伴，橫跨不同領域，卻擁有共同的熱情與信念。</p>
+                        <p>我們相信，音樂與創造，能將彼此的專業節奏完美同步。</p>
                     </div>
                 </div>
-                
-                <div class="team-member">
-                    <div class="member-header">
-                        <span class="member-emoji">👩‍🎨</span>
-                        <span class="member-name"><strong>Kathy Tsai</strong></span>
-                        <span class="member-title">行銷策略 & 視覺創意 & 使用者體驗設計師</span>
+            </div>
+
+            <!-- 4. 每個成員介紹 -->
+            <div class="team-members-section">
+                <h3 class="section-title">👥 團隊成員</h3>
+                <div class="members-grid">
+                    <div class="team-member">
+                        <div class="member-header">
+                            <span class="member-emoji">👨‍💼</span>
+                            <div class="member-info">
+                                <div class="member-name">Peter Wang</div>
+                                <div class="member-title">產品設計 & 專案統籌（隊長）</div>
+                            </div>
+                        </div>
+                        <div class="member-description">
+                            主導專案規劃與任務分配，統整團隊節奏與進度節點，掌握目標與時程。<br>
+                            負責核心程式開發、架構整合、Cursor撰寫，同時積極與AI協作進行快速試錯，<br>
+                            並負責debug與邏輯校調，確保系統實作穩定執行。<br>
+                            推動團隊高效協作，作為Trio Sync的「主引擎」。
+                        </div>
                     </div>
-                    <div class="member-description">
-                        從行銷策略切入，提煉遊戲核心定位與品牌語言形象，<br>
-                        參與主視覺風格設計，營造整體敘事氛圍與畫面風格，<br>
-                        聚焦UIUX細節，優化玩家操作體驗與互動節奏，<br>
-                        投入Cursor編修與除錯，統整故事邏輯與使用感受。
+
+                    <div class="team-member">
+                        <div class="member-header">
+                            <span class="member-emoji">👩‍💻</span>
+                            <div class="member-info">
+                                <div class="member-name">Kathy Tsai</div>
+                                <div class="member-title">行銷策略 & 視覺創意 & 使用者體驗設計師</div>
+                            </div>
+                        </div>
+                        <div class="member-description">
+                            從行銷策略切入，提煉遊戲核心定位與品牌語言形象，<br>
+                            參與主視覺風格設計，營造整體敘事氛圍與畫面風格，<br>
+                            聚焦UIUX細節，優化玩家操作體驗與互動節奏，<br>
+                            投入Cursor編修與除錯，統整故事邏輯與使用感受。
+                        </div>
+                    </div>
+
+                    <div class="team-member">
+                        <div class="member-header">
+                            <span class="member-emoji">👨‍💻</span>
+                            <div class="member-info">
+                                <div class="member-name">Jimmy Shih</div>
+                                <div class="member-title">iOS 工程開發 & UIUX 設計師</div>
+                            </div>
+                        </div>
+                        <div class="member-description">
+                            兼具前端技術與使用者體驗視角，針對UI操作與介面邏輯提出實用的設計建議，<br>
+                            協助調整互動節奏與排版細節，確保畫面表現與操作感受一致。<br>
+                            在開發流程中參與架構規劃與程式撰寫，投入Cursor編修與多次除錯，<br>
+                            同時積極參與功能討論與投票決策，是技術執行與體驗平衡的重要支柱。
+                        </div>
                     </div>
                 </div>
-                
-                
+            </div>
+
+            <!-- 5. 專案故事介紹 -->
+            <div class="project-story-section">
+                <h3 class="section-title">🎮 專案故事</h3>
                 <div class="project-story">
                     <div class="story-intro">
                         <span class="story-icon">🎮</span>
                         <div class="story-title-group">
                             <div class="story-title-main">Fate Keys</div>
                             <div class="story-title-sub">命運節奏 的誕生</div>
-                            <span class="story-desc">
-                                不只是音樂與節奏的交織，<br>
-                                更是一場跨領域協作、技術挑戰與創意實驗的旅程。
-                            </span>
+                            <div class="story-desc">
+                                不只是音樂與節奏的交織，更是一場跨領域協作、技術挑戰與創意實驗的旅程。
+                            </div>
                         </div>
                     </div>
                     <div class="story-section">
                         <div class="story-section-title">🛠️ 構想與技術挑戰</div>
-                        Canvas 畫布邏輯與 CSS 視覺結構重構<br>
-                        解決「畫面變形」、「梯形錯覺」、「元素無法對齊」等UI問題<br>
-                        實作 <code>clip-path</code> 與 <code>transform</code> 效果，打造仿3D賽道視覺<br>
-                        多次修改 <code>game-area</code> 與 <code>#main-wrapper</code> 的layout結構，調整固定與絕對定位，避免出現元素錯位<br>
+                        <p>Canvas 畫布邏輯與 CSS 視覺結構重構</p>
+                        <p>解決「畫面變形」、「梯形錯覺」、「元素無法對齊」等UI問題</p>
+                        <p>實作 <code>clip-path</code> 與 <code>transform</code> 效果，打造仿3D賽道視覺</p>
+                        <p>多次修改 <code>game-area</code> 與 <code>#main-wrapper</code> 的layout結構，調整固定與絕對定位，避免出現元素錯位</p>
                     </div>
                     <div class="story-section">
                         <div class="story-section-title">⭐ 關卡難度與賽道系統設計</div>
-                        重構難度選擇動畫與星數判定系統，優化 <code>LEVEL_CONFIGS</code> 設計邏輯<br>
-                        建立 fate 模式特殊解鎖條件，搭配 <code>localStorage</code> 儲存邏輯<br>
-                        自訂每個難度對應的 <code>keyCount</code> 與 <code>noteDensity</code>，實作 <code>laneManager.setLaneCount()</code> 自動調整<br>
+                        <p>重構難度選擇動畫與星數判定系統，優化 <code>LEVEL_CONFIGS</code> 設計邏輯</p>
+                        <p>建立 fate 模式特殊解鎖條件，搭配 <code>localStorage</code> 儲存邏輯</p>
+                        <p>自訂每個難度對應的 <code>keyCount</code> 與 <code>noteDensity</code>，實作 <code>laneManager.setLaneCount()</code> 自動調整</p>
                     </div>
                     <div class="story-section">
                         <div class="story-section-title">🐞 Debug 修復歷程</div>
-                        解決「同一鍵位擊中兩音符」、「combo 錯誤計算」、「音符無法被正確移除」等問題<br>
-                        開發 <code>showToast()</code> 功能提示與 <code>console.warn</code> 除錯機制，追蹤canvas設定失敗與ctx重繪錯誤<br>
-                        撰寫 <code>updateKeyHints()</code> 並動態生成提示按鍵，補強UI響應性<br>
+                        <p>解決「同一鍵位擊中兩音符」、「combo 錯誤計算」、「音符無法被正確移除」等問題</p>
+                        <p>開發 <code>showToast()</code> 功能提示與 <code>console.warn</code> 除錯機制，追蹤canvas設定失敗與ctx重繪錯誤</p>
+                        <p>撰寫 <code>updateKeyHints()</code> 並動態生成提示按鍵，補強UI響應性</p>
                     </div>
                     <div class="story-section">
                         <div class="story-section-title">🤖 與 AI 的協作試錯流程</div>
-                        運用AI協助設計音符渲染邏輯、CSS動畫調整、結構布局建議<br>
-                        多次針對CSS position、z-index、flex layout、polygon、vw/vh、動畫等問題進行來回調整與實驗<br>
-                        將原始版本的錯誤與限制，逐步導入可維護的元件化設計<br>
+                        <p>運用AI協助設計音符渲染邏輯、CSS動畫調整、結構布局建議</p>
+                        <p>多次針對CSS position、z-index、flex layout、polygon、vw/vh、動畫等問題進行來回調整與實驗</p>
+                        <p>將原始版本的錯誤與限制，逐步導入可維護的元件化設計</p>
                     </div>
                 </div>
             </div>
+
             <button id="close-team-btn" class="action-btn" style="margin-top:24px;font-size:1.2em;align-self:center;">關閉</button>
         </div>
     </div>

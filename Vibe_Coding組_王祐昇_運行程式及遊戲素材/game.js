@@ -3154,7 +3154,7 @@ function renderDifficultyStars() {
         let stars = '';
         // 根據難度等級顯示對應數量的星星
         for (let i = 0; i < config.stars; i++) {
-            if (config.locked) {
+            if (config && config.locked) {
                 stars += '<span class="star star-locked">⭐</span>';
             } else {
                 stars += '<span class="star">⭐</span>';
@@ -3162,7 +3162,7 @@ function renderDifficultyStars() {
         }
         const starDiv = btn.querySelector('.difficulty-stars');
         if (starDiv) starDiv.innerHTML = stars;
-        // tooltip
+        // tooltip - 只更新內容，不重複創建
         let tooltip = btn.querySelector('.tooltip');
         if (!tooltip) {
             tooltip = document.createElement('div');
@@ -3175,16 +3175,16 @@ function renderDifficultyStars() {
 
 // Lv.6 解鎖條件：通關3首 Lv.3 以上
 function checkFinalUnlock() {
-    const hiddenBtn = document.querySelector('.hidden-difficulty');
-    if (!hiddenBtn) return;
+    const fateBtn = document.querySelector('[data-difficulty="fate"]');
+    if (!fateBtn) return;
     let playCount = parseInt(localStorage.getItem('fatekeys_playcount') || '0', 10);
     if (playCount >= 3) {
-        hiddenBtn.disabled = false;
-        hiddenBtn.classList.add('unlocked-final');
+        fateBtn.disabled = false;
+        fateBtn.classList.add('unlocked-final');
         LEVEL_CONFIGS.fate.locked = false;
     } else {
-        hiddenBtn.disabled = true;
-        hiddenBtn.classList.remove('unlocked-final');
+        fateBtn.disabled = true;
+        fateBtn.classList.remove('unlocked-final');
         LEVEL_CONFIGS.fate.locked = true;
     }
     renderDifficultyStars();
@@ -3197,6 +3197,12 @@ function setDifficulty(diff) {
         selectedDifficulty = 'superEasy';
         diff = 'superEasy';
     } else {
+        // 檢查難度是否被鎖定
+        const config = LEVEL_CONFIGS[diff];
+        if (config && config.locked) {
+            showToast('此難度尚未解鎖，無法選擇！');
+            return; // 阻止設定鎖定的難度
+        }
         selectedDifficulty = diff;
     }
     // 根據難度自動設定賽道數量
@@ -3253,11 +3259,24 @@ function startGame() {
         showToast('請先選擇歌曲與難度');
         return;
     }
+    
+    // 最終檢查：確保選擇的難度沒有被鎖定
+    const config = LEVEL_CONFIGS[selectedDifficulty];
+    if (config && config.locked) {
+        showToast('此難度尚未解鎖，無法開始遊戲！');
+        return;
+    }
+    
+    // 額外檢查：確保 selectedDifficulty 是有效的難度
+    if (!LEVEL_CONFIGS[selectedDifficulty]) {
+        showToast('無效的難度設定，請重新選擇！');
+        return;
+    }
+    
     // 切換到遊戲畫面
     showScreen('game');
     // 倒數三秒後才開始遊戲
     showCountdown(realStartGame);
-    const config = LEVEL_CONFIGS[selectedDifficulty];
     missBufferCount = config ? config.missBuffer : 0;
     setMissBufferCount(missBufferCount);
 }
@@ -3446,7 +3465,6 @@ function endGame() {
 Perfect：${perfectCount}
 Great：${greatCount}
 Good：${goodCount}
-Miss：${missCount}
 
 你也來挑戰看看吧！
 遊戲連結：${window.location.href}`;
@@ -3511,12 +3529,12 @@ Miss：${missCount}
         leaderboardDiv.innerHTML = '';
         const table = document.createElement('table');
         table.style = 'width:100%;margin-top:0;border-collapse:collapse;background:rgba(0,0,0,0.5);';
-        table.innerHTML = `<thead><tr style="color:#0ff;font-size:1.1em;"><th style="text-align:left">名次</th><th style="text-align:left">暱稱</th><th style="text-align:center">難度</th><th style="text-align:right">分數</th><th style="text-align:center">最大Combo</th></tr></thead><tbody id="leaderboard-body"></tbody>`;
+        table.innerHTML = `<thead><tr style="color:#0ff;font-size:1.1em;"><th style="text-align:left;width:10%;">名次</th><th style="text-align:left;width:25%;">暱稱</th><th style="text-align:left;width:15%;">難度</th><th style="text-align:left;width:35%;">分數</th><th style="text-align:left;width:15%;">最大Combo</th></tr></thead><tbody id="leaderboard-body"></tbody>`;
         leaderboardDiv.appendChild(table);
         const body = table.querySelector('#leaderboard-body');
         leaderboard.forEach((item, idx) => {
             const tr = document.createElement('tr');
-            tr.innerHTML = `<td style="color:#ffe066;font-weight:bold;">${idx+1}</td><td>${item.nickname}</td><td style="text-align:center;">${item.difficulty||''}</td><td style="text-align:right;">${item.score.toLocaleString()}</td><td style="text-align:center;">${item.maxCombo}</td>`;
+            tr.innerHTML = `<td style="color:#ffe066;font-weight:bold;">${idx+1}</td><td>${item.nickname}</td><td style="text-align:left;">${item.difficulty||''}</td><td style="text-align:left;">${item.score.toLocaleString()}</td><td style="text-align:left;">${item.maxCombo}</td>`;
             if (highlight && highlight.nickname === item.nickname && highlight.score === item.score && highlight.maxCombo === item.maxCombo) {
                 tr.style.background = 'rgba(255,255,0,0.18)';
                 tr.style.boxShadow = '0 0 16px #ffe06688';
@@ -4008,6 +4026,13 @@ window.addEventListener('DOMContentLoaded', function() {
     // 檢查終極幻想難度
     checkFinalUnlock();
     
+    // 調試：檢查所有難度的鎖定狀態
+    console.log('[DEBUG] 所有難度的鎖定狀態:');
+    Object.keys(LEVEL_CONFIGS).forEach(diff => {
+        const config = LEVEL_CONFIGS[diff];
+        console.log(`  ${diff}: locked = ${config ? config.locked : 'undefined'}`);
+    });
+    
     // 音訊解鎖遮罩事件
     const audioMask = document.getElementById('unlock-audio-mask');
     if (audioMask) {
@@ -4070,32 +4095,45 @@ window.addEventListener('DOMContentLoaded', function() {
     // 難度選擇事件
     if (difficultyBtns) {
         difficultyBtns.forEach(btn => {
-            // 先確保tooltip存在
+            // 使用已存在的tooltip，不重複創建
             let tooltip = btn.querySelector('.tooltip');
             if (!tooltip) {
+                console.warn('Tooltip not found for difficulty button, creating one');
                 tooltip = document.createElement('div');
                 tooltip.className = 'tooltip';
                 btn.appendChild(tooltip);
             }
             // 預設隱藏
             tooltip.style.display = 'none';
-            // hover顯示
+            // hover顯示 - 改為不顯示tooltip，只顯示difficulty-desc
             btn.addEventListener('mouseenter', function() {
-                tooltip.style.display = 'block';
+                // tooltip.style.display = 'block'; // 註解掉，不顯示tooltip
             });
             // 移出隱藏
             btn.addEventListener('mouseleave', function() {
-                tooltip.style.display = 'none';
+                // tooltip.style.display = 'none'; // 註解掉，不顯示tooltip
             });
             // 點擊時如果有顯示則隱藏
             btn.addEventListener('click', function() {
-                if (tooltip.style.display === 'block') {
-                    tooltip.style.display = 'none';
-                }
+                // if (tooltip.style.display === 'block') {
+                //     tooltip.style.display = 'none';
+                // }
                 // 新增：點擊難度時播放音效
                 soundManager.play('ui');
                 // 新增：彈窗顯示難度名稱
                 const diff = this.dataset.difficulty;
+                
+                // 檢查難度是否被鎖定
+                const config = LEVEL_CONFIGS[diff];
+                console.log(`[DEBUG] 檢查難度 ${diff} 的鎖定狀態:`, config ? config.locked : 'config not found');
+                if (config && config.locked) {
+                    showToast('此難度尚未解鎖，請先完成前置條件！');
+                    // 清除當前選擇的難度，防止使用之前選擇的難度
+                    selectedDifficulty = null;
+                    updateStartBtnState();
+                    return; // 阻止選擇鎖定的難度
+                }
+                
                 const levelMap = {
                     'beginner': '初學者',
                     'casual': '休閒玩家',
@@ -4136,6 +4174,11 @@ window.addEventListener('DOMContentLoaded', function() {
                 selectedDifficulty: selectedDifficulty,
                 gameStarted: gameStarted,
                 isCountingDown: isCountingDown
+            });
+            console.log('[DEBUG] 開始遊戲前的難度檢查:', {
+                selectedDifficulty: selectedDifficulty,
+                config: LEVEL_CONFIGS[selectedDifficulty],
+                locked: LEVEL_CONFIGS[selectedDifficulty] ? LEVEL_CONFIGS[selectedDifficulty].locked : 'undefined'
             });
             e.preventDefault();
             e.stopPropagation();
@@ -4645,7 +4688,7 @@ function showLeaderboardOnly() {
     // 只顯示排行榜表格
     let table = document.createElement('table');
     table.style = 'width:100%;margin-top:18px;border-collapse:collapse;background:rgba(0,0,0,0.5);';
-    table.innerHTML = `<thead><tr style="color:#0ff;font-size:1.1em;"><th style="text-align:left">名次</th><th style="text-align:left">暱稱</th><th style="text-align:center">難度</th><th style="text-align:right">分數</th><th style="text-align:center">最大Combo</th></tr></thead><tbody id="leaderboard-body"></tbody>`;
+    table.innerHTML = `<thead><tr style="color:#0ff;font-size:1.1em;"><th style="text-align:left;width:10%;">名次</th><th style="text-align:left;width:25%;">暱稱</th><th style="text-align:left;width:15%;">難度</th><th style="text-align:left;width:35%;">分數</th><th style="text-align:left;width:15%;">最大Combo</th></tr></thead><tbody id="leaderboard-body"></tbody>`;
     leaderboardDiv.appendChild(table);
     let leaderboard = [];
     try {
@@ -4655,7 +4698,7 @@ function showLeaderboardOnly() {
     body.innerHTML = '';
     leaderboard.forEach((item, idx) => {
         let tr = document.createElement('tr');
-        tr.innerHTML = `<td style="color:#ffe066;font-weight:bold;">${idx+1}</td><td>${item.nickname}</td><td style="text-align:center;">${item.difficulty||''}</td><td style="text-align:right;">${item.score.toLocaleString()}</td><td style="text-align:center;">${item.maxCombo}</td>`;
+        tr.innerHTML = `<td style="color:#ffe066;font-weight:bold;">${idx+1}</td><td>${item.nickname}</td><td style="text-align:left;">${item.difficulty||''}</td><td style="text-align:left;">${item.score.toLocaleString()}</td><td style="text-align:left;">${item.maxCombo}</td>`;
         body.appendChild(tr);
     });
     // 隱藏分數與combo顯示區
@@ -4673,9 +4716,9 @@ function renderLeaderboardView() {
     } catch(e) { leaderboard = []; }
     let html = '<h2 style="color:#0ff;text-align:center;margin-bottom:18px;">🏆 排行榜</h2>';
     html += '<table style="width:100%;border-collapse:collapse;background:rgba(0,0,0,0.5);">';
-    html += '<thead><tr style="color:#0ff;font-size:1.1em;"><th style="text-align:left">名次</th><th style="text-align:left">暱稱</th><th style="text-align:center">難度</th><th style="text-align:right">分數</th><th style="text-align:center">最大Combo</th></tr></thead><tbody>';
+    html += '<thead><tr style="color:#0ff;font-size:1.1em;"><th style="text-align:left;width:10%;">名次</th><th style="text-align:left;width:25%;">暱稱</th><th style="text-align:left;width:15%;">難度</th><th style="text-align:left;width:35%;">分數</th><th style="text-align:left;width:15%;">最大Combo</th></tr></thead><tbody>';
     leaderboard.forEach((item, idx) => {
-        html += `<tr><td style="color:#ffe066;font-weight:bold;">${idx+1}</td><td>${item.nickname}</td><td style="text-align:center;">${item.difficulty||''}</td><td style="text-align:right;">${item.score.toLocaleString()}</td><td style="text-align:center;">${item.maxCombo}</td></tr>`;
+        html += `<tr><td style="color:#ffe066;font-weight:bold;">${idx+1}</td><td>${item.nickname}</td><td style="text-align:left;">${item.difficulty||''}</td><td style="text-align:left;">${item.score.toLocaleString()}</td><td style="text-align:left;">${item.maxCombo}</td></tr>`;
     });
     html += '</tbody></table>';
     leaderboardContent.innerHTML = html;

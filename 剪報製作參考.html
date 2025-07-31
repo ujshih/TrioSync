@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fate Keys 命運節奏 - 剪報製作參考</title>
+    <style>
+        :root {
+            /* 字體大小系統 */
+            --font-display: 2.8rem;
+            --font-section: 1.75rem;
+            --font-heading: 1.4rem;
+            --font-body-large: 1.15rem;
+            --font-body: 1rem;
+            --font-caption: 0.9rem;
+            --font-mini: 0.8rem;
+            
+            /* 顏色系統 */
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --accent-color: #f59e0b;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --background: #ffffff;
+            --surface: #f9fafb;
+            --border: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', 'PingFang TC', 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--background);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 1rem;
+        }
+
+        .title {
+            font-size: var(--font-display);
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            font-size: var(--font-body-large);
+            opacity: 0.9;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: var(--surface);
+            border-radius: 1rem;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .section-title {
+            font-size: var(--font-section);
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-icon {
+            font-size: 1.5rem;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-title {
+            font-size: var(--font-heading);
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-description {
+            font-size: var(--font-body);
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #fef3c7, #fde68a);
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-weight: 600;
+        }
+
+        .tech-badge {
+            display: inline-block;
+            background: var(--accent-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: var(--font-caption);
+            margin: 0.25rem;
+        }
+
+        .quote {
+            font-style: italic;
+            color: var(--text-secondary);
+            border-left: 3px solid var(--primary-color);
+            padding-left: 1rem;
+            margin: 1rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .section-title {
+                font-size: 1.5rem;
+            }
+            
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (prefers-contrast: high) {
+            :root {
+                --font-caption: 1rem;
+                --font-mini: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">Fate Keys 命運節奏</h1>
+            <p class="subtitle">剪報製作參考資料</p>
+        </header>
+
+        <!-- 玩法設計亮點 -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-icon">🎮</span>
+                玩法設計亮點
+            </h2>
+            <div class="content-grid">
+                <div class="feature-card">
+                    <h3 class="feature-title">節奏同步系統</h3>
+                    <p class="feature-description">
+                        創新的<span class="highlight">三鍵同步機制</span>，玩家需要同時按下三個按鍵來配合音樂節奏，創造出獨特的多人協作體驗。
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">動態難度調整</h3>
+                    <p class="feature-description">
+                        根據玩家表現即時調整遊戲難度，確保<span class="highlight">挑戰性與可玩性的完美平衡</span>，讓每位玩家都能享受遊戲樂趣。
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">視覺回饋系統</h3>
+                    <p class="feature-description">
+                        豐富的視覺效果和動畫，包括<span class="highlight">Combo 動畫、分數特效、按鍵反饋</span>等，提升遊戲的沉浸感。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 核心功能模組 -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-icon">⚙️</span>
+                核心功能模組
+            </h2>
+            <div class="content-grid">
+                <div class="feature-card">
+                    <h3 class="feature-title">音樂播放引擎</h3>
+                    <p class="feature-description">
+                        支援多種音訊格式，具備<span class="highlight">精確的時間同步</span>和音訊處理能力，確保遊戲節奏的準確性。
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">評分系統</h3>
+                    <p class="feature-description">
+                        多維度評分機制，包含<span class="highlight">準確度、連擊數、時機掌握</span>等指標，提供詳細的遊戲表現分析。
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">歌曲管理系統</h3>
+                    <p class="feature-description">
+                        完整的歌曲庫管理，支援<span class="highlight">自訂歌曲、難度設定、分類標籤</span>等功能，方便玩家選擇和組織音樂。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 技術特點 -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-icon">💻</span>
+                技術特點
+            </h2>
+            <div class="content-grid">
+                <div class="feature-card">
+                    <h3 class="feature-title">響應式設計</h3>
+                    <p class="feature-description">
+                        採用<span class="highlight">CSS Grid 和 Flexbox</span>技術，確保遊戲在不同設備上都能提供最佳體驗。
+                    </p>
+                    <div style="margin-top: 1rem;">
+                        <span class="tech-badge">CSS Grid</span>
+                        <span class="tech-badge">Flexbox</span>
+                        <span class="tech-badge">Media Queries</span>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">音訊處理技術</h3>
+                    <p class="feature-description">
+                        使用<span class="highlight">Web Audio API</span>實現高品質音訊播放和處理，支援即時音訊分析和效果處理。
+                    </p>
+                    <div style="margin-top: 1rem;">
+                        <span class="tech-badge">Web Audio API</span>
+                        <span class="tech-badge">音訊分析</span>
+                        <span class="tech-badge">即時處理</span>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">可訪問性設計</h3>
+                    <p class="feature-description">
+                        支援<span class="highlight">高對比度模式</span>和減少動畫模式，確保不同需求的玩家都能享受遊戲。
+                    </p>
+                    <div style="margin-top: 1rem;">
+                        <span class="tech-badge">可訪問性</span>
+                        <span class="tech-badge">高對比度</span>
+                        <span class="tech-badge">減少動畫</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 世界觀與劇情設計 -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-icon">🌍</span>
+                世界觀與劇情設計
+            </h2>
+            <div class="content-grid">
+                <div class="feature-card">
+                    <h3 class="feature-title">命運主題</h3>
+                    <p class="feature-description">
+                        以<span class="highlight">命運與選擇</span>為核心主題，透過音樂節奏來詮釋人生中的關鍵時刻和重要決定。
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">視覺風格</h3>
+                    <p class="feature-description">
+                        採用<span class="highlight">現代簡約風格</span>，結合動態視覺效果，創造出既時尚又富有深度的遊戲體驗。
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">情感共鳴</h3>
+                    <p class="feature-description">
+                        透過<span class="highlight">音樂與視覺的完美結合</span>，讓玩家在遊戲過程中產生深刻的情感共鳴和思考。
+                    </p>
+                </div>
+            </div>
+            <div class="quote">
+                "音樂是命運的語言，節奏是時間的脈動，在 Fate Keys 中，每個音符都是命運的選擇。"
+            </div>
+        </section>
+
+        <!-- 遊戲體驗與操作互動 -->
+        <section class="section">
+            <h2 class="section-title">
+                <span class="section-icon">🎯</span>
+                遊戲體驗與操作互動
+            </h2>
+            <div class="content-grid">
+                <div class="feature-card">
+                    <h3 class="feature-title">直觀操作設計</h3>
+                    <p class="feature-description">
+                        簡潔的<span class="highlight">三鍵操作系統</span>，讓玩家能夠快速上手，專注於音樂節奏的享受。
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">即時反饋機制</h3>
+                    <p class="feature-description">
+                        豐富的<span class="highlight">視覺和聽覺反饋</span>，讓玩家能夠即時了解自己的表現和遊戲狀態。
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <h3 class="feature-title">沉浸式體驗</h3>
+                    <p class="feature-description">
+                        透過<span class="highlight">動態背景、粒子效果、音訊視覺化</span>等技術，創造出完全沉浸的遊戲環境。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <footer style="text-align: center; margin-top: 3rem; padding: 2rem; color: var(--text-secondary);">
+            <p>© 2024 Fate Keys 命運節奏 - 剪報製作參考資料</p>
+        </footer>
+    </div>
+</body>
+</html> 
