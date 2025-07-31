@@ -155,6 +155,10 @@
                 <div id="timer-display">60</div>
                 <div id="score-display">分數: 0</div>
                 <div id="combo-display">0</div>
+                <!-- 新增暫停按鈕 -->
+                <button id="pause-btn" class="pause-btn" tabindex="0" aria-label="暫停遊戲">
+                    <span class="pause-icon">⏸️</span>
+                </button>
             </div>
             
             <canvas id="game-canvas"></canvas>
@@ -172,6 +176,38 @@
             
             <!-- Combo 容器 -->
             <div id="combo-container"></div>
+            
+            <!-- 新增暫停畫面 -->
+            <div id="pause-overlay" class="pause-overlay" style="display: none;">
+                <div class="pause-content">
+                    <div class="pause-title">⏸️ 遊戲暫停</div>
+                    <div class="pause-stats">
+                        <div class="pause-stat">
+                            <span class="stat-label">當前分數</span>
+                            <span id="pause-score" class="stat-value">0</span>
+                        </div>
+                        <div class="pause-stat">
+                            <span class="stat-label">當前連擊</span>
+                            <span id="pause-combo" class="stat-value">0</span>
+                        </div>
+                        <div class="pause-stat">
+                            <span class="stat-label">剩餘時間</span>
+                            <span id="pause-timer" class="stat-value">60</span>
+                        </div>
+                    </div>
+                    <div class="pause-buttons">
+                        <button id="resume-btn" class="pause-action-btn resume-btn" tabindex="0" aria-label="繼續遊戲">
+                            <span class="btn-icon">▶️</span>
+                            繼續遊戲
+                        </button>
+                        <button id="pause-back-btn" class="pause-action-btn back-btn" tabindex="0" aria-label="返回主選單">
+                            <span class="btn-icon">🏠</span>
+                            返回主選單
+                        </button>
+                    </div>
+                    <div class="pause-hint">按 ESC 鍵也可以暫停/繼續遊戲</div>
+                </div>
+            </div>
         </section>
         
         <!-- 結算畫面 -->

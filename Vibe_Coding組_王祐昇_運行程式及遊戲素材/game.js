@@ -491,6 +491,14 @@ let autoMissCheckId = null;
 let missBufferCount = 0;
 let gamePlayCount = 0;
 
+// 暫停功能相關變數
+let pauseStartTime = 0;
+let totalPauseTime = 0;
+let pauseBtn = null;
+let pauseOverlay = null;
+let resumeBtn = null;
+let pauseBackBtn = null;
+
 // 動態互動狀態
 let feverMode = false;
 let feverStartTime = 0;
@@ -956,6 +964,10 @@ function realStartGame() {
     missCount = 0;
     hitCount = 0;
     
+    // 重置暫停相關變數
+    totalPauseTime = 0;
+    pauseStartTime = 0;
+    
     // 先設置遊戲開始時間，確保音符時間計算正確
     gameStartTime = performance.now();
     gameEndTime = gameStartTime + GAME_DURATION * 1000;
@@ -1025,7 +1037,13 @@ function realStartGame() {
         if (conf.scoreMultiplier) scoreMultiplier = conf.scoreMultiplier;
         if (conf.gradeThresholds) gradeThresholds = conf.gradeThresholds;
         if (conf.comboForgiveness !== undefined) comboForgiveness = conf.comboForgiveness;
-            console.log('[realStartGame] 判定寬容度:', judgeWindow, '分數倍率:', scoreMultiplier, '評級門檻:', gradeThresholds, 'combo容錯:', comboForgiveness);
+        console.log('[realStartGame] 判定寬容度:', judgeWindow, '分數倍率:', scoreMultiplier, '評級門檻:', gradeThresholds, 'combo容錯:', comboForgiveness);
+    }
+    
+    // 初始化暫停功能（如果還沒初始化）
+    if (!pauseBtn) {
+        initPauseFunctionality();
+    }
     
     // 添加測試函數到全局，方便調試
     window.testNotes = function() {
@@ -1107,7 +1125,6 @@ function realStartGame() {
         });
     };
 }
-}
 
 // ===============================
 // 遊戲主迴圈 (Game Main Loop)
@@ -1117,13 +1134,16 @@ function gameLoop(now) {
     
     // 使用 performance.now() 確保時間計算一致性
     if (now === undefined) now = performance.now();
-    currentTime = (now - gameStartTime) / 1000;
+    
+    // 調整時間計算以考慮暫停時間
+    const adjustedNow = now - totalPauseTime;
+    currentTime = (adjustedNow - gameStartTime) / 1000;
+    
     // 只印一次開始
     if (!window._gameLoopStarted) {
         window._gameLoopStarted = true;
         console.log('[gameLoop] 開始執行');
     }
-
     
     // 檢查 ctx 是否可用
     if (!ctx) {
@@ -1148,22 +1168,10 @@ function gameLoop(now) {
         }
     }
     
-    // 畫面震動效果（已停用）
-    /*
-    if (screenShake > 0) {
-        ctx.save();
-        const shakeX = (Math.random() - 0.5) * screenShake;
-        const shakeY = (Math.random() - 0.5) * screenShake;
-        ctx.translate(shakeX, shakeY);
-    }
-    */
-    
     drawBackground(ctx);
     
     // 繪製賽道（中央霓虹引導線）
     laneManager.drawLanes(ctx, canvas);
-    
-
     
     drawNotes(now);
     
@@ -1174,13 +1182,6 @@ function gameLoop(now) {
     // 更新和繪製判定線閃光效果
     judgeLineFlashManager.update();
     judgeLineFlashManager.draw(ctx, canvas);
-    
-    // 恢復畫面震動（已停用）
-    /*
-    if (screenShake > 0) {
-        ctx.restore();
-    }
-    */
     
     animationId = requestAnimationFrame(gameLoop);
 }
@@ -5129,4 +5130,211 @@ document.addEventListener('DOMContentLoaded', function() {
   closeMenu();
 });
 // ... existing code ...
+
+// ===============================
+// 暫停功能實作 (Pause Functionality)
+// ===============================
+
+// 初始化暫停功能
+function initPauseFunctionality() {
+    console.log('[initPauseFunctionality] 初始化暫停功能');
+    
+    if (!pauseBtn || !pauseOverlay || !resumeBtn || !pauseBackBtn) {
+        console.warn('[initPauseFunctionality] 暫停功能元素未找到');
+        return;
+    }
+    
+    // 暫停按鈕點擊事件
+    pauseBtn.addEventListener('click', togglePause);
+    
+    // 繼續按鈕點擊事件
+    resumeBtn.addEventListener('click', resumeGame);
+    
+    // 返回主選單按鈕點擊事件
+    pauseBackBtn.addEventListener('click', pauseBackToMenu);
+    
+    // ESC鍵暫停/繼續功能
+    document.addEventListener('keydown', handlePauseKeydown);
+    
+    console.log('[initPauseFunctionality] 暫停功能初始化完成');
+}
+
+// 處理暫停相關的鍵盤事件
+function handlePauseKeydown(event) {
+    if (event.key === 'Escape' && gameStarted && !gameEnded) {
+        event.preventDefault();
+        togglePause();
+    }
+}
+
+// 切換暫停狀態
+function togglePause() {
+    if (!gameStarted || gameEnded) return;
+    
+    if (gamePaused) {
+        resumeGame();
+    } else {
+        pauseGame();
+    }
+}
+
+// 暫停遊戲
+function pauseGame() {
+    if (!gameStarted || gameEnded || gamePaused) return;
+    
+    console.log('[pauseGame] 遊戲暫停');
+    
+    // 設置暫停狀態
+    gamePaused = true;
+    pauseStartTime = performance.now();
+    
+    // 暫停音頻
+    if (audioManager.audio && !audioManager.audio.paused) {
+        audioManager.audio.pause();
+    }
+    
+    // 暫停音頻可視化
+    audioVisualizer.stop();
+    
+    // 暫停粒子背景
+    particleManager.stop();
+    
+    // 停止遊戲迴圈
+    if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+    }
+    
+    // 停止自動Miss檢查
+    stopAutoMissCheck();
+    
+    // 更新暫停畫面統計資訊
+    updatePauseStats();
+    
+    // 顯示暫停畫面
+    pauseOverlay.style.display = 'flex';
+    
+    // 添加暫停狀態樣式
+    if (gameArea) {
+        gameArea.classList.add('paused');
+    }
+    
+    // 暫停按鈕動畫效果
+    pauseBtn.classList.add('pulse');
+    
+    console.log('[pauseGame] 遊戲已暫停');
+}
+
+// 繼續遊戲
+function resumeGame() {
+    if (!gameStarted || gameEnded || !gamePaused) return;
+    
+    console.log('[resumeGame] 繼續遊戲');
+    
+    // 計算暫停時間
+    const pauseEndTime = performance.now();
+    const pauseDuration = pauseEndTime - pauseStartTime;
+    totalPauseTime += pauseDuration;
+    
+    // 重置暫停狀態
+    gamePaused = false;
+    
+    // 隱藏暫停畫面
+    pauseOverlay.style.display = 'none';
+    
+    // 移除暫停狀態樣式
+    if (gameArea) {
+        gameArea.classList.remove('paused');
+    }
+    
+    // 移除暫停按鈕動畫
+    pauseBtn.classList.remove('pulse');
+    
+    // 恢復音頻播放
+    if (audioManager.audio && audioManager.audio.paused) {
+        audioManager.audio.play().catch(err => {
+            console.warn('[resumeGame] 音頻恢復播放失敗:', err);
+        });
+    }
+    
+    // 恢復音頻可視化
+    if (audioManager.audio) {
+        audioVisualizer.start(audioManager.audio);
+    }
+    
+    // 恢復粒子背景
+    particleManager.init();
+    
+    // 重新開始遊戲迴圈
+    gameLoop();
+    
+    // 重新開始自動Miss檢查
+    startAutoMissCheck();
+    
+    console.log('[resumeGame] 遊戲已恢復，暫停時間:', pauseDuration, 'ms');
+}
+
+// 從暫停狀態返回主選單
+function pauseBackToMenu() {
+    if (!gamePaused) return;
+    
+    console.log('[pauseBackToMenu] 從暫停狀態返回主選單');
+    
+    // 結束當前遊戲
+    endGame();
+    
+    // 隱藏暫停畫面
+    pauseOverlay.style.display = 'none';
+    
+    // 移除暫停狀態樣式
+    if (gameArea) {
+        gameArea.classList.remove('paused');
+    }
+    
+    // 移除暫停按鈕動畫
+    pauseBtn.classList.remove('pulse');
+    
+    // 切換到選擇畫面
+    showScreen('select');
+    
+    console.log('[pauseBackToMenu] 已返回主選單');
+}
+
+// 更新暫停畫面統計資訊
+function updatePauseStats() {
+    if (!pauseOverlay) return;
+    
+    // 更新分數
+    const pauseScoreEl = document.getElementById('pause-score');
+    if (pauseScoreEl) {
+        pauseScoreEl.textContent = score.toLocaleString();
+    }
+    
+    // 更新連擊數
+    const pauseComboEl = document.getElementById('pause-combo');
+    if (pauseComboEl) {
+        pauseComboEl.textContent = combo;
+    }
+    
+    // 更新剩餘時間
+    const pauseTimerEl = document.getElementById('pause-timer');
+    if (pauseTimerEl) {
+        const remainingTime = Math.max(0, Math.ceil(GAME_DURATION - currentTime));
+        pauseTimerEl.textContent = remainingTime;
+    }
+}
+
+
+
+// 在DOM載入完成後初始化暫停功能
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化暫停功能相關元素
+    pauseBtn = document.getElementById('pause-btn');
+    pauseOverlay = document.getElementById('pause-overlay');
+    resumeBtn = document.getElementById('resume-btn');
+    pauseBackBtn = document.getElementById('pause-back-btn');
+    
+    // 初始化暫停功能
+    initPauseFunctionality();
+});
 
