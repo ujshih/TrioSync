@@ -3652,7 +3652,7 @@ function endGame() {
     // 排行榜區塊
     const leaderboardDiv = document.createElement('div');
     leaderboardDiv.className = 'result-leaderboard';
-    leaderboardDiv.style = 'width:100%;max-width:420px;margin:18px auto 0 auto;background:rgba(0,0,0,0.7);border-radius:16px;padding:16px 8px 8px 8px;box-shadow:0 0 24px #0ff3;';
+    leaderboardDiv.style = 'width:120%;max-width:420px;margin:18px auto 0 auto;background:rgba(0,0,0,0.7);border-radius:16px;padding:16px 8px 8px 8px;box-shadow:0 0 24px #0ff3;';
     resultScreen.appendChild(leaderboardDiv);
 
     // 再玩一次/回主選單按鈕
@@ -3662,11 +3662,11 @@ function endGame() {
     const retryBtn = document.createElement('button');
     retryBtn.className = 'action-btn';
     retryBtn.innerHTML = '再玩一次';
-    retryBtn.style = 'padding:10px 32px;font-size:1.2em;border-radius:12px;background:#ffe066;color:#222;font-weight:bold;border:none;cursor:pointer;box-shadow:0 0 12px #ffe06688;transition:transform 0.2s;';
+    retryBtn.style = 'width:160px;height:48px;padding:0;font-size:1.1em;border-radius:12px;background:#ffe066;color:#222;font-weight:bold;border:none;cursor:pointer;box-shadow:0 0 12px #ffe06688;transition:transform 0.2s;display:flex;align-items:center;justify-content:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
     const menuBtn = document.createElement('button');
     menuBtn.className = 'action-btn';
-    menuBtn.innerHTML = '回主選單';
-    menuBtn.style = 'padding:10px 32px;font-size:1.2em;border-radius:12px;background:#4ecdc4;color:#222;font-weight:bold;border:none;cursor:pointer;box-shadow:0 0 12px #4ecdc488;transition:transform 0.2s;';
+            menuBtn.innerHTML = '返回主選單';
+    menuBtn.style = 'width:160px;height:48px;padding:0;font-size:1.1em;border-radius:12px;background:#0ff;color:#222;font-weight:bold;border:none;cursor:pointer;box-shadow:0 0 12px #0ff88;transition:transform 0.2s;display:flex;align-items:center;justify-content:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
     btnRow.appendChild(retryBtn);
     btnRow.appendChild(menuBtn);
     resultScreen.appendChild(btnRow);
@@ -3680,13 +3680,13 @@ function endGame() {
     const emailShareBtn = document.createElement('button');
     emailShareBtn.className = 'action-btn';
     emailShareBtn.innerHTML = '📧 郵件分享';
-    emailShareBtn.style = 'padding:10px 24px;font-size:1.1em;border-radius:12px;background:#4ecdc4;color:#222;font-weight:bold;border:none;cursor:pointer;box-shadow:0 0 12px #4ecdc488;transition:transform 0.2s;';
+    emailShareBtn.style = 'width:160px;height:48px;padding:0;font-size:1.1em;border-radius:12px;background:#4ecdc4;color:#222;font-weight:bold;border:none;cursor:pointer;box-shadow:0 0 12px #4ecdc488;transition:transform 0.2s;display:flex;align-items:center;justify-content:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
     
     // 檔案分享按鈕
     const fileShareBtn = document.createElement('button');
     fileShareBtn.className = 'action-btn';
     fileShareBtn.innerHTML = '📁 檔案分享';
-    fileShareBtn.style = 'padding:10px 24px;font-size:1.1em;border-radius:12px;background:#0ff;color:#222;font-weight:bold;border:none;cursor:pointer;box-shadow:0 0 12px #0ff8;transition:transform 0.2s;';
+    fileShareBtn.style = 'width:160px;height:48px;padding:0;font-size:1.1em;border-radius:12px;background:#4ecdc4;color:#222;font-weight:bold;border:none;cursor:pointer;box-shadow:0 0 12px #4ecdc488;transition:transform 0.2s;display:flex;align-items:center;justify-content:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
     
     shareRow.appendChild(emailShareBtn);
     shareRow.appendChild(fileShareBtn);
@@ -4351,17 +4351,6 @@ window.addEventListener('DOMContentLoaded', function() {
             }
         }
     }, 1000);
-    
-    // 添加緊急修復：如果開始按鈕無法點擊，強制隱藏所有可能的遮罩
-    setTimeout(() => {
-        const masks = document.querySelectorAll('#unlock-audio-mask, #countdown-overlay');
-        masks.forEach(mask => {
-            if (mask && mask.style.display !== 'none') {
-                console.log('[緊急修復] 隱藏遮罩:', mask.id);
-                mask.style.display = 'none';
-            }
-        });
-    }, 2000);
     
     // 歌曲選擇事件
     if (songCards) {
