@@ -3264,24 +3264,14 @@ body.result-bg-d::before {
 }
 
 .team-title {
-    font-size: 2.3rem;
-    font-family: 'Orbitron', 'Audiowide', '微軟正黑體', Arial, sans-serif;
+    font-size: calc(var(--font-section) * 2);
     font-weight: bold;
-    letter-spacing: 0.12em;
-    background: linear-gradient(90deg, #0ff 10%, #f0f 40%, #fff700 70%, #ff6f91 100%);
-    background-size: 300% 100%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    /* text-fill-color: transparent; 這行已移除 */
-    text-shadow:
-        0 0 18px #fff700,
-        0 0 32px #0ff,
-        0 0 48px #f0f,
-        0 0 64px #ff6f91;
-    animation: team-title-glow 3s linear infinite, team-title-rainbow 5s linear infinite;
+    color: #fff;
+    text-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+    animation: title-pulse 2s ease-in-out infinite;
     margin-bottom: 1.2em;
     text-align: center;
+    line-height: 1.2;
 }
 
 @keyframes team-title-glow {
@@ -3857,7 +3847,7 @@ body.result-bg-d::before {
 .pause-btn {
   position: fixed;
   top: -0.4rem;
-  right: 0.2rem;
+  left: -2rem;
   width: 50px;
   height: 50px;
   border: none;
