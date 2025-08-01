@@ -508,7 +508,6 @@ let gamePlayCount = 0;
 
 // 暫停功能相關變數
 let pauseStartTime = 0;
-let totalPauseTime = 0;
 let pauseBtn = null;
 let pauseOverlay = null;
 let resumeBtn = null;
@@ -991,7 +990,6 @@ function realStartGame() {
     hitCount = 0;
     
     // 重置暫停相關變數
-    totalPauseTime = 0;
     pauseStartTime = 0;
     gameEndTimeoutRemaining = 0;
     
@@ -1162,9 +1160,8 @@ function gameLoop(now) {
     // 使用 performance.now() 確保時間計算一致性
     if (now === undefined) now = performance.now();
     
-    // 調整時間計算以考慮暫停時間
-    const adjustedNow = now - totalPauseTime;
-    currentTime = (adjustedNow - gameStartTime) / 1000;
+    // 修正：直接計算當前時間，因為 gameStartTime 已經在暫停時調整過了
+    currentTime = (now - gameStartTime) / 1000;
     
     // 只印一次開始
     if (!window._gameLoopStarted) {
@@ -5504,9 +5501,8 @@ function pauseGame() {
     
     // 暫停遊戲結束計時器
     if (window.gameEndTimeout) {
-        // 計算剩餘時間
-        const elapsedTime = (performance.now() - gameStartTime) / 1000;
-        gameEndTimeoutRemaining = Math.max(0, GAME_DURATION - elapsedTime);
+        // 修正：使用 currentTime 來計算剩餘時間，因為 currentTime 已經正確計算了遊戲時間
+        gameEndTimeoutRemaining = Math.max(0, GAME_DURATION - currentTime);
         console.log('[pauseGame] 暫停遊戲結束計時器，剩餘時間:', gameEndTimeoutRemaining, '秒');
         
         // 清除當前計時器
@@ -5543,7 +5539,10 @@ function resumeGame() {
     // 計算暫停時間
     const pauseEndTime = performance.now();
     const pauseDuration = pauseEndTime - pauseStartTime;
-    totalPauseTime += pauseDuration;
+    
+    // 修正：調整遊戲開始時間而不是累加暫停時間
+    // 這樣可以確保 currentTime 計算正確
+    gameStartTime += pauseDuration;
     
     // 重置暫停狀態
     gamePaused = false;
